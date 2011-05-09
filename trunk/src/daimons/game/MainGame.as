@@ -1,5 +1,7 @@
 ﻿package daimons.game
 {
+	import daimons.game.levels.abstract.ALevel;
+	import flash.ui.Keyboard;
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.platformer.Baddy;
@@ -29,7 +31,7 @@
 		public function MainGame()
 		{
 			super();
-
+			console.openKey = Keyboard.F;
 			console.enabled = false;
 
 			var objects : Array = [Platform, Hero, CitrusSprite, Sensor, Coin, Baddy, Crate];
@@ -53,10 +55,17 @@
 			e.target.removeEventListener(Event.COMPLETE, handleSWFLoadComplete);
 			var levelObjectsMC : MovieClip = e.target.loader.content;
 
-			state = new Level1();
+			_levelManager = new LevelManager();
+			_levelManager.onLevelChanged.add(_onLevelChanged);
+			_levelManager.init(0);
 
 			e.target.loader.unloadAndStop();
-			this.enabled = false;
+			//this.enabled = false;
+		}
+
+		private function _onLevelChanged(lvl:ALevel) : void
+		{
+			state = _levelManager.currentLevel;
 		}
 	}
 }
