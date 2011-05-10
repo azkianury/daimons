@@ -43,8 +43,16 @@ package daimons.game.levels
 
 		public function gotoLevel(lvl : uint) : void
 		{
+			if(_currentLevel != null)
+				_currentLevel.lvlEnded.remove(_onLevelEnded);
 			_currentLevel = ALevel(new _levels[_currentIndex]());
+			_currentLevel.lvlEnded.add(_onLevelEnded);
 			onLevelChanged.dispatch(currentLevel);
+		}
+
+		private function _onLevelEnded() : void
+		{
+			
 		}
 
 		public function init(level : uint = 0) : void
