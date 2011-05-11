@@ -1,11 +1,11 @@
 package daimons.game.hurtingobjects
 {
-	import flash.ui.Keyboard;
-	import daimons.core.KeyManager;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
-	import daimons.core.PATHS;
+	import daimons.core.consts.PATHS;
+	import daimons.game.actions.ActionManager;
+	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 
 	/**
@@ -13,6 +13,8 @@ package daimons.game.hurtingobjects
 	 */
 	public class Wall extends AHurtingObject
 	{
+		public var enemyClass : Class = Defender;
+
 		public function Wall(name : String, params : Object = null)
 		{
 			if (params == null)
@@ -26,16 +28,16 @@ package daimons.game.hurtingobjects
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
 			var colliderBody : b2Body = e.other.GetBody();
+			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
 
 			if (colliderBody.GetUserData() is enemyClass)
 			{
-				trace(KeyManager.getInstance().curentKeyDown);
-				if(KeyManager.getInstance().curentKeyDown == Keyboard.A){
+				e.contact.Disable();
+				if (ActionManager.getInstance().currentAction.name == "plasma")
+				{
 					hurt();
-					KeyManager.getInstance().resetKeyDown();
 				}
 			}
-			super._handleBeginContact(e);
 		}
 	}
 }

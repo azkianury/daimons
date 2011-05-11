@@ -1,4 +1,4 @@
-package daimons.core
+package daimons.core.consts
 {
 	/**
 	 * @author lbineau

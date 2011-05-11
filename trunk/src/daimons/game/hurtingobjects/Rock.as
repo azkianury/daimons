@@ -1,8 +1,12 @@
 package daimons.game.hurtingobjects
 {
 	import Box2DAS.Collision.Shapes.b2CircleShape;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import Box2DAS.Dynamics.ContactEvent;
+	import Box2DAS.Dynamics.b2Body;
 
+	import daimons.game.actions.ActionManager;
+	import daimons.game.characters.Defender;
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 
 	/**
 	 * @author lbineau
@@ -10,14 +14,31 @@ package daimons.game.hurtingobjects
 	public class Rock extends AHurtingObject
 	{
 		private var _radius : Number;
+		public var enemyClass : Class = Defender;
 
 		public function Rock(name : String, params : Object = null)
 		{
-			if(params == null){
+			if (params == null)
+			{
 				params = new Object();
 				params.radius = 50;
 			}
 			super(name, params);
+		}
+
+		override protected function _handleBeginContact(e : ContactEvent) : void
+		{
+			var colliderBody : b2Body = e.other.GetBody();
+			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
+
+			if (colliderBody.GetUserData() is enemyClass)
+			{
+				e.contact.Disable();
+				if (ActionManager.getInstance().currentAction.name == "plasma")
+				{
+					hurt();
+				}
+			}
 		}
 
 		override protected function createShape() : void

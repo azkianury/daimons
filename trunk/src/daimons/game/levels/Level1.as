@@ -1,25 +1,25 @@
 package daimons.game.levels
 {
 	import Box2DAS.Dynamics.ContactEvent;
-
-	import daimons.core.PATHS;
-	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.Rock;
-	import daimons.game.hurtingobjects.Wall;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
-	import daimons.game.levels.abstract.ALevel;
-
-	import fr.lbineau.utils.PerfectTimer;
-
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.PhysicsObject;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.objects.platformer.Sensor;
 	import com.citrusengine.physics.Box2D;
-
+	import daimons.core.consts.PATHS;
+	import daimons.game.characters.Defender;
+	import daimons.game.hurtingobjects.Rock;
+	import daimons.game.hurtingobjects.Wall;
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import daimons.game.levels.abstract.ALevel;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
+	import fr.lbineau.utils.PerfectTimer;
+
+
+
+
 
 	/**
 	 * @author lbineau
@@ -53,7 +53,7 @@ package daimons.game.levels
 
 			_bg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:0.5, group:0});
 			add(_bg);
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf")});
+			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"),gravity:0.5});
 			_hero.offsetY = -200;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;

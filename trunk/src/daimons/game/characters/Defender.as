@@ -1,5 +1,6 @@
 package daimons.game.characters
 {
+	import daimons.game.actions.ActionManager;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -32,11 +33,11 @@ package daimons.game.characters
 		/**
 		 * This is the initial velocity that the hero will move at when he jumps.
 		 */
-		public var jumpHeight : Number = 14;
+		public var jumpHeight : Number = 10;
 		/**
 		 * This is the amount of "float" that the hero has when the player holds the jump button while jumping. 
 		 */
-		public var jumpAcceleration : Number = 0.9;
+		public var jumpAcceleration : Number = 0;
 		/**
 		 * This is the amount of friction that the hero will have when he's not running. 
 		 */
@@ -94,6 +95,7 @@ package daimons.game.characters
 		private var _hurtTimeoutID : Number;
 		private var _hurt : Boolean = false;
 		private var _prevAnimation : String = "idle";
+		private var _actionManager:ActionManager;
 
 		/**
 		 * Creates a new hero object.
@@ -106,6 +108,7 @@ package daimons.game.characters
 			onGiveDamage = new Signal();
 			onTakeDamage = new Signal();
 			onAnimationChange = new Signal();
+			_actionManager = ActionManager.getInstance();
 		}
 
 		override public function destroy() : void
@@ -167,13 +170,13 @@ package daimons.game.characters
 					moveKeysPressed = true;
 				}
 
-				if (_onGround && _ce.input.justPressed(Keyboard.SPACE))
+				if (_onGround && _ce.input.justPressed(Keyboard.SPACE) && _actionManager.currentAction.name == "jump")
 				{
 					velocity.y = -jumpHeight;
 					onJump.dispatch();
 				}
 
-				if (_ce.input.isDown(Keyboard.SPACE) && !_onGround && velocity.y < 0)
+				if (_ce.input.isDown(Keyboard.SPACE) && !_onGround && velocity.y < 0 && _actionManager.currentAction.name == "jump")
 				{
 					velocity.y -= jumpAcceleration;
 				}
@@ -181,7 +184,7 @@ package daimons.game.characters
 				if (_springOffEnemy != -1)
 				{
 					y = _springOffEnemy;
-					if (_ce.input.isDown(Keyboard.SPACE))
+					if (_ce.input.isDown(Keyboard.SPACE) && _actionManager.currentAction.name == "jump")
 						velocity.y = -enemySpringJumpHeight;
 					else
 						velocity.y = -enemySpringHeight;
@@ -299,7 +302,7 @@ package daimons.game.characters
 			{
 				_animation = "hurt";
 			}
-			else if (!_onGround)
+			else if (!_onGround && _actionManager.currentAction.name == "jump")
 			{
 				_animation = "jump";
 			}
