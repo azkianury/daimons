@@ -1,27 +1,25 @@
 package daimons.game.levels
 {
 	import Box2DAS.Dynamics.ContactEvent;
-	import com.citrusengine.core.CitrusEngine;
-	import com.citrusengine.core.State;
+
+	import daimons.core.PATHS;
+	import daimons.game.characters.Defender;
+	import daimons.game.hurtingobjects.Rock;
+	import daimons.game.hurtingobjects.Wall;
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import daimons.game.levels.abstract.ALevel;
+
+	import fr.lbineau.utils.PerfectTimer;
+
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.PhysicsObject;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.objects.platformer.Sensor;
 	import com.citrusengine.physics.Box2D;
-	import daimons.core.PATHS;
-	import daimons.game.characters.Defender;
-	import daimons.game.hurtObjects.Rock;
-	import daimons.game.hurtObjects.Wall;
-	import daimons.game.hurtObjects.abstract.Trap;
-	import daimons.game.levels.abstract.ALevel;
-	import flash.display.DisplayObject;
+
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
-	import flash.utils.Timer;
-
-
-
 
 	/**
 	 * @author lbineau
@@ -29,12 +27,16 @@ package daimons.game.levels
 	public class Level1 extends ALevel
 	{
 		private var _hero : Defender;
-		private var _bg : CitrusSprite; // Arrière plan
-		private var _fg: CitrusSprite; // Premier plan
+		private var _bg : CitrusSprite;
+		// Arrière plan
+		private var _fg : CitrusSprite;
+		// Premier plan
 		private var _ennemi : PhysicsObject;
-		private var _timer : Timer;
-		private var _ennemyArray : Array = [Wall,Rock];
-		private var _container:Sprite ;
+		private var _ennemyArray : Array = [Wall, Rock];
+		private var _ennemyStock : Vector.<AHurtingObject>;
+		private var _currentEnnemyIdx : uint ;
+		private var _container : Sprite ;
+		private static const MAX_ENNEMIES : uint = 10;
 
 		public function Level1()
 		{
@@ -43,16 +45,16 @@ package daimons.game.levels
 
 		override public function initialize() : void
 		{
+			_ennemyStock = new Vector.<AHurtingObject>(MAX_ENNEMIES, true);
 
-			
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
 			box2D.visible = true;
-			//CitrusEngine.getInstance().playing = false;
-			_bg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS+"level1/bg.swf", parallax:0.5,group:0});
+
+			_bg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:0.5, group:0});
 			add(_bg);
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "hero.swf")});
-			_hero.offsetY = -20;
+			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf")});
+			_hero.offsetY = -200;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
 			_hero.killVelocity = 1;
@@ -66,10 +68,6 @@ package daimons.game.levels
 			add(platform1);
 			platform1.x = 0;
 			platform1.y = stage.stageHeight - platform1.height;
-			
-			var wall:Wall = new Wall("Wall");
-			wall.x = 200; 
-			add(wall);
 
 			var sensor : Sensor = new Sensor("Reset Sensor", {width:2000, height:20});
 			add(sensor);
@@ -81,24 +79,35 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(50, 200);
 			view.cameraEasing.y = 0;
 
-			_timer = new Timer(2000, 0);
+			_timer = new PerfectTimer(2000, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onTick);
 			_timer.start();
-			
-			_fg = new CitrusSprite("Forground", {view:PATHS.LEVELS_ASSETS+"level1/fg.swf", parallax:1.5,group:3});
+
+			_fg = new CitrusSprite("Forground", {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", parallax:1.5, group:3});
 			add(_fg);
-			
+
 			_container = new Sprite();
-			//addChild(_container);
-			//addChild(DisplayObject(view.getArt(_fg)));
 		}
 
 		private function _onTick(event : TimerEvent) : void
 		{
 			_ennemi = new _ennemyArray[Math.round(Math.random())]("Ennemi" + _timer.currentCount + 1);
 			add(_ennemi);
-			_ennemi.x = _hero.x + 800;
+			_ennemi.x = _hero.x + stage.stageWidth;
 			_ennemi.y = stage.stageHeight - 200;
+
+			_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
+
+			_ennemyStock[_currentEnnemyIdx] = _ennemi as AHurtingObject;
+
+			for each (var ennemi : AHurtingObject in _ennemyStock)
+			{
+				if (ennemi != null && ennemi.x < _hero.x - 100)
+				{
+					// ennemi.destroy(); // BUG
+					ennemi.kill = true;
+				}
+			}
 		}
 
 		/*	private function _hurt():void {
@@ -110,6 +119,32 @@ package daimons.game.levels
 			if (cEvt.other.GetBody().GetUserData() is Defender)
 			{
 			}
+		}
+
+		override public function pause() : void
+		{
+			for each (var ennemi : AHurtingObject in _ennemyStock)
+			{
+				if (ennemi != null && ennemi.x < _hero.x - 100)
+				{
+					ennemi.changeAnimation("idle");
+				}
+			}
+			_hero.changeAnimation("idle");
+			_timer.pause();
+		}
+
+		override public function resume() : void
+		{
+			for each (var ennemi : AHurtingObject in _ennemyStock)
+			{
+				if (ennemi != null && ennemi.x < _hero.x - 100)
+				{
+					ennemi.changeAnimation(ennemi.prevAnimation);
+				}
+			}
+			_hero.changeAnimation("walk");
+			_timer.start();
 		}
 	}
 }

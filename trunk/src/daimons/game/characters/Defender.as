@@ -93,6 +93,7 @@ package daimons.game.characters
 		private var _springOffEnemy : Number = -1;
 		private var _hurtTimeoutID : Number;
 		private var _hurt : Boolean = false;
+		private var _prevAnimation : String = "idle";
 
 		/**
 		 * Creates a new hero object.
@@ -324,6 +325,13 @@ package daimons.game.characters
 			{
 				onAnimationChange.dispatch();
 			}
+		}
+
+		public function changeAnimation(anim : String) : void
+		{
+			_prevAnimation = _animation;
+			_animation = anim;
+			trace(_animation)
 		}
 	}
 }

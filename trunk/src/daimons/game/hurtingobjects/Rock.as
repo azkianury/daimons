@@ -1,13 +1,13 @@
-package daimons.game.hurtObjects
+package daimons.game.hurtingobjects
 {
 	import Box2DAS.Collision.Shapes.b2CircleShape;
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 
-	import daimons.game.hurtObjects.abstract.Trap;
 
 	/**
 	 * @author lbineau
 	 */
-	public class Rock extends Trap
+	public class Rock extends AHurtingObject
 	{
 		private var _radius : Number;
 
