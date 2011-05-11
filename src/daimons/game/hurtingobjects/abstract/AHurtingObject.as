@@ -1,5 +1,11 @@
-package daimons.game.hurtObjects.abstract
+package daimons.game.hurtingobjects.abstract
 {
+	import flash.display.Sprite;
+
+	import com.citrusengine.view.CitrusView;
+
+	import org.osflash.signals.Signal;
+
 	import daimons.game.characters.Defender;
 
 	import Box2DAS.Common.V2;
@@ -21,7 +27,7 @@ package daimons.game.hurtObjects.abstract
 	 * For example, the Hero doesn't contain the logic for killing the Baddy, and the Baddy doesn't contain the
 	 * logic for making the hero "Spring" when he kills him. 
 	 */
-	public class Trap extends PhysicsObject
+	public class AHurtingObject extends PhysicsObject
 	{
 		public var speed : Number = 1.3;
 		public var enemyClass : Class = Defender;
@@ -30,15 +36,17 @@ package daimons.game.hurtObjects.abstract
 		public var hurtDuration : Number = 400;
 		private var _hurtTimeoutID : Number = 0;
 		private var _hurt : Boolean = false;
+		private var _prevAnimation : String = "idle";
 
-		public function Trap(name : String, params : Object = null)
+		public function AHurtingObject(name : String, params : Object = null)
 		{
 			super(name, params);
 		}
 
 		override public function destroy() : void
 		{
-			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, handleBeginContact);
+			trace(this + ":Destroyed");
+			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 			clearTimeout(_hurtTimeoutID);
 			super.destroy();
 		}
@@ -53,29 +61,28 @@ package daimons.game.hurtObjects.abstract
 		{
 			super.createFixture();
 			_fixture.m_reportBeginContact = true;
-			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, handleBeginContact);
+			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 		}
 
 		override public function update(timeDelta : Number) : void
 		{
 			super.update(timeDelta);
-
 			_updateAnimation();
 		}
 
 		public function hurt() : void
 		{
 			_hurt = true;
-			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
+			//_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 		}
 
-		private function handleBeginContact(e : ContactEvent) : void
+		protected function _handleBeginContact(e : ContactEvent) : void
 		{
 			var colliderBody : b2Body = e.other.GetBody();
 			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
-			var enemyClass : Class = enemyClass;
 
-			if (colliderBody.GetUserData() is enemyClass){
+			if (colliderBody.GetUserData() is enemyClass)
+			{
 				e.contact.Disable();
 			}
 		}
@@ -92,6 +99,17 @@ package daimons.game.hurtObjects.abstract
 		{
 			_hurt = false;
 			kill = true;
+		}
+
+		public function changeAnimation(anim : String) : void
+		{
+			_prevAnimation = _animation;
+			_animation = anim;
+		}
+
+		public function get prevAnimation() : String
+		{
+			return _prevAnimation;
 		}
 	}
 }

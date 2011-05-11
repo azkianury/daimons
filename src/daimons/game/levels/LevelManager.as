@@ -1,8 +1,16 @@
 package daimons.game.levels
 {
-	import flash.utils.Timer;
+	import flash.utils.setTimeout;
+
 	import daimons.game.levels.abstract.ALevel;
+	import daimons.ui.Menu;
+
+	import com.citrusengine.core.CitrusEngine;
+
 	import org.osflash.signals.Signal;
+
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 
 	/**
 	 * @author lbineau
@@ -13,11 +21,35 @@ package daimons.game.levels
 		private var _currentIndex : uint;
 		private var _currentLevel : ALevel;
 		public var onLevelChanged : Signal;
-		private var _timer:Timer;
 
 		public function LevelManager()
 		{
 			onLevelChanged = new Signal(ALevel);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+		}
+
+		private function _onKeyDown(event : KeyboardEvent) : void
+		{
+			switch(event.keyCode)
+			{
+				case Keyboard.ESCAPE:
+					_togglePause();
+					break;
+			}
+		}
+
+		private function _togglePause() : void
+		{
+			if (CitrusEngine.getInstance().playing)
+			{
+				_currentLevel.pause();
+				CitrusEngine.getInstance().playing = false;
+			}
+			else
+			{
+				_currentLevel.resume();
+				CitrusEngine.getInstance().playing = true;
+			}
 		}
 
 		public function destroy() : void
@@ -43,31 +75,20 @@ package daimons.game.levels
 
 		public function gotoLevel(lvl : uint) : void
 		{
-			if(_currentLevel != null)
+			if (_currentLevel != null)
 				_currentLevel.lvlEnded.remove(_onLevelEnded);
 			_currentLevel = ALevel(new _levels[_currentIndex]());
 			_currentLevel.lvlEnded.add(_onLevelEnded);
-			onLevelChanged.dispatch(currentLevel);
+			onLevelChanged.dispatch(_currentLevel);
 		}
 
 		private function _onLevelEnded() : void
 		{
-			
 		}
 
 		public function init(level : uint = 0) : void
 		{
 			gotoLevel(0);
-		}
-
-		public function get currentLevel() : ALevel
-		{
-			return _currentLevel;
-		}
-
-		public function set currentLevel(currentLevel : ALevel) : void
-		{
-			_currentLevel = currentLevel;
 		}
 	}
 }
