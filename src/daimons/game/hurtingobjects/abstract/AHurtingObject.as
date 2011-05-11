@@ -30,7 +30,6 @@ package daimons.game.hurtingobjects.abstract
 	public class AHurtingObject extends PhysicsObject
 	{
 		public var speed : Number = 1.3;
-		public var enemyClass : Class = Defender;
 		protected var _hurtActions : Array;
 		public var enemyKillVelocity : Number = 3;
 		public var hurtDuration : Number = 400;
@@ -45,7 +44,7 @@ package daimons.game.hurtingobjects.abstract
 
 		override public function destroy() : void
 		{
-			trace(this + ":Destroyed");
+			//trace(this + ":Destroyed");
 			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 			clearTimeout(_hurtTimeoutID);
 			super.destroy();
@@ -78,13 +77,6 @@ package daimons.game.hurtingobjects.abstract
 
 		protected function _handleBeginContact(e : ContactEvent) : void
 		{
-			var colliderBody : b2Body = e.other.GetBody();
-			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
-
-			if (colliderBody.GetUserData() is enemyClass)
-			{
-				e.contact.Disable();
-			}
 		}
 
 		protected function _updateAnimation() : void

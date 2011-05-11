@@ -1,10 +1,5 @@
 ﻿package daimons.game
 {
-	import daimons.core.PATHS;
-	import daimons.game.levels.LevelManager;
-	import daimons.game.levels.abstract.ALevel;
-	import daimons.ui.Menu;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.platformer.Baddy;
@@ -13,13 +8,18 @@
 	import com.citrusengine.objects.platformer.Hero;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.objects.platformer.Sensor;
-
+	import daimons.core.consts.PATHS;
+	import daimons.game.levels.LevelManager;
+	import daimons.game.levels.abstract.ALevel;
+	import daimons.ui.Menu;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.net.URLRequest;
 	import flash.ui.Keyboard;
+
+
 
 	/**
 	 * @author lbineau
