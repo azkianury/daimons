@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	
+	<tutorial active="yes"></tutorial>
+	<configuration>
+		<objectinterval>2000</objectinterval>
+	</configuration>
+
+</root>

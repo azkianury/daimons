@@ -1,25 +1,24 @@
 package daimons.game.levels
 {
+	import daimons.score.ScoreManager;
 	import Box2DAS.Dynamics.ContactEvent;
-	import com.citrusengine.math.MathVector;
-	import com.citrusengine.objects.CitrusSprite;
-	import com.citrusengine.objects.PhysicsObject;
-	import com.citrusengine.objects.platformer.Platform;
-	import com.citrusengine.objects.platformer.Sensor;
-	import com.citrusengine.physics.Box2D;
+
 	import daimons.core.consts.PATHS;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
 	import daimons.game.hurtingobjects.Wall;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 	import daimons.game.levels.abstract.ALevel;
-	import flash.display.Sprite;
-	import flash.events.TimerEvent;
+
 	import fr.lbineau.utils.PerfectTimer;
 
+	import com.citrusengine.math.MathVector;
+	import com.citrusengine.objects.CitrusSprite;
+	import com.citrusengine.objects.PhysicsObject;
+	import com.citrusengine.objects.platformer.Platform;
+	import com.citrusengine.physics.Box2D;
 
-
-
+	import flash.events.TimerEvent;
 
 	/**
 	 * @author lbineau
@@ -27,15 +26,18 @@ package daimons.game.levels
 	public class Level1 extends ALevel
 	{
 		private var _hero : Defender;
-		private var _bg : CitrusSprite;
+		private var _ground : Platform;
 		// Arrière plan
-		private var _fg : CitrusSprite;
+		private var _currentBg : CitrusSprite;
+		private var _bg : CitrusSprite;
 		// Premier plan
+		private var _currentFg : CitrusSprite;
+		private var _fg : CitrusSprite;
 		private var _ennemi : PhysicsObject;
 		private var _ennemyArray : Array = [Wall, Rock];
 		private var _ennemyStock : Vector.<AHurtingObject>;
 		private var _currentEnnemyIdx : uint ;
-		private var _container : Sprite ;
+
 		private static const MAX_ENNEMIES : uint = 10;
 
 		public function Level1()
@@ -51,29 +53,23 @@ package daimons.game.levels
 			add(box2D);
 			box2D.visible = true;
 
-			_bg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:0.5, group:0});
-			add(_bg);
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"),gravity:0.5});
-			_hero.offsetY = -200;
+			_currentBg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:1, group:0});
+			add(_currentBg);
+			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100,group:2});
+			_hero.offsetY = -30;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
 			_hero.killVelocity = 1;
-			_hero.maxVelocity = 3;
+			_hero.acceleration = 5;
+			_hero.maxVelocity = 5;
 			_hero.skidFriction = 1;
 			add(_hero);
 			_hero.x = 200;
 			_hero.y = stage.stageHeight - 200;
 
-			var platform1 : Platform = new Platform("Platform1", {width:100000, height:20});
-			add(platform1);
-			platform1.x = 0;
-			platform1.y = stage.stageHeight - platform1.height;
-
-			var sensor : Sensor = new Sensor("Reset Sensor", {width:2000, height:20});
-			add(sensor);
-			sensor.onBeginContact.add(_resetLevel);
-			sensor.x = 0;
-			sensor.y = stage.stageHeight;
+			_ground = new Platform("Platform1", {width:stage.stageWidth * 2, height:20});
+			add(_ground);
+			_ground.y = stage.stageHeight - _ground.height;
 
 			view.cameraTarget = _hero;
 			view.cameraOffset = new MathVector(50, 200);
@@ -83,10 +79,8 @@ package daimons.game.levels
 			_timer.addEventListener(TimerEvent.TIMER, _onTick);
 			_timer.start();
 
-			_fg = new CitrusSprite("Forground", {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", parallax:1.5, group:3});
-			add(_fg);
-
-			_container = new Sprite();
+			_currentFg = new CitrusSprite("Foreground", {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", parallax:1, group:3});
+			add(_currentFg);
 		}
 
 		private function _onTick(event : TimerEvent) : void
@@ -108,8 +102,51 @@ package daimons.game.levels
 					ennemi.kill = true;
 				}
 			}
-		}
 
+			// Roulement des Backgrounds
+			if(_bg != null && (_hero.x > view.getArt(_bg).x + view.getArt(_bg).width)){
+				trace("REMOVED Background");
+				remove(_bg);
+				_bg.destroy();
+				_bg = null;
+			}
+			if(_hero.x > (view.getArt(_currentBg).x + view.getArt(_currentBg).width) - (stage.stageWidth * 2)){
+				trace("ADDED Background");
+				_bg = _currentBg;
+				_currentBg = new CitrusSprite("Background"+_timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", x:view.getArt(_bg).x + view.getArt(_bg).width, parallax:1, group:0});
+				add(_currentBg);
+			}
+			
+			// Roulement des Foregrounds
+			if(_fg != null && (_hero.x > view.getArt(_fg).x + view.getArt(_fg).width)){
+				trace("REMOVED Foreground");
+				remove(_fg);
+				_fg.destroy();
+				_fg = null;
+			}
+			if(_hero.x > (view.getArt(_currentFg).x + view.getArt(_currentFg).width) - (stage.stageWidth * 2)){
+				trace("ADDED Foreground");
+				_fg = _currentFg;
+				_currentFg = new CitrusSprite("Foreground"+_timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", x:view.getArt(_fg).x + view.getArt(_fg).width, parallax:1, group:3});
+				add(_currentFg);
+			}
+		}
+		override public function update(timeDelta : Number) : void
+		{
+			for each (var ennemi : AHurtingObject in _ennemyStock) {
+				if(ennemi != null && !ennemi.passed && (ennemi.x < _hero.x)){
+					
+					if(!ennemi.touched)
+						ScoreManager.getInstance().add(1);
+					else
+						ScoreManager.getInstance().remove(1);
+					ennemi.passed = true;
+
+				}
+			}
+			_ground.x = _hero.x;
+			super.update(timeDelta);
+		}
 		/*	private function _hurt():void {
 		this.dispatchEvent(new GameEvent(GameEvent.LOSE_LIFE));
 		}

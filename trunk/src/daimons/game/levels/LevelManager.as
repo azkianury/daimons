@@ -1,9 +1,7 @@
 package daimons.game.levels
 {
-	import flash.utils.setTimeout;
-
 	import daimons.game.levels.abstract.ALevel;
-	import daimons.ui.Menu;
+	import daimons.score.ScoreManager;
 
 	import com.citrusengine.core.CitrusEngine;
 
@@ -88,7 +86,7 @@ package daimons.game.levels
 
 		public function init(level : uint = 0) : void
 		{
-			gotoLevel(0);
+			gotoLevel(0);			
 		}
 	}
 }
