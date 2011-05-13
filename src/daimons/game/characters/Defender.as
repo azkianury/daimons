@@ -1,6 +1,10 @@
 package daimons.game.characters
 {
+	import com.citrusengine.core.CitrusEngine;
+
+	import daimons.game.actions.objects.Projectile;
 	import daimons.game.actions.ActionManager;
+
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -95,7 +99,7 @@ package daimons.game.characters
 		private var _hurtTimeoutID : Number;
 		private var _hurt : Boolean = false;
 		private var _prevAnimation : String = "idle";
-		private var _actionManager:ActionManager;
+		private var _actionManager : ActionManager;
 
 		/**
 		 * Creates a new hero object.
@@ -302,18 +306,16 @@ package daimons.game.characters
 			{
 				_animation = "hurt";
 			}
-			else if (!_onGround && _actionManager.currentAction.name == "jump")
+			else if (!_onGround)
 			{
-				_animation = "jump";
+				if(velocity.y < 5)
+					_animation = "jump";
+				else
+					_animation = "land";
 			}
 			else
 			{
-				if (velocity.x < -.5)
-				{
-					_inverted = true;
-					_animation = "walk";
-				}
-				else if (velocity.x > .5)
+				if (velocity.x > .5)
 				{
 					_inverted = false;
 					_animation = "walk";
@@ -321,6 +323,15 @@ package daimons.game.characters
 				else
 				{
 					_animation = "idle";
+				}
+				if (_actionManager.currentAction.name == "plasma")
+				{
+					_animation = "plasma";
+					if (CitrusEngine.getInstance().input.justPressed(Keyboard.A))
+					{
+						var proj:Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 70, gravity:0});
+						CitrusEngine.getInstance().state.add(proj);
+					}
 				}
 			}
 

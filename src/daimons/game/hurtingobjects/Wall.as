@@ -1,5 +1,10 @@
 package daimons.game.hurtingobjects
 {
+	import flash.utils.setTimeout;
+	import org.osflash.signals.Signal;
+
+	import daimons.game.actions.objects.Projectile;
+
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
@@ -20,7 +25,9 @@ package daimons.game.hurtingobjects
 			if (params == null)
 			{
 				params = new Object();
-				params.view = PATHS.CHARACTER_ASSETS + "hero.swf";
+				params.width = 10;
+				params.height = 200;
+				params.view = PATHS.HURTING_OBJECTS_ASSETS + "mur.swf";
 			}
 			super(name, params);
 		}
@@ -28,7 +35,6 @@ package daimons.game.hurtingobjects
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
 			var colliderBody : b2Body = e.other.GetBody();
-			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
 
 			if (colliderBody.GetUserData() is enemyClass)
 			{
@@ -37,6 +43,13 @@ package daimons.game.hurtingobjects
 				{
 					hurt();
 				}
+				else
+					_touched = true;
+			}
+			if (!_killed && colliderBody.GetUserData() is Projectile)
+			{
+				e.contact.Disable();
+				hurt();
 			}
 		}
 	}

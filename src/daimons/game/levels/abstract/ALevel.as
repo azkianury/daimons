@@ -1,15 +1,13 @@
 package daimons.game.levels.abstract
 {
+	import daimons.score.ScoreManager;
+	import daimons.ui.ScoreUI;
+
 	import fr.lbineau.utils.PerfectTimer;
 
-	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.core.State;
 
 	import org.osflash.signals.Signal;
-
-	import flash.events.KeyboardEvent;
-	import flash.ui.Keyboard;
-	import flash.utils.setTimeout;
 
 	/**
 	 * @author lbineau
@@ -18,6 +16,7 @@ package daimons.game.levels.abstract
 	{
 		public var lvlEnded : Signal;
 		protected var _timer : PerfectTimer;
+		protected var _scoreUI : ScoreUI;
 
 		public function ALevel()
 		{
@@ -28,8 +27,10 @@ package daimons.game.levels.abstract
 		public function init() : void
 		{
 			lvlEnded = new Signal();
+			_scoreUI = new ScoreUI();
+			addChild(_scoreUI);
+			ScoreManager.getInstance().init(_scoreUI);
 		}
-
 
 		override public function destroy() : void
 		{

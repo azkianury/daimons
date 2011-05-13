@@ -1,22 +1,11 @@
 package daimons.game.hurtingobjects.abstract
 {
-	import flash.display.Sprite;
-
-	import com.citrusengine.view.CitrusView;
-
-	import org.osflash.signals.Signal;
-
-	import daimons.game.characters.Defender;
-
-	import Box2DAS.Common.V2;
+	import flash.utils.setTimeout;
 	import Box2DAS.Dynamics.ContactEvent;
-	import Box2DAS.Dynamics.b2Body;
 
 	import com.citrusengine.objects.PhysicsObject;
 
 	import flash.utils.clearTimeout;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.setTimeout;
 
 	/**
 	 * This is a common example of a side-scrolling bad guy. He has limited logic, basically
@@ -31,11 +20,14 @@ package daimons.game.hurtingobjects.abstract
 	{
 		public var speed : Number = 1.3;
 		protected var _hurtActions : Array;
+		protected var _killed : Boolean;
 		public var enemyKillVelocity : Number = 3;
 		public var hurtDuration : Number = 400;
-		private var _hurtTimeoutID : Number = 0;
-		private var _hurt : Boolean = false;
-		private var _prevAnimation : String = "idle";
+		protected var _hurtTimeoutID : Number = 0;
+		protected var _hurt : Boolean = false;
+		protected var _prevAnimation : String = "idle";
+		protected var _touched : Boolean = false;
+		protected var _passed : Boolean = false;
 
 		public function AHurtingObject(name : String, params : Object = null)
 		{
@@ -72,7 +64,8 @@ package daimons.game.hurtingobjects.abstract
 		public function hurt() : void
 		{
 			_hurt = true;
-			//_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
+			_touched = false;
+			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 		}
 
 		protected function _handleBeginContact(e : ContactEvent) : void
@@ -83,11 +76,11 @@ package daimons.game.hurtingobjects.abstract
 		{
 			if (_hurt)
 				_animation = "die";
-			else
-				_animation = "walk";
+			//else
+				//_animation = "idle";
 		}
 
-		private function endHurtState() : void
+		protected function endHurtState() : void
 		{
 			_hurt = false;
 			kill = true;
@@ -102,6 +95,26 @@ package daimons.game.hurtingobjects.abstract
 		public function get prevAnimation() : String
 		{
 			return _prevAnimation;
+		}
+
+		public function get killed() : Boolean
+		{
+			return _killed;
+		}
+
+		public function get touched() : Boolean
+		{
+			return _touched;
+		}
+
+		public function get passed() : Boolean
+		{
+			return _passed;
+		}
+
+		public function set passed(passed : Boolean) : void
+		{
+			_passed = passed;
 		}
 	}
 }

@@ -11,7 +11,7 @@
 	import daimons.core.consts.PATHS;
 	import daimons.game.levels.LevelManager;
 	import daimons.game.levels.abstract.ALevel;
-	import daimons.ui.Menu;
+	import daimons.ui.ScoreUI;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.events.Event;

@@ -1,5 +1,6 @@
 package daimons.game.hurtingobjects
 {
+	import daimons.core.consts.PATHS;
 	import Box2DAS.Collision.Shapes.b2CircleShape;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -22,6 +23,8 @@ package daimons.game.hurtingobjects
 			{
 				params = new Object();
 				params.radius = 50;
+				params.offsetX = -70;
+				params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
 			}
 			super(name, params);
 		}
@@ -34,10 +37,11 @@ package daimons.game.hurtingobjects
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				if (ActionManager.getInstance().currentAction.name == "plasma")
+				_touched = true;
+				/*if (ActionManager.getInstance().currentAction.name == "plasma")
 				{
 					hurt();
-				}
+				}*/
 			}
 		}
 

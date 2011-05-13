@@ -84,5 +84,10 @@ package daimons.game.actions
 		{
 			return _currentAction;
 		}
+
+		public function get busy() : Boolean
+		{
+			return _busy;
+		}
 	}
 }
