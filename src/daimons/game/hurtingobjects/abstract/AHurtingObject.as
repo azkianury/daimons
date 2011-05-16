@@ -19,7 +19,7 @@ package daimons.game.hurtingobjects.abstract
 	public class AHurtingObject extends PhysicsObject
 	{
 		public var speed : Number = 1.3;
-		protected var _hurtActions : Array;
+		protected var _hurtAction : String;
 		protected var _killed : Boolean;
 		public var enemyKillVelocity : Number = 3;
 		public var hurtDuration : Number = 400;
@@ -115,6 +115,11 @@ package daimons.game.hurtingobjects.abstract
 		public function set passed(passed : Boolean) : void
 		{
 			_passed = passed;
+		}
+
+		public function get hurtAction() : String
+		{
+			return _hurtAction;
 		}
 	}
 }

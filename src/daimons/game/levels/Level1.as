@@ -150,11 +150,13 @@ package daimons.game.levels
 							ScoreManager.getInstance().remove(1);
 						ennemi.passed = true;
 					}
-					else if (ennemi.x < (_hero.x + 500)){
-						if (_tutorial)
-						{
-							//trace("tutorial"+ennemi);
+					if (_tutorial){
+						if (ennemi.x < (_hero.x + 600)){
+							_tutoUI.show();
+							_tutoUI.displayPicto(ennemi.hurtAction);
 						}
+						else
+							_tutoUI.hide();
 					}
 
 				}

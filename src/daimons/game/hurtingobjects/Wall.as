@@ -29,6 +29,7 @@ package daimons.game.hurtingobjects
 				params.height = 200;
 				params.view = PATHS.HURTING_OBJECTS_ASSETS + "mur.swf";
 			}
+			_hurtAction = "punch";
 			super(name, params);
 		}
 
