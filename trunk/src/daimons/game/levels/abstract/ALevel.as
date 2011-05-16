@@ -1,5 +1,6 @@
 package daimons.game.levels.abstract
 {
+	import daimons.ui.TutorialUI;
 	import daimons.score.ScoreManager;
 	import daimons.ui.ScoreUI;
 
@@ -17,6 +18,7 @@ package daimons.game.levels.abstract
 		public var lvlEnded : Signal;
 		protected var _timer : PerfectTimer;
 		protected var _scoreUI : ScoreUI;
+		protected var _tutoUI : TutorialUI;
 
 		public function ALevel()
 		{
@@ -28,7 +30,9 @@ package daimons.game.levels.abstract
 		{
 			lvlEnded = new Signal();
 			_scoreUI = new ScoreUI();
+			_tutoUI = new TutorialUI();
 			ScoreManager.getInstance().init(_scoreUI);
+			addChild(_tutoUI.view);
 			addChild(_scoreUI);
 		}
 

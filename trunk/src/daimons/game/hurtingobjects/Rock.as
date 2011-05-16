@@ -26,6 +26,7 @@ package daimons.game.hurtingobjects
 				params.offsetX = -70;
 				params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
 			}
+			_hurtAction = "jump";
 			super(name, params);
 		}
 
