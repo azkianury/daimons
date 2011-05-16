@@ -52,7 +52,7 @@ package daimons.game.hurtingobjects.abstract
 		{
 			super.createFixture();
 			_fixture.m_reportBeginContact = true;
-			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
+			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact,false,0,true);
 		}
 
 		override public function update(timeDelta : Number) : void
@@ -74,8 +74,8 @@ package daimons.game.hurtingobjects.abstract
 
 		protected function _updateAnimation() : void
 		{
-			if (_hurt)
-				_animation = "die";
+			//if (_hurt)
+				//_animation = "die";
 			//else
 				//_animation = "idle";
 		}

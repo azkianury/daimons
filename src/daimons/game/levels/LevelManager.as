@@ -1,7 +1,6 @@
 package daimons.game.levels
 {
 	import daimons.game.levels.abstract.ALevel;
-	import daimons.score.ScoreManager;
 
 	import com.citrusengine.core.CitrusEngine;
 
