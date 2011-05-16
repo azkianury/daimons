@@ -28,8 +28,8 @@ package daimons.game.levels.abstract
 		{
 			lvlEnded = new Signal();
 			_scoreUI = new ScoreUI();
-			addChild(_scoreUI);
 			ScoreManager.getInstance().init(_scoreUI);
+			addChild(_scoreUI);
 		}
 
 		override public function destroy() : void

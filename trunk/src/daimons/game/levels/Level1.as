@@ -1,6 +1,7 @@
 package daimons.game.levels
 {
 	import daimons.score.ScoreManager;
+
 	import Box2DAS.Dynamics.ContactEvent;
 
 	import daimons.core.consts.PATHS;
@@ -25,6 +26,7 @@ package daimons.game.levels
 	 */
 	public class Level1 extends ALevel
 	{
+		private var _tutorial : Boolean = true;
 		private var _hero : Defender;
 		private var _ground : Platform;
 		// Arrière plan
@@ -37,7 +39,6 @@ package daimons.game.levels
 		private var _ennemyArray : Array = [Wall, Rock];
 		private var _ennemyStock : Vector.<AHurtingObject>;
 		private var _currentEnnemyIdx : uint ;
-
 		private static const MAX_ENNEMIES : uint = 10;
 
 		public function Level1()
@@ -55,7 +56,7 @@ package daimons.game.levels
 
 			_currentBg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:1, group:0});
 			add(_currentBg);
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100,group:2});
+			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100, group:2});
 			_hero.offsetY = -30;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
@@ -75,7 +76,7 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(50, 200);
 			view.cameraEasing.y = 0;
 
-			_timer = new PerfectTimer(2000, 0);
+			_timer = new PerfectTimer(4000, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onTick);
 			_timer.start();
 
@@ -104,49 +105,64 @@ package daimons.game.levels
 			}
 
 			// Roulement des Backgrounds
-			if(_bg != null && (_hero.x > view.getArt(_bg).x + view.getArt(_bg).width)){
+			if (_bg != null && (_hero.x > view.getArt(_bg).x + view.getArt(_bg).width))
+			{
 				trace("REMOVED Background");
 				remove(_bg);
 				_bg.destroy();
 				_bg = null;
 			}
-			if(_hero.x > (view.getArt(_currentBg).x + view.getArt(_currentBg).width) - (stage.stageWidth * 2)){
+			if (_hero.x > (view.getArt(_currentBg).x + view.getArt(_currentBg).width) - (stage.stageWidth * 2))
+			{
 				trace("ADDED Background");
 				_bg = _currentBg;
-				_currentBg = new CitrusSprite("Background"+_timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", x:view.getArt(_bg).x + view.getArt(_bg).width, parallax:1, group:0});
+				_currentBg = new CitrusSprite("Background" + _timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", x:view.getArt(_bg).x + view.getArt(_bg).width, parallax:1, group:0});
 				add(_currentBg);
 			}
-			
+
 			// Roulement des Foregrounds
-			if(_fg != null && (_hero.x > view.getArt(_fg).x + view.getArt(_fg).width)){
+			if (_fg != null && (_hero.x > view.getArt(_fg).x + view.getArt(_fg).width))
+			{
 				trace("REMOVED Foreground");
 				remove(_fg);
 				_fg.destroy();
 				_fg = null;
 			}
-			if(_hero.x > (view.getArt(_currentFg).x + view.getArt(_currentFg).width) - (stage.stageWidth * 2)){
+			if (_hero.x > (view.getArt(_currentFg).x + view.getArt(_currentFg).width) - (stage.stageWidth * 2))
+			{
 				trace("ADDED Foreground");
 				_fg = _currentFg;
-				_currentFg = new CitrusSprite("Foreground"+_timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", x:view.getArt(_fg).x + view.getArt(_fg).width, parallax:1, group:3});
+				_currentFg = new CitrusSprite("Foreground" + _timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", x:view.getArt(_fg).x + view.getArt(_fg).width, parallax:1, group:3});
 				add(_currentFg);
 			}
 		}
+
 		override public function update(timeDelta : Number) : void
 		{
-			for each (var ennemi : AHurtingObject in _ennemyStock) {
-				if(ennemi != null && !ennemi.passed && (ennemi.x < _hero.x)){
-					
-					if(!ennemi.touched)
-						ScoreManager.getInstance().add(1);
-					else
-						ScoreManager.getInstance().remove(1);
-					ennemi.passed = true;
+			for each (var ennemi : AHurtingObject in _ennemyStock)
+			{
+				if (ennemi != null && !ennemi.passed)
+				{
+					if((ennemi.x < _hero.x)){
+						if (!ennemi.touched)
+							ScoreManager.getInstance().add(1);
+						else
+							ScoreManager.getInstance().remove(1);
+						ennemi.passed = true;
+					}
+					else if (ennemi.x < (_hero.x + 500)){
+						if (_tutorial)
+						{
+							//trace("tutorial"+ennemi);
+						}
+					}
 
 				}
 			}
 			_ground.x = _hero.x;
 			super.update(timeDelta);
 		}
+
 		/*	private function _hurt():void {
 		this.dispatchEvent(new GameEvent(GameEvent.LOSE_LIFE));
 		}
