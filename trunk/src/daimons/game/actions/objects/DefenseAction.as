@@ -1,32 +1,15 @@
 package daimons.game.actions.objects
 {
+	import daimons.game.actions.abstract.AAction;
+
 	/**
 	 * @author lbineau
 	 */
-	public class DefenseAction
+	public class DefenseAction extends AAction
 	{
-		private var _name : String;
-		private var _persistence : Number;
-
 		public function DefenseAction($name : String, $persistence : Number)
 		{
-			_name = $name;
-			_persistence = $persistence;
-		}
-
-		public function get name() : String
-		{
-			return _name;
-		}
-
-		public function set name(name : String) : void
-		{
-			_name = name;
-		}
-
-		public function get persistence() : Number
-		{
-			return _persistence;
+			super($name, $persistence);
 		}
 	}
 }

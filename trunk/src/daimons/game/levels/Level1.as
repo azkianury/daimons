@@ -1,5 +1,7 @@
 package daimons.game.levels
 {
+	import fr.lbineau.utils.UMath;
+	import daimons.game.hurtingobjects.Spikes;
 	import daimons.score.ScoreManager;
 
 	import Box2DAS.Dynamics.ContactEvent;
@@ -36,7 +38,7 @@ package daimons.game.levels
 		private var _currentFg : CitrusSprite;
 		private var _fg : CitrusSprite;
 		private var _ennemi : PhysicsObject;
-		private var _ennemyArray : Array = [Wall, Rock];
+		private var _ennemyArray : Array = [Wall, Rock, Spikes];
 		private var _ennemyStock : Vector.<AHurtingObject>;
 		private var _currentEnnemyIdx : uint ;
 		private static const MAX_ENNEMIES : uint = 10;
@@ -71,12 +73,13 @@ package daimons.game.levels
 			_ground = new Platform("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
 			_ground.y = stage.stageHeight - _ground.height;
+			_ground.x = -stage.stageWidth;
 
 			view.cameraTarget = _hero;
 			view.cameraOffset = new MathVector(50, 200);
 			view.cameraEasing.y = 0;
 
-			_timer = new PerfectTimer(4000, 0);
+			_timer = new PerfectTimer(5000, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onTick);
 			_timer.start();
 
@@ -86,9 +89,9 @@ package daimons.game.levels
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			_ennemi = new _ennemyArray[Math.round(Math.random())]("Ennemi" + _timer.currentCount + 1);
+			_ennemi = new _ennemyArray[Math.round(UMath.randomRange(0, _ennemyArray.length - 1))]("Ennemi" + _timer.currentCount + 1);
 			add(_ennemi);
-			_ennemi.x = _hero.x + stage.stageWidth;
+			_ennemi.x = _ground.x + stage.stageWidth;
 			_ennemi.y = stage.stageHeight - 200;
 
 			_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;

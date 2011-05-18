@@ -26,23 +26,22 @@ package daimons.game.hurtingobjects
 				params.offsetX = -70;
 				params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
 			}
-			_hurtAction = "jump";
+			_hurtAction = ActionManager.SHIELD;
+			_touched = true;
 			super(name, params);
 		}
 
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
 			var colliderBody : b2Body = e.other.GetBody();
-			// var enemyClassClass:Class = flash.utils.getDefinitionByName(enemyClass) as Class;
 
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				_touched = true;
-				/*if (ActionManager.getInstance().currentAction.name == "plasma")
+				if (ActionManager.getInstance().currentAction.name == _hurtAction)
 				{
-					hurt();
-				}*/
+					_touched = false;
+				}
 			}
 		}
 
