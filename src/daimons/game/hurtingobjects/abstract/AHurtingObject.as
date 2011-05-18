@@ -64,7 +64,6 @@ package daimons.game.hurtingobjects.abstract
 		public function hurt() : void
 		{
 			_hurt = true;
-			_touched = false;
 			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 		}
 

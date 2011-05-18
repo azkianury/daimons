@@ -1,5 +1,6 @@
 package daimons.game.characters
 {
+	import daimons.game.actions.abstract.AAction;
 	import com.citrusengine.core.CitrusEngine;
 
 	import daimons.game.actions.objects.Projectile;
@@ -113,6 +114,20 @@ package daimons.game.characters
 			onTakeDamage = new Signal();
 			onAnimationChange = new Signal();
 			_actionManager = ActionManager.getInstance();
+			_actionManager.onAction.add(_onAction);
+		}
+
+		private function _onAction(action:AAction) : void
+		{
+			if (action.name == ActionManager.PUNCH)
+			{
+				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 70, gravity:0});
+				CitrusEngine.getInstance().state.add(proj);
+			}
+			else if (action.name == ActionManager.SHIELD)
+			{
+			}
+			_animation = action.name;
 		}
 
 		override public function destroy() : void
@@ -302,35 +317,28 @@ package daimons.game.characters
 			var prevAnimation : String = _animation;
 
 			var velocity : V2 = _body.GetLinearVelocity();
-			if (_hurt)
-			{
-				_animation = "hurt";
-			}
-			else if (!_onGround)
-			{
-				if(velocity.y < 5)
-					_animation = "jump";
-				else
-					_animation = "land";
-			}
-			else
-			{
-				if (velocity.x > .5)
+			if(!_actionManager.busy){
+				if (_hurt)
 				{
-					_inverted = false;
-					_animation = "walk";
+					_animation = "hurt";
+				}
+				else if (!_onGround)
+				{
+					if (velocity.y < 5)
+						_animation = "jump";
+					else
+						_animation = "land";
 				}
 				else
 				{
-					_animation = "idle";
-				}
-				if (_actionManager.currentAction.name == "plasma")
-				{
-					_animation = "plasma";
-					if (CitrusEngine.getInstance().input.justPressed(Keyboard.A))
+					if (velocity.x > .5)
 					{
-						var proj:Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 70, gravity:0});
-						CitrusEngine.getInstance().state.add(proj);
+						_inverted = false;
+						_animation = "walk";
+					}
+					else
+					{
+						_animation = "idle";
 					}
 				}
 			}

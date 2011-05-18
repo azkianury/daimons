@@ -1,6 +1,7 @@
 package daimons.game.hurtingobjects
 {
 	import flash.utils.setTimeout;
+
 	import org.osflash.signals.Signal;
 
 	import daimons.game.actions.objects.Projectile;
@@ -29,7 +30,8 @@ package daimons.game.hurtingobjects
 				params.height = 200;
 				params.view = PATHS.HURTING_OBJECTS_ASSETS + "mur.swf";
 			}
-			_hurtAction = "punch";
+			_hurtAction = ActionManager.PUNCH;
+			_touched = true;
 			super(name, params);
 		}
 
@@ -40,17 +42,18 @@ package daimons.game.hurtingobjects
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				if (ActionManager.getInstance().currentAction.name == "plasma")
+				if (ActionManager.getInstance().currentAction.name == _hurtAction)
 				{
-					hurt();
+					_touched = false;
+
+					// hurt();
 				}
-				else
-					_touched = true;
 			}
 			if (!_killed && colliderBody.GetUserData() is Projectile)
 			{
 				e.contact.Disable();
-				hurt();
+				_touched = false;
+				// hurt();
 			}
 		}
 	}
