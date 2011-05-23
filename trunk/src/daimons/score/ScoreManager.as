@@ -1,7 +1,7 @@
 package daimons.score
 {
-	import daimons.ui.ScoreUI;
-	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.events.Event;
 
 	public final class ScoreManager
 	{
@@ -9,7 +9,7 @@ package daimons.score
 		private var _percentage : Number = 50;
 		private var _nbHuringObject : Number = 0;
 		private var _avoidHuringObject : Number = 0;
-		private var _view : DisplayObject;
+		private var _view : MovieClip;
 
 		public function ScoreManager()
 		{
@@ -21,27 +21,42 @@ package daimons.score
 			return instance;
 		}
 
-		public function init(view : DisplayObject) : void
+		public function init(view : MovieClip) : void
 		{
 			_view = view;
+			updateUI(50);
+			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 		}
 
+		private function _onAddedToStage(event : Event) : void
+		{
+			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_view.x = (_view.stage.stageWidth - _view.width) / 2;
+			_view.y = _view.height + 10;
+		}
+		
 		public function add(ponderation:Number) : void
 		{
 			_avoidHuringObject++;
 			_nbHuringObject++;
 			_percentage = int((_avoidHuringObject / _nbHuringObject) * 100);
-			(_view as ScoreUI).updateUI(_percentage);
+			updateUI(_percentage);
 		}
 
 		public function remove(ponderation:Number) : void
 		{
 			_nbHuringObject++;
 			_percentage = int((_avoidHuringObject / _nbHuringObject) * 100);
-			(_view as ScoreUI).updateUI(_percentage);
+			updateUI(_percentage);
 		}
-
-		public function get view() : DisplayObject
+		
+		public function updateUI(percent:Number):void
+		{
+			_view.gotoAndStop(percent);
+			_view["mc_percentage"]["tf"].text = percent + "%";			
+			_view["mc_percentage"].x = _view["mc_mask"].x + _view["mc_mask"].width;
+		}
+		public function get view() : MovieClip
 		{
 			return _view;
 		}
