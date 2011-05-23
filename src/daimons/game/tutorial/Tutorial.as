@@ -1,4 +1,4 @@
-package daimons.ui
+package daimons.game.tutorial
 {
 	import com.greensock.TweenMax;
 	import com.greensock.TweenLite;
@@ -10,21 +10,26 @@ package daimons.ui
 	/**
 	 * @author lbineau
 	 */
-	public class TutorialUI extends EventDispatcher
+	public class Tutorial extends EventDispatcher
 	{
 		private var _view : MovieClip;
 		private var _busy : Boolean = false;
 
-		public function TutorialUI()
+		public function Tutorial()
 		{
-			_view = new TutorialUIAsset();
+		}
+		
+		public function init(view : MovieClip) : void
+		{
+			_view = view;
 			_view.alpha = 0;
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 		}
 
 		private function _onAddedToStage(event : Event) : void
 		{
-			_view.x = _view.stage.stageWidth / 2;
+			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_view.x = int(_view.stage.stageWidth - _view.width) / 2;
 			_view.y = _view.height + 10;
 		}
 

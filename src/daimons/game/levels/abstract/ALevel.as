@@ -1,15 +1,13 @@
 package daimons.game.levels.abstract
 {
-	import daimons.game.MainGame;
-	import daimons.ui.TutorialUI;
-	import daimons.score.ScoreManager;
-	import daimons.ui.ScoreUI;
-
-	import fr.lbineau.utils.PerfectTimer;
-
 	import com.citrusengine.core.State;
-
+	import daimons.game.tutorial.Tutorial;
+	import daimons.score.ScoreManager;
+	import fr.lbineau.utils.PerfectTimer;
 	import org.osflash.signals.Signal;
+
+
+
 
 	/**
 	 * @author lbineau
@@ -18,8 +16,7 @@ package daimons.game.levels.abstract
 	{
 		public var lvlEnded : Signal;
 		protected var _timer : PerfectTimer;
-		protected var _scoreUI : ScoreUI;
-		protected var _tutoUI : TutorialUI;
+		protected var _tutoUI : Tutorial;
 
 		public function ALevel()
 		{
@@ -30,13 +27,11 @@ package daimons.game.levels.abstract
 		public function init() : void
 		{
 			lvlEnded = new Signal();
-			_scoreUI = new ScoreUI();
-			_scoreUI.x = (MainGame.STAGE.stageWidth - _scoreUI.width) / 2;
-			_scoreUI.y = (MainGame.STAGE.stageHeight - _scoreUI.height) / 2;
-			_tutoUI = new TutorialUI();
-			ScoreManager.getInstance().init(_scoreUI);
+			_tutoUI = new Tutorial();
+			_tutoUI.init(new TutorialUIAsset());
 			addChild(_tutoUI.view);
-			addChild(_scoreUI);
+			ScoreManager.getInstance().init(new ScoreUIAsset());
+			addChild(ScoreManager.getInstance().view);
 		}
 
 		override public function destroy() : void
