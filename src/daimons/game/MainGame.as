@@ -1,17 +1,17 @@
 ﻿package daimons.game
 {
+	import flash.display.Stage;
+	import flash.events.Event;
 	import daimons.core.consts.PATHS;
 	import daimons.game.levels.LevelManager;
 	import daimons.game.levels.abstract.ALevel;
 
-	import fr.lbineau.utils.Stats;
-
 	import com.citrusengine.core.CitrusEngine;
+	import com.greensock.events.LoaderEvent;
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.SWFLoader;
 
-	import flash.display.Loader;
-	import flash.display.MovieClip;
-	import flash.events.Event;
-	import flash.net.URLRequest;
+	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 
 	/**
@@ -21,40 +21,30 @@
 	public class MainGame extends CitrusEngine
 	{
 		private var _levelManager : LevelManager;
+		public static var STAGE : Stage;
 
 		public function MainGame()
 		{
+			STAGE = stage;
 			super();
-			//stage.addChild(new Stats());
+			this.scrollRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+			// stage.addChild(new Stats());
 			console.openKey = Keyboard.F;
 			console.enabled = false;
 
 			// var objects : Array = [Platform, Hero, CitrusSprite, Sensor, Coin, Baddy, Crate];
 
-			// Create audio assets
-			/*sound.addSound("Collect", "sounds/collect.mp3");
-			sound.addSound("Hurt", "sounds/hurt.mp3");
-			sound.addSound("Jump", "sounds/jump.mp3");
-			sound.addSound("Kill", "sounds/kill.mp3");
-			sound.addSound("Skid", "sounds/skid.mp3");
-			sound.addSound("Song", "sounds/song.mp3");
-			sound.addSound("Walk", "sounds/walk.mp3");*/
-
-			var loader : Loader = new Loader();
-			loader.load(new URLRequest(PATHS.LEVELS_ASSETS + "layout.swf"));
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleSWFLoadComplete, false, 0, true);
+			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
+			loader.append(new SWFLoader(PATHS.LEVELS_ASSETS + "level1/decor.swf", {name:"decor1"}));
+			loader.load();
 		}
 
-		private function handleSWFLoadComplete(e : Event) : void
+		private function _onComplete(event : LoaderEvent) : void
 		{
-			e.target.removeEventListener(Event.COMPLETE, handleSWFLoadComplete);
-			var levelObjectsMC : MovieClip = e.target.loader.content;
-
 			_levelManager = new LevelManager();
 			_levelManager.onLevelChanged.add(_onLevelChanged);
 			_levelManager.init(0);
 
-			e.target.loader.unloadAndStop();
 			// this.enabled = false;
 		}
 
