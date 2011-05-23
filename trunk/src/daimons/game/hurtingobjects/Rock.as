@@ -22,7 +22,7 @@ package daimons.game.hurtingobjects
 			if (params == null)
 			{
 				params = new Object();
-				params.radius = 50;
+				params.radius = 70;
 				params.offsetX = -70;
 				params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
 			}

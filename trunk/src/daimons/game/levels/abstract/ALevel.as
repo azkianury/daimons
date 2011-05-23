@@ -1,5 +1,6 @@
 package daimons.game.levels.abstract
 {
+	import daimons.game.MainGame;
 	import daimons.ui.TutorialUI;
 	import daimons.score.ScoreManager;
 	import daimons.ui.ScoreUI;
@@ -30,6 +31,8 @@ package daimons.game.levels.abstract
 		{
 			lvlEnded = new Signal();
 			_scoreUI = new ScoreUI();
+			_scoreUI.x = (MainGame.STAGE.stageWidth - _scoreUI.width) / 2;
+			_scoreUI.y = (MainGame.STAGE.stageHeight - _scoreUI.height) / 2;
 			_tutoUI = new TutorialUI();
 			ScoreManager.getInstance().init(_scoreUI);
 			addChild(_tutoUI.view);

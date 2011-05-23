@@ -88,9 +88,8 @@ package daimons.game.actions
 		private function _endBusy(event : TimerEvent) : void
 		{
 			_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
-			trace("_endBusy : " + _currentAction.name);
-			_currentAction = _defendArray[NONE];
 			// Reset the action to none
+			_currentAction = _defendArray[NONE];
 			_busy = false;
 		}
 

@@ -1,26 +1,32 @@
 package daimons.game.levels
 {
-	import fr.lbineau.utils.UMath;
-	import daimons.game.hurtingobjects.Spikes;
-	import daimons.score.ScoreManager;
-
 	import Box2DAS.Dynamics.ContactEvent;
 
 	import daimons.core.consts.PATHS;
+	import daimons.game.MainGame;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
+	import daimons.game.hurtingobjects.Spikes;
 	import daimons.game.hurtingobjects.Wall;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 	import daimons.game.levels.abstract.ALevel;
+	import daimons.score.ScoreManager;
 
 	import fr.lbineau.utils.PerfectTimer;
+	import fr.lbineau.utils.UMath;
 
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.PhysicsObject;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.physics.Box2D;
+	import com.demonsters.debugger.MonsterDebugger;
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.SWFLoader;
 
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 
 	/**
@@ -32,11 +38,11 @@ package daimons.game.levels
 		private var _hero : Defender;
 		private var _ground : Platform;
 		// Arrière plan
+		private var _containerBg : Sprite;
 		private var _currentBg : CitrusSprite;
-		private var _bg : CitrusSprite;
 		// Premier plan
+		private var _containerFg : Sprite;
 		private var _currentFg : CitrusSprite;
-		private var _fg : CitrusSprite;
 		private var _ennemi : PhysicsObject;
 		private var _ennemyArray : Array = [Wall, Rock, Spikes];
 		private var _ennemyStock : Vector.<AHurtingObject>;
@@ -46,6 +52,7 @@ package daimons.game.levels
 		public function Level1()
 		{
 			super();
+			MonsterDebugger.initialize(this);
 		}
 
 		override public function initialize() : void
@@ -56,8 +63,6 @@ package daimons.game.levels
 			add(box2D);
 			box2D.visible = true;
 
-			_currentBg = new CitrusSprite("Background", {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", parallax:1, group:0});
-			add(_currentBg);
 			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100, group:2});
 			_hero.offsetY = -30;
 			_hero.hurtVelocityX = 1;
@@ -68,11 +73,11 @@ package daimons.game.levels
 			_hero.skidFriction = 1;
 			add(_hero);
 			_hero.x = 200;
-			_hero.y = stage.stageHeight - 200;
+			_hero.y = stage.stageHeight - 400;
 
 			_ground = new Platform("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
-			_ground.y = stage.stageHeight - _ground.height;
+			_ground.y = stage.stageHeight - 180;
 			_ground.x = -stage.stageWidth;
 
 			view.cameraTarget = _hero;
@@ -82,17 +87,51 @@ package daimons.game.levels
 			_timer = new PerfectTimer(5000, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onTick);
 			_timer.start();
+			
+			_initDecor();
 
-			_currentFg = new CitrusSprite("Foreground", {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", parallax:1, group:3});
+		}
+
+		private function _initDecor() : void
+		{
+			var fgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("FG"));
+			var bgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("BG"));
+			var bmp0 : Bitmap;
+			var bmp1 : Bitmap;
+			_containerFg = new Sprite();
+			_containerBg = new Sprite();
+			
+			bmp0 = new Bitmap(new fgClass());
+			_containerFg.addChild(bmp0);
+			bmp0.cacheAsBitmap = true;
+
+			bmp1 = new Bitmap(new fgClass());
+			bmp1.x = _containerFg.width;
+			bmp1.cacheAsBitmap = true;
+			_containerFg.addChild(bmp1);
+			
+			_currentFg = new CitrusSprite("Foreground", {view:_containerFg,parallax:1.5, group:3});
 			add(_currentFg);
+
+			bmp0 = new Bitmap(new bgClass());
+			_containerBg.addChild(bmp0);
+			bmp0.cacheAsBitmap = true;
+
+			bmp1 = new Bitmap(new bgClass());
+			bmp1.x = _containerBg.width;
+			bmp1.cacheAsBitmap = true;
+			_containerBg.addChild(bmp1);
+			_currentBg = new CitrusSprite("Background", {view:_containerBg, parallax:0.5, group:0});
+			add(_currentBg);
+
 		}
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			_ennemi = new _ennemyArray[Math.round(UMath.randomRange(0, _ennemyArray.length - 1))]("Ennemi" + _timer.currentCount + 1);
+			_ennemi = new _ennemyArray[UMath.round(UMath.randomRange(-0.6, _ennemyArray.length - 1.4))]("Ennemi" + _timer.currentCount + 1);
 			add(_ennemi);
 			_ennemi.x = _ground.x + stage.stageWidth;
-			_ennemi.y = stage.stageHeight - 200;
+			_ennemi.y = _ground.y - 200;
 
 			_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
 
@@ -108,36 +147,23 @@ package daimons.game.levels
 			}
 
 			// Roulement des Backgrounds
-			if (_bg != null && (_hero.x > view.getArt(_bg).x + view.getArt(_bg).width))
+			var tailleBg:Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;
+			if (_hero.x > tailleBg)
 			{
 				trace("REMOVED Background");
-				remove(_bg);
-				_bg.destroy();
-				_bg = null;
-			}
-			if (_hero.x > (view.getArt(_currentBg).x + view.getArt(_currentBg).width) - (stage.stageWidth * 2))
-			{
-				trace("ADDED Background");
-				_bg = _currentBg;
-				_currentBg = new CitrusSprite("Background" + _timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/bg.swf", x:view.getArt(_bg).x + view.getArt(_bg).width, parallax:1, group:0});
-				add(_currentBg);
+				_containerBg.getChildAt(0).x = _containerBg.getChildAt(1).x + _containerBg.getChildAt(1).width - 20;
+				_containerBg.setChildIndex(_containerBg.getChildAt(0),1);
 			}
 
 			// Roulement des Foregrounds
-			if (_fg != null && (_hero.x > view.getArt(_fg).x + view.getArt(_fg).width))
+			var tailleFg:Number = view.getArt(_currentFg).x + _containerFg.getChildAt(0).x + _containerFg.getChildAt(0).width;
+			if (_hero.x > tailleFg)
 			{
 				trace("REMOVED Foreground");
-				remove(_fg);
-				_fg.destroy();
-				_fg = null;
+				_containerFg.getChildAt(0).x = _containerFg.getChildAt(1).x + _containerFg.getChildAt(1).width - 20;
+				_containerFg.setChildIndex(_containerFg.getChildAt(0),1);
 			}
-			if (_hero.x > (view.getArt(_currentFg).x + view.getArt(_currentFg).width) - (stage.stageWidth * 2))
-			{
-				trace("ADDED Foreground");
-				_fg = _currentFg;
-				_currentFg = new CitrusSprite("Foreground" + _timer.currentCount, {view:PATHS.LEVELS_ASSETS + "level1/fg.swf", x:view.getArt(_fg).x + view.getArt(_fg).width, parallax:1, group:3});
-				add(_currentFg);
-			}
+			
 		}
 
 		override public function update(timeDelta : Number) : void
@@ -146,22 +172,24 @@ package daimons.game.levels
 			{
 				if (ennemi != null && !ennemi.passed)
 				{
-					if((ennemi.x < _hero.x)){
+					if ((ennemi.x < _hero.x))
+					{
 						if (!ennemi.touched)
 							ScoreManager.getInstance().add(1);
 						else
 							ScoreManager.getInstance().remove(1);
 						ennemi.passed = true;
 					}
-					if (_tutorial){
-						if (ennemi.x < (_hero.x + 600)){
+					if (_tutorial)
+					{
+						if (ennemi.x < (_hero.x + 600))
+						{
 							_tutoUI.show();
 							_tutoUI.displayPicto(ennemi.hurtAction);
 						}
 						else
 							_tutoUI.hide();
 					}
-
 				}
 			}
 			_ground.x = _hero.x;
