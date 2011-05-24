@@ -1,0 +1,1 @@
+package org.shoebox.patterns.mvc.interfaces {	import org.shoebox.patterns.mvc.events.UpdateEvent;	import flash.events.Event;	/**	 * @author shoe[box]	 */	public interface IView {				function update(o:UpdateEvent = null):void;		function cancel(e:Event = null):void;		function initialize():void;			}}
