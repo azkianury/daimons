@@ -1,0 +1,1 @@
+package org.shoebox.patterns.commands.samples {	import flash.events.MouseEvent;	/**	 * @author shoe[box]	 */	public interface IMouseOver {				function over(e: MouseEvent):void;			}}

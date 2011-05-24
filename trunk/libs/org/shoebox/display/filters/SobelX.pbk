@@ -1,0 +1,42 @@
+<languageVersion : 1.0;>
+
+kernel NewFilter
+<   namespace : "org.shoebox.filters.SobelX";
+    vendor : "shoebox";
+    version : 1;
+    description : "";
+>
+{
+    input image4 src;
+    output pixel4 dst;
+   
+    void evaluatePixel(){
+        
+         float3x3 sobelX = float3x3(
+                                -1,-2,-1,
+                                +0,+0,+0,
+                                +1,+2,+1
+                                );
+                                
+        float2 curPt = outCoord();
+        float4 tot = float4(0.0);
+        
+        tot += sobelX[0][0] * sampleNearest(src,float2(curPt.x-1.0,curPt.y-1.0));
+        tot += sobelX[0][1] * sampleNearest(src,float2(curPt.x-1.0,curPt.y    ));
+        tot += sobelX[0][2] * sampleNearest(src,float2(curPt.x-1.0,curPt.y+1.0));
+        
+        tot += sobelX[1][0] * sampleNearest(src,float2(curPt.x    ,curPt.y-1.0));
+        tot += sobelX[1][1] * sampleNearest(src,float2(curPt.x    ,curPt.y    ));
+        tot += sobelX[1][2] * sampleNearest(src,float2(curPt.x    ,curPt.y+1.0));
+        
+        tot += sobelX[2][0] * sampleNearest(src,float2(curPt.x+1.0,curPt.y-1.0));
+        tot += sobelX[2][1] * sampleNearest(src,float2(curPt.x+1.0,curPt.y    ));
+        tot += sobelX[2][2] * sampleNearest(src,float2(curPt.x+1.0,curPt.y+1.0));
+        
+        dst = tot/0.5 + float(0.5);
+        
+
+    }
+
+    }
+
