@@ -1,6 +1,9 @@
 package daimons.game.actions
 {
+	import flash.display.MovieClip;
+
 	import daimons.game.actions.abstract.AAction;
+
 	import org.osflash.signals.Signal;
 
 	import daimons.game.actions.objects.DefenseAction;
@@ -16,11 +19,11 @@ package daimons.game.actions
 	public final class ActionManager
 	{
 		private static var instance : ActionManager = new ActionManager();
+		private var _view : MovieClip;
 		private var _busy : Boolean = false;
 		private var _defendArray : Array;
 		private var _currentAction : AAction;
 		private var _timerBusy : PerfectTimer;
-		
 		public var onAction : Signal;
 		public static const NONE : String = "none";
 		public static const PUNCH : String = "punch";
@@ -38,6 +41,12 @@ package daimons.game.actions
 			_defendArray[JUMP] = new DefenseAction(JUMP, 1000);
 			_currentAction = _defendArray[NONE];
 			onAction = new Signal(AAction);
+		}
+
+		public function init(view : MovieClip) : void
+		{
+			_view = view;
+			
 		}
 
 		public static function getInstance() : ActionManager

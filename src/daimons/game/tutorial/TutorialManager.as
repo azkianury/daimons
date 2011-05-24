@@ -10,16 +10,12 @@ package daimons.game.tutorial
 	/**
 	 * @author lbineau
 	 */
-	public class Tutorial extends EventDispatcher
+	public class TutorialManager extends EventDispatcher
 	{
 		private var _view : MovieClip;
 		private var _busy : Boolean = false;
 
-		public function Tutorial()
-		{
-		}
-		
-		public function init(view : MovieClip) : void
+		public function TutorialManager(view : MovieClip)
 		{
 			_view = view;
 			_view.alpha = 0;

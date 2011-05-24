@@ -1,13 +1,16 @@
 package daimons.game.levels.abstract
 {
-	import com.citrusengine.core.State;
-	import daimons.game.tutorial.Tutorial;
+	import daimons.game.time.CountdownManager;
+	import daimons.game.tutorial.TutorialManager;
 	import daimons.score.ScoreManager;
+
 	import fr.lbineau.utils.PerfectTimer;
+
+	import com.citrusengine.core.State;
+
 	import org.osflash.signals.Signal;
 
-
-
+	import flash.events.TimerEvent;
 
 	/**
 	 * @author lbineau
@@ -15,23 +18,37 @@ package daimons.game.levels.abstract
 	public class ALevel extends State implements ILevel
 	{
 		public var lvlEnded : Signal;
-		protected var _timer : PerfectTimer;
-		protected var _tutoUI : Tutorial;
+		protected var _timerGame : PerfectTimer;
+		protected var _tuto : TutorialManager;
+		protected var _countdown : CountdownManager;
 
 		public function ALevel()
 		{
 			super();
-			init();
+			lvlEnded = new Signal();
 		}
 
-		public function init() : void
+		override public function initialize() : void
 		{
-			lvlEnded = new Signal();
-			_tutoUI = new Tutorial();
-			_tutoUI.init(new TutorialUIAsset());
-			addChild(_tutoUI.view);
+			_countdown = new CountdownManager(new CountdownUIAsset());
+			_countdown.init(300);
+			_countdown.start();
+			addChild(_countdown.view);
+			_countdown.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+			
+			_tuto = new TutorialManager(new TutorialUIAsset());
+			addChild(_tuto.view);
+			
 			ScoreManager.getInstance().init(new ScoreUIAsset());
 			addChild(ScoreManager.getInstance().view);
+			
+			super.initialize();
+		}
+
+		private function _onTimerComplete(event : TimerEvent) : void
+		{
+			_countdown.removeEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+			lvlEnded.dispatch();
 		}
 
 		override public function destroy() : void

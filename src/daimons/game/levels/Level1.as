@@ -3,7 +3,6 @@ package daimons.game.levels
 	import Box2DAS.Dynamics.ContactEvent;
 
 	import daimons.core.consts.PATHS;
-	import daimons.game.MainGame;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
 	import daimons.game.hurtingobjects.Spikes;
@@ -20,12 +19,10 @@ package daimons.game.levels
 	import com.citrusengine.objects.PhysicsObject;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.physics.Box2D;
-	import com.demonsters.debugger.MonsterDebugger;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
 
 	import flash.display.Bitmap;
-	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 
@@ -43,6 +40,9 @@ package daimons.game.levels
 		// Premier plan
 		private var _containerFg : Sprite;
 		private var _currentFg : CitrusSprite;
+		// Middle plan
+		private var _containerMg : Sprite;
+		private var _currentMg : CitrusSprite;
 		private var _ennemi : PhysicsObject;
 		private var _ennemyArray : Array = [Wall, Rock, Spikes];
 		private var _ennemyStock : Vector.<AHurtingObject>;
@@ -52,16 +52,19 @@ package daimons.game.levels
 		public function Level1()
 		{
 			super();
-			MonsterDebugger.initialize(this);
 		}
 
 		override public function initialize() : void
 		{
+			super.initialize();
+
 			_ennemyStock = new Vector.<AHurtingObject>(MAX_ENNEMIES, true);
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
 			box2D.visible = true;
+
+			_initDecor();
 
 			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100, group:2});
 			_hero.offsetY = -30;
@@ -84,51 +87,60 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(50, 200);
 			view.cameraEasing.y = 0;
 
-			_timer = new PerfectTimer(5000, 0);
-			_timer.addEventListener(TimerEvent.TIMER, _onTick);
-			_timer.start();
-			
-			_initDecor();
-
+			_timerGame = new PerfectTimer(5000, 0);
+			_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
+			_timerGame.start();
 		}
 
 		private function _initDecor() : void
 		{
 			var fgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("FG"));
 			var bgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("BG"));
+			var mgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("MG"));
 			var bmp0 : Bitmap;
 			var bmp1 : Bitmap;
 			_containerFg = new Sprite();
 			_containerBg = new Sprite();
-			
-			bmp0 = new Bitmap(new fgClass());
-			_containerFg.addChild(bmp0);
-			bmp0.cacheAsBitmap = true;
-
-			bmp1 = new Bitmap(new fgClass());
-			bmp1.x = _containerFg.width;
-			bmp1.cacheAsBitmap = true;
-			_containerFg.addChild(bmp1);
-			
-			_currentFg = new CitrusSprite("Foreground", {view:_containerFg,parallax:1.5, group:3});
-			add(_currentFg);
+			_containerMg = new Sprite();
 
 			bmp0 = new Bitmap(new bgClass());
 			_containerBg.addChild(bmp0);
 			bmp0.cacheAsBitmap = true;
 
 			bmp1 = new Bitmap(new bgClass());
-			bmp1.x = _containerBg.width;
+			bmp1.x = _containerBg.width - 10;
 			bmp1.cacheAsBitmap = true;
 			_containerBg.addChild(bmp1);
 			_currentBg = new CitrusSprite("Background", {view:_containerBg, parallax:0.5, group:0});
 			add(_currentBg);
 
+			bmp0 = new Bitmap(new mgClass());
+			_containerMg.addChild(bmp0);
+			bmp0.cacheAsBitmap = true;
+
+			bmp1 = new Bitmap(new mgClass());
+			bmp1.x = _containerMg.width - 10;
+			bmp1.cacheAsBitmap = true;
+			_containerMg.addChild(bmp1);
+			_currentMg = new CitrusSprite("Middleground", {view:_containerMg, parallax:1, group:0});
+			add(_currentMg);
+
+			bmp0 = new Bitmap(new fgClass());
+			_containerFg.addChild(bmp0);
+			bmp0.cacheAsBitmap = true;
+
+			bmp1 = new Bitmap(new fgClass());
+			bmp1.x = _containerFg.width - 10;
+			bmp1.cacheAsBitmap = true;
+			_containerFg.addChild(bmp1);
+
+			_currentFg = new CitrusSprite("Foreground", {view:_containerFg, parallax:2, group:4});
+			add(_currentFg);
 		}
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			_ennemi = new _ennemyArray[UMath.round(UMath.randomRange(-0.6, _ennemyArray.length - 1.4))]("Ennemi" + _timer.currentCount + 1);
+			_ennemi = new _ennemyArray[UMath.round(UMath.randomRange(-0.6, _ennemyArray.length - 1.4))]("Ennemi" + _timerGame.currentCount + 1);
 			add(_ennemi);
 			_ennemi.x = _ground.x + stage.stageWidth;
 			_ennemi.y = _ground.y - 200;
@@ -147,23 +159,31 @@ package daimons.game.levels
 			}
 
 			// Roulement des Backgrounds
-			var tailleBg:Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;
+			var tailleBg : Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;
 			if (_hero.x > tailleBg)
 			{
 				trace("REMOVED Background");
-				_containerBg.getChildAt(0).x = _containerBg.getChildAt(1).x + _containerBg.getChildAt(1).width - 20;
-				_containerBg.setChildIndex(_containerBg.getChildAt(0),1);
+				_containerBg.getChildAt(0).x = _containerBg.getChildAt(1).x + _containerBg.getChildAt(1).width - 10;
+				_containerBg.setChildIndex(_containerBg.getChildAt(0), 1);
+			}
+
+			// Roulement des Middlegrounds
+			var tailleMg : Number = view.getArt(_currentMg).x + _containerMg.getChildAt(0).x + _containerMg.getChildAt(0).width;
+			if (_hero.x > tailleMg)
+			{
+				trace("REMOVED Middleground");
+				_containerMg.getChildAt(0).x = _containerMg.getChildAt(1).x + _containerMg.getChildAt(1).width - 10;
+				_containerMg.setChildIndex(_containerMg.getChildAt(0), 1);
 			}
 
 			// Roulement des Foregrounds
-			var tailleFg:Number = view.getArt(_currentFg).x + _containerFg.getChildAt(0).x + _containerFg.getChildAt(0).width;
+			var tailleFg : Number = view.getArt(_currentFg).x + _containerFg.getChildAt(0).x + _containerFg.getChildAt(0).width;
 			if (_hero.x > tailleFg)
 			{
 				trace("REMOVED Foreground");
-				_containerFg.getChildAt(0).x = _containerFg.getChildAt(1).x + _containerFg.getChildAt(1).width - 20;
-				_containerFg.setChildIndex(_containerFg.getChildAt(0),1);
+				_containerFg.getChildAt(0).x = _containerFg.getChildAt(1).x + _containerFg.getChildAt(1).width - 10;
+				_containerFg.setChildIndex(_containerFg.getChildAt(0), 1);
 			}
-			
 		}
 
 		override public function update(timeDelta : Number) : void
@@ -184,11 +204,11 @@ package daimons.game.levels
 					{
 						if (ennemi.x < (_hero.x + 600))
 						{
-							_tutoUI.show();
-							_tutoUI.displayPicto(ennemi.hurtAction);
+							_tuto.show();
+							_tuto.displayPicto(ennemi.hurtAction);
 						}
 						else
-							_tutoUI.hide();
+							_tuto.hide();
 					}
 				}
 			}
@@ -217,7 +237,8 @@ package daimons.game.levels
 				}
 			}
 			_hero.changeAnimation("idle");
-			_timer.pause();
+			_timerGame.pause();
+			_countdown.pause();
 		}
 
 		override public function resume() : void
@@ -230,7 +251,8 @@ package daimons.game.levels
 				}
 			}
 			_hero.changeAnimation("walk");
-			_timer.start();
+			_timerGame.resume();
+			_countdown.resume();
 		}
 	}
 }

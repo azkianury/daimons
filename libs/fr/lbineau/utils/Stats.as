@@ -104,7 +104,20 @@ package fr.lbineau.utils
 			addChild(graph);
 
 			addEventListener(MouseEvent.CLICK, onClick);
+			addEventListener(MouseEvent.MOUSE_DOWN, _onMouseDown);
 			addEventListener(Event.ENTER_FRAME, update);
+		}
+
+		private function _onMouseDown(event : MouseEvent) : void
+		{
+			stage.addEventListener(MouseEvent.MOUSE_UP,_onMouseUp);
+			startDrag(false);
+		}
+
+		private function _onMouseUp(event : MouseEvent) : void
+		{
+			stage.removeEventListener(MouseEvent.MOUSE_UP,_onMouseUp);
+			stopDrag();
 		}
 
 		private function destroy(e : Event) : void
@@ -118,6 +131,8 @@ package fr.lbineau.utils
 
 			removeEventListener(MouseEvent.CLICK, onClick);
 			removeEventListener(Event.ENTER_FRAME, update);
+			removeEventListener(MouseEvent.MOUSE_DOWN, _onMouseDown);
+			stage.removeEventListener(MouseEvent.MOUSE_UP,_onMouseUp);
 		}
 
 		private function update(e : Event) : void
