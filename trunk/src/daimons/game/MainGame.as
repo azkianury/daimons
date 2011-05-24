@@ -1,5 +1,6 @@
 ﻿package daimons.game
 {
+	import fr.lbineau.utils.Stats;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import daimons.core.consts.PATHS;
@@ -28,7 +29,7 @@
 			STAGE = stage;
 			super();
 			this.scrollRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-			// stage.addChild(new Stats());
+			stage.addChild(new Stats());
 			console.openKey = Keyboard.F;
 			console.enabled = false;
 
