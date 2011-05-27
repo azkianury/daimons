@@ -1,5 +1,11 @@
 package daimons.game.levels.abstract
 {
+	import com.citrusengine.core.CitrusEngine;
+
+	import flash.display.BitmapData;
+	import flash.display.Bitmap;
+
+	import daimons.game.actions.ActionManager;
 	import daimons.game.time.CountdownManager;
 	import daimons.game.tutorial.TutorialManager;
 	import daimons.score.ScoreManager;
@@ -21,6 +27,7 @@ package daimons.game.levels.abstract
 		protected var _timerGame : PerfectTimer;
 		protected var _tuto : TutorialManager;
 		protected var _countdown : CountdownManager;
+		private var _bmp : Bitmap;
 
 		public function ALevel()
 		{
@@ -35,13 +42,16 @@ package daimons.game.levels.abstract
 			_countdown.start();
 			addChild(_countdown.view);
 			_countdown.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
-			
+
 			_tuto = new TutorialManager(new TutorialUIAsset());
 			addChild(_tuto.view);
-			
+
 			ScoreManager.getInstance().init(new ScoreUIAsset());
 			addChild(ScoreManager.getInstance().view);
-			
+
+			ActionManager.getInstance().init(new ActionsUIAsset());
+			addChild(ScoreManager.getInstance().view);
+
 			super.initialize();
 		}
 
@@ -64,10 +74,20 @@ package daimons.game.levels.abstract
 
 		public function pause() : void
 		{
+			var bitmapdata : BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight);
+
+			bitmapdata.draw(stage);
+
+			_bmp = new Bitmap(bitmapdata);
+
+			addChild(_bmp);
 		}
 
 		public function resume() : void
 		{
+			removeChild(_bmp);
+			_bmp.bitmapData.dispose();
+			_bmp = null;
 		}
 	}
 }

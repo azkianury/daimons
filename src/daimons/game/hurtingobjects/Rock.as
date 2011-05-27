@@ -1,6 +1,6 @@
 package daimons.game.hurtingobjects
 {
-	import daimons.core.consts.PATHS;
+	import flash.utils.clearTimeout;
 	import Box2DAS.Collision.Shapes.b2CircleShape;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -8,6 +8,9 @@ package daimons.game.hurtingobjects
 	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.SWFLoader;
 
 	/**
 	 * @author lbineau
@@ -19,20 +22,20 @@ package daimons.game.hurtingobjects
 
 		public function Rock(name : String, params : Object = null)
 		{
-			if (params == null)
-			{
-				params = new Object();
-				params.radius = 70;
-				params.offsetX = -70;
-				params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
-			}
 			_hurtAction = ActionManager.SHIELD;
 			_touched = true;
 			super(name, params);
 		}
 
+		override public function reset() : void
+		{
+			super.reset();
+			_touched = true;
+		}
+
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
+			super._handleBeginContact(e);
 			var colliderBody : b2Body = e.other.GetBody();
 
 			if (colliderBody.GetUserData() is enemyClass)
@@ -41,6 +44,7 @@ package daimons.game.hurtingobjects
 				if (ActionManager.getInstance().currentAction.name == _hurtAction)
 				{
 					_touched = false;
+					_animation = "destroy";
 				}
 			}
 		}

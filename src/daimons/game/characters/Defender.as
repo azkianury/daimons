@@ -1,6 +1,12 @@
 package daimons.game.characters
 {
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	import com.greensock.TweenLite;
+
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 	import daimons.game.actions.abstract.AAction;
+
 	import com.citrusengine.core.CitrusEngine;
 
 	import daimons.game.actions.objects.Projectile;
@@ -94,7 +100,7 @@ package daimons.game.characters
 		public var onAnimationChange : Signal;
 		private var _groundContacts : Array = [];
 		// Used to determine if he's on ground or not.
-		private var _enemyClass : Class = Baddy;
+		private var _enemyClass : Class = AHurtingObject;
 		private var _onGround : Boolean = false;
 		private var _springOffEnemy : Number = -1;
 		private var _hurtTimeoutID : Number;
@@ -117,7 +123,7 @@ package daimons.game.characters
 			_actionManager.onAction.add(_onAction);
 		}
 
-		private function _onAction(action:AAction) : void
+		private function _onAction(action : AAction) : void
 		{
 			if (action.name == ActionManager.PUNCH)
 			{
@@ -234,10 +240,30 @@ package daimons.game.characters
 		 */
 		public function hurt() : void
 		{
-			_hurt = true;
+			// _hurt = true;
 			controlsEnabled = false;
+			var timer : Timer = new Timer(100,10);
+			timer.addEventListener(TimerEvent.TIMER, _clignote);
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
 			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 			onTakeDamage.dispatch();
+		}
+
+		private function _finClignote(event : TimerEvent) : void
+		{
+			event.currentTarget.removeEventListener(TimerEvent.TIMER, _clignote);
+			event.currentTarget.removeEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
+		}
+
+		private function _clignote(event : TimerEvent) : void
+		{
+			_view.visible = !_view.visible;
+		}
+
+		private function _onClignote() : void
+		{
+			_view.visible = false;
+			
 		}
 
 		override protected function defineBody() : void
@@ -272,13 +298,6 @@ package daimons.game.characters
 				if (_body.GetLinearVelocity().y < killVelocity && !_hurt)
 				{
 					hurt();
-					e.contact.Disable();
-				}
-				else
-				{
-					e.contact.Disable();
-					// _springOffEnemy = colliderBody.GetPosition().y * _box2D.scale - height;
-					onGiveDamage.dispatch();
 				}
 			}
 
@@ -317,7 +336,8 @@ package daimons.game.characters
 			var prevAnimation : String = _animation;
 
 			var velocity : V2 = _body.GetLinearVelocity();
-			if(!_actionManager.busy){
+			if (!_actionManager.busy)
+			{
 				if (_hurt)
 				{
 					_animation = "hurt";

@@ -1,7 +1,5 @@
 package daimons.game.levels
 {
-	import Box2DAS.Dynamics.ContactEvent;
-
 	import daimons.core.consts.PATHS;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
@@ -16,7 +14,6 @@ package daimons.game.levels
 
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
-	import com.citrusengine.objects.PhysicsObject;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.physics.Box2D;
 	import com.greensock.loading.LoaderMax;
@@ -43,11 +40,8 @@ package daimons.game.levels
 		// Middle plan
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
-		private var _ennemi : PhysicsObject;
-		private var _ennemyArray : Array = [Wall, Rock, Spikes];
-		private var _ennemyStock : Vector.<AHurtingObject>;
-		private var _currentEnnemyIdx : uint ;
-		private static const MAX_ENNEMIES : uint = 10;
+		private var _ennemyArray : Vector.<AHurtingObject>;
+		private static const MAX_ENNEMIES : uint = 3;
 
 		public function Level1()
 		{
@@ -58,7 +52,7 @@ package daimons.game.levels
 		{
 			super.initialize();
 
-			_ennemyStock = new Vector.<AHurtingObject>(MAX_ENNEMIES, true);
+			_ennemyArray = new Vector.<AHurtingObject>(MAX_ENNEMIES, true);
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
@@ -66,13 +60,16 @@ package daimons.game.levels
 
 			_initDecor();
 
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "eon.swf"), gravity:0.5, width:50, height:100, group:2});
-			_hero.offsetY = -30;
+			_initHurtingObjects();
+
+			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "hero.swf"), gravity:0.5, width:50, height:100, group:2});
+			_hero.offsetY = -10;
+			_hero.offsetX = -20;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
 			_hero.killVelocity = 1;
-			_hero.acceleration = 5;
-			_hero.maxVelocity = 5;
+			_hero.acceleration = 6;
+			_hero.maxVelocity = 6;
 			_hero.skidFriction = 1;
 			add(_hero);
 			_hero.x = 200;
@@ -87,16 +84,32 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(50, 200);
 			view.cameraEasing.y = 0;
 
-			_timerGame = new PerfectTimer(5000, 0);
+			_timerGame = new PerfectTimer(6000, 0);
 			_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
 			_timerGame.start();
 		}
 
+		private function _initHurtingObjects() : void
+		{
+			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:180, height:40, offsetX:-150, offsetY:-80});
+			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100,offsetY:- 100});
+			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
+			_ennemyArray[0] = spike;
+			_ennemyArray[1] = rock;
+			_ennemyArray[2] = wall;
+			add(spike);
+			add(rock);
+			add(wall);
+			spike.x = rock.x = wall.x = - 100;
+		}
+
 		private function _initDecor() : void
 		{
-			var fgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("FG"));
-			var bgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("BG"));
-			var mgClass : Class = ((LoaderMax.getLoader("decor1") as SWFLoader).getClass("MG"));
+			var masqueClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("Masque"));
+			var masque : Sprite = new masqueClass();
+			var fgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("FG"));
+			var bgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("BG"));
+			var mgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("MG"));
 			var bmp0 : Bitmap;
 			var bmp1 : Bitmap;
 			_containerFg = new Sprite();
@@ -136,27 +149,36 @@ package daimons.game.levels
 
 			_currentFg = new CitrusSprite("Foreground", {view:_containerFg, parallax:2, group:4});
 			add(_currentFg);
+			
+			
+			_containerFg.cacheAsBitmap = true;
+			masque.cacheAsBitmap = true;
+			
+			_containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			_ennemi = new _ennemyArray[UMath.round(UMath.randomRange(-0.6, _ennemyArray.length - 1.4))]("Ennemi" + _timerGame.currentCount + 1);
-			add(_ennemi);
-			_ennemi.x = _ground.x + stage.stageWidth;
-			_ennemi.y = _ground.y - 200;
+			var _ennemi : AHurtingObject = _ennemyArray[UMath.round(UMath.randomRange(-0.51, 2.49))];
+			// var _ennemi : AHurtingObject = _ennemyArray[2];
+			_ennemi.reset();
+			// add(_ennemi);
+			_ennemi.x = _ground.x + stage.stageWidth - 200;
+			_ennemi.y = _ground.y - _ennemi.height - 100;
 
-			_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
+			/*_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
 
-			_ennemyStock[_currentEnnemyIdx] = _ennemi as AHurtingObject;
+			_ennemyArray[_currentEnnemyIdx] = _ennemi as AHurtingObject;
 
-			for each (var ennemi : AHurtingObject in _ennemyStock)
+			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi != null && ennemi.x < _hero.x - 100)
-				{
-					// ennemi.destroy(); // BUG
-					ennemi.kill = true;
-				}
+			if (ennemi != null && ennemi.x < _hero.x - 100)
+			{
+			// ennemi.destroy(); // BUG
+			ennemi.kill = true;
+			remove(ennemi);				  
 			}
+			}*/
 
 			// Roulement des Backgrounds
 			var tailleBg : Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;
@@ -188,9 +210,9 @@ package daimons.game.levels
 
 		override public function update(timeDelta : Number) : void
 		{
-			for each (var ennemi : AHurtingObject in _ennemyStock)
+			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi != null && !ennemi.passed)
+				if (!ennemi.passed)
 				{
 					if ((ennemi.x < _hero.x))
 					{
@@ -220,18 +242,12 @@ package daimons.game.levels
 		this.dispatchEvent(new GameEvent(GameEvent.LOSE_LIFE));
 		}
 		 */
-		private function _resetLevel(cEvt : ContactEvent) : void
-		{
-			if (cEvt.other.GetBody().GetUserData() is Defender)
-			{
-			}
-		}
-
 		override public function pause() : void
 		{
-			for each (var ennemi : AHurtingObject in _ennemyStock)
+			super.pause();
+			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi != null && ennemi.x < _hero.x - 100)
+				if (ennemi.x < _hero.x - 100)
 				{
 					ennemi.changeAnimation("idle");
 				}
@@ -243,9 +259,10 @@ package daimons.game.levels
 
 		override public function resume() : void
 		{
-			for each (var ennemi : AHurtingObject in _ennemyStock)
+			super.resume();
+			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi != null && ennemi.x < _hero.x - 100)
+				if (ennemi.x < _hero.x - 100)
 				{
 					ennemi.changeAnimation(ennemi.prevAnimation);
 				}

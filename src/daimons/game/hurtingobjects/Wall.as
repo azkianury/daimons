@@ -1,16 +1,10 @@
 package daimons.game.hurtingobjects
 {
-	import flash.utils.setTimeout;
-
-	import org.osflash.signals.Signal;
-
-	import daimons.game.actions.objects.Projectile;
-
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
-	import daimons.core.consts.PATHS;
 	import daimons.game.actions.ActionManager;
+	import daimons.game.actions.objects.Projectile;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 
@@ -23,20 +17,20 @@ package daimons.game.hurtingobjects
 
 		public function Wall(name : String, params : Object = null)
 		{
-			if (params == null)
-			{
-				params = new Object();
-				params.width = 10;
-				params.height = 200;
-				params.view = PATHS.HURTING_OBJECTS_ASSETS + "mur.swf";
-			}
 			_hurtAction = ActionManager.PUNCH;
 			_touched = true;
 			super(name, params);
 		}
 
+		override public function reset() : void
+		{
+			super.reset();
+			_touched = true;
+		}
+
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
+			super._handleBeginContact(e);
 			var colliderBody : b2Body = e.other.GetBody();
 
 			if (colliderBody.GetUserData() is enemyClass)
@@ -45,7 +39,7 @@ package daimons.game.hurtingobjects
 				if (ActionManager.getInstance().currentAction.name == _hurtAction)
 				{
 					_touched = false;
-
+					_animation = "destroy";
 					// hurt();
 				}
 			}
@@ -53,6 +47,7 @@ package daimons.game.hurtingobjects
 			{
 				e.contact.Disable();
 				_touched = false;
+				_animation = "destroy";
 				// hurt();
 			}
 		}
