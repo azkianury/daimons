@@ -185,7 +185,7 @@ package com.citrusengine.view
 			if (bounds)
 				cameraBounds = bounds;
 			if (easing)
-				cameraEasing = easing
+				cameraEasing = easing;
 		}
 		
 		/**

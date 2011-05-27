@@ -62,7 +62,6 @@ package com.citrusengine.objects.platformer
 		override protected function createFixture():void
 		{
 			super.createFixture();
-			
 			if (_oneWay)
 			{
 				_fixture.m_reportPreSolve = true;

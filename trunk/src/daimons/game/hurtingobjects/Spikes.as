@@ -17,19 +17,19 @@ package daimons.game.hurtingobjects
 
 		public function Spikes(name : String, params : Object = null)
 		{
-			if (params == null)
-			{
-				params = new Object();
-				params.width = 100;
-				params.height = 50;
-				//params.view = PATHS.HURTING_OBJECTS_ASSETS + "rocher.swf";
-			}
 			_hurtAction = ActionManager.JUMP;
 			super(name, params);
 		}
 
+		override public function reset() : void
+		{
+			super.reset();
+			_touched = false;
+		}
+
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
+			super._handleBeginContact(e);
 			var colliderBody : b2Body = e.other.GetBody();
 
 			if (colliderBody.GetUserData() is enemyClass)

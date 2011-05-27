@@ -34,19 +34,24 @@ package daimons.game.actions
 		{
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+
 			_defendArray = [];
 			_defendArray[NONE] = new DefenseAction(NONE, 100);
 			_defendArray[PUNCH] = new DefenseAction(PUNCH, 1000);
 			_defendArray[SHIELD] = new DefenseAction(SHIELD, 1000);
 			_defendArray[JUMP] = new DefenseAction(JUMP, 1000);
+
 			_currentAction = _defendArray[NONE];
+
+			_timerBusy = new PerfectTimer(1000, 1);
+			_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
+
 			onAction = new Signal(AAction);
 		}
 
 		public function init(view : MovieClip) : void
 		{
 			_view = view;
-			
 		}
 
 		public static function getInstance() : ActionManager
@@ -76,10 +81,9 @@ package daimons.game.actions
 				onAction.dispatch(_currentAction);
 				if (_busy)
 				{
-					_clearTimer();
 					delay = _currentAction.persistence;
-					_timerBusy = new PerfectTimer(delay, 1);
-					_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
+					_timerBusy.delay = delay;
+					_timerBusy.reset();
 					_timerBusy.start();
 				}
 			}
@@ -90,13 +94,11 @@ package daimons.game.actions
 			if (_timerBusy != null)
 			{
 				_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
-				_timerBusy = null;
 			}
 		}
 
 		private function _endBusy(event : TimerEvent) : void
 		{
-			_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
 			// Reset the action to none
 			_currentAction = _defendArray[NONE];
 			_busy = false;

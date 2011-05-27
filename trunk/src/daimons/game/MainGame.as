@@ -18,7 +18,7 @@
 	/**
 	 * @author lbineau
 	 */
-	[SWF(backgroundColor="#FFFFFF", frameRate="31", width="1024", height="768")]
+	[SWF(backgroundColor="#FFFFFF", frameRate="31", width="1280", height="768")]
 	public class MainGame extends CitrusEngine
 	{
 		private var _levelManager : LevelManager;
@@ -30,14 +30,20 @@
 			super();
 			this.scrollRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
 			stage.addChild(new Stats());
-			console.openKey = Keyboard.F;
-			console.enabled = false;
+			console.openKey = Keyboard.TAB;
+			console.enabled = true;
+			console.addCommand("togglebox2d", _togglebox2d);
 
 			// var objects : Array = [Platform, Hero, CitrusSprite, Sensor, Coin, Baddy, Crate];
 
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
-			loader.append(new SWFLoader(PATHS.LEVELS_ASSETS + "level1/decor.swf", {name:"decor1"}));
+			loader.append(new SWFLoader(PATHS.LEVELS_ASSETS + "level1/decor.swf", {name:"decors1"}));
+			loader.append(new SWFLoader(PATHS.HURTING_OBJECTS_ASSETS + "hurtingObjects.swf", {name:"hurtingObjects1"}));
 			loader.load();
+		}
+
+		private function _togglebox2d() : void
+		{
 		}
 
 		private function _onComplete(event : LoaderEvent) : void

@@ -1,11 +1,10 @@
 package daimons.game.hurtingobjects.abstract
 {
-	import flash.utils.setTimeout;
 	import Box2DAS.Dynamics.ContactEvent;
-
+	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
-
 	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 
 	/**
 	 * This is a common example of a side-scrolling bad guy. He has limited logic, basically
@@ -28,15 +27,28 @@ package daimons.game.hurtingobjects.abstract
 		protected var _prevAnimation : String = "idle";
 		protected var _touched : Boolean = false;
 		protected var _passed : Boolean = false;
+		protected var _event : ContactEvent;
+		private var _onGround : Boolean = false;
 
 		public function AHurtingObject(name : String, params : Object = null)
 		{
 			super(name, params);
 		}
 
+		public function reset() : void
+		{
+			_event.contact.SetEnabled(true);
+			clearTimeout(_hurtTimeoutID);
+			_passed = false;
+			_hurt = false;
+			_onGround = false;
+			_animation = "none";
+			setTimeout(changeAnimation, 100, "fall");
+		}
+
 		override public function destroy() : void
 		{
-			//trace(this + ":Destroyed");
+			// trace(this + ":Destroyed");
 			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 			clearTimeout(_hurtTimeoutID);
 			super.destroy();
@@ -51,8 +63,9 @@ package daimons.game.hurtingobjects.abstract
 		override protected function createFixture() : void
 		{
 			super.createFixture();
+			_fixture.SetRestitution(0);
 			_fixture.m_reportBeginContact = true;
-			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact,false,0,true);
+			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact, false, 0, true);
 		}
 
 		override public function update(timeDelta : Number) : void
@@ -69,14 +82,20 @@ package daimons.game.hurtingobjects.abstract
 
 		protected function _handleBeginContact(e : ContactEvent) : void
 		{
+			_event = e;
+						//Collision angle
+			if (e.normal) //The normal property doesn't come through all the time. I think doesn't come through against sensors.
+			{
+				var collisionAngle:Number = new MathVector(e.normal.x, e.normal.y).angle * 180 / Math.PI;
+				if (collisionAngle > 45 && collisionAngle < 135)
+				{
+					_onGround = true;
+				}
+			}
 		}
 
 		protected function _updateAnimation() : void
 		{
-			//if (_hurt)
-				//_animation = "die";
-			//else
-				//_animation = "idle";
 		}
 
 		protected function endHurtState() : void
