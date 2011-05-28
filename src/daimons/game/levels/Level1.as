@@ -1,12 +1,12 @@
 package daimons.game.levels
 {
-	import daimons.core.consts.PATHS;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
 	import daimons.game.hurtingobjects.Spikes;
 	import daimons.game.hurtingobjects.Wall;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
 	import daimons.game.levels.abstract.ALevel;
+	import daimons.game.sensors.DestroyerSensor;
 	import daimons.score.ScoreManager;
 
 	import fr.lbineau.utils.PerfectTimer;
@@ -20,6 +20,7 @@ package daimons.game.levels
 	import com.greensock.loading.SWFLoader;
 
 	import flash.display.Bitmap;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 
@@ -31,13 +32,14 @@ package daimons.game.levels
 		private var _tutorial : Boolean = true;
 		private var _hero : Defender;
 		private var _ground : Platform;
+		private var _destroyer: DestroyerSensor;
 		// Arrière plan
 		private var _containerBg : Sprite;
 		private var _currentBg : CitrusSprite;
 		// Premier plan
 		private var _containerFg : Sprite;
 		private var _currentFg : CitrusSprite;
-		// Middle plan
+		// Plan médian
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
@@ -62,16 +64,18 @@ package daimons.game.levels
 
 			_initHurtingObjects();
 
-			_hero = new Defender("Hero", {view:(PATHS.CHARACTER_ASSETS + "hero.swf"), gravity:0.5, width:50, height:100, group:2});
-			_hero.offsetY = -10;
-			_hero.offsetX = -20;
+			_hero = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:100, group:2});
+			_hero.offsetY = -20;
+			_hero.offsetX = -80;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
 			_hero.killVelocity = 1;
 			_hero.acceleration = 6;
 			_hero.maxVelocity = 6;
 			_hero.skidFriction = 1;
+			
 			add(_hero);
+			_hero.theMc = MovieClip(view.getArt(_hero)); // Obligé d'attendre qu'il soit ajouté au state
 			_hero.x = 200;
 			_hero.y = stage.stageHeight - 400;
 
@@ -79,6 +83,11 @@ package daimons.game.levels
 			add(_ground);
 			_ground.y = stage.stageHeight - 180;
 			_ground.x = -stage.stageWidth;
+			
+			_destroyer = new DestroyerSensor("theDestroyer",{width:100,height:stage.stageHeight});
+			_destroyer.x = stage.stageWidth;
+			_destroyer.y = 100;
+			add(_destroyer);
 
 			view.cameraTarget = _hero;
 			view.cameraOffset = new MathVector(50, 200);
@@ -92,15 +101,29 @@ package daimons.game.levels
 		private function _initHurtingObjects() : void
 		{
 			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:180, height:40, offsetX:-150, offsetY:-80});
-			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100,offsetY:- 100});
+			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100, offsetY:- 100});
 			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
 			_ennemyArray[0] = spike;
 			_ennemyArray[1] = rock;
 			_ennemyArray[2] = wall;
-			add(spike);
-			add(rock);
-			add(wall);
-			spike.x = rock.x = wall.x = - 100;
+			for each (var ennemi : AHurtingObject in _ennemyArray)
+			{
+				ennemi.x = -500;
+				ennemi.onTouched.add(_onEnnemiTouched);
+				ennemi.onDestroyed.add(_onEnnemiDestroyed);
+				add(ennemi);
+			}
+		}
+
+		private function _onEnnemiDestroyed() : void
+		{
+			ScoreManager.getInstance().add(1);
+		}
+
+		private function _onEnnemiTouched() : void
+		{
+			_hero.hurt();
+			ScoreManager.getInstance().remove(1);
 		}
 
 		private function _initDecor() : void
@@ -149,12 +172,11 @@ package daimons.game.levels
 
 			_currentFg = new CitrusSprite("Foreground", {view:_containerFg, parallax:2, group:4});
 			add(_currentFg);
-			
-			
+
 			_containerFg.cacheAsBitmap = true;
 			masque.cacheAsBitmap = true;
-			
-			_containerFg.mask = masque;
+
+			// _containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
@@ -162,7 +184,6 @@ package daimons.game.levels
 			var _ennemi : AHurtingObject = _ennemyArray[UMath.round(UMath.randomRange(-0.51, 2.49))];
 			// var _ennemi : AHurtingObject = _ennemyArray[2];
 			_ennemi.reset();
-			// add(_ennemi);
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
 			_ennemi.y = _ground.y - _ennemi.height - 100;
 
@@ -214,12 +235,10 @@ package daimons.game.levels
 			{
 				if (!ennemi.passed)
 				{
-					if ((ennemi.x < _hero.x))
+					if ((ennemi.x + ennemi.width < _hero.x))
 					{
-						if (!ennemi.touched)
+						if (ennemi is Spikes && !ennemi.touched)
 							ScoreManager.getInstance().add(1);
-						else
-							ScoreManager.getInstance().remove(1);
 						ennemi.passed = true;
 					}
 					if (_tutorial)
@@ -235,13 +254,10 @@ package daimons.game.levels
 				}
 			}
 			_ground.x = _hero.x;
+			_destroyer.x = _hero.x + stage.stageWidth;
 			super.update(timeDelta);
 		}
 
-		/*	private function _hurt():void {
-		this.dispatchEvent(new GameEvent(GameEvent.LOSE_LIFE));
-		}
-		 */
 		override public function pause() : void
 		{
 			super.pause();

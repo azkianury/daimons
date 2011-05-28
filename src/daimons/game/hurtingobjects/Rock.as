@@ -1,6 +1,5 @@
 package daimons.game.hurtingobjects
 {
-	import flash.utils.clearTimeout;
 	import Box2DAS.Collision.Shapes.b2CircleShape;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -8,9 +7,6 @@ package daimons.game.hurtingobjects
 	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
-
-	import com.greensock.loading.LoaderMax;
-	import com.greensock.loading.SWFLoader;
 
 	/**
 	 * @author lbineau
@@ -45,6 +41,10 @@ package daimons.game.hurtingobjects
 				{
 					_touched = false;
 					_animation = "destroy";
+					onDestroyed.dispatch();
+				}
+				else{
+					onTouched.dispatch();
 				}
 			}
 		}

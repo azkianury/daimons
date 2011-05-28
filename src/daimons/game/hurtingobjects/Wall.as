@@ -1,5 +1,7 @@
 package daimons.game.hurtingobjects
 {
+	import flash.utils.setTimeout;
+
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
@@ -40,16 +42,27 @@ package daimons.game.hurtingobjects
 				{
 					_touched = false;
 					_animation = "destroy";
-					// hurt();
+					onDestroyed.dispatch();
+				}
+				else if (_touched)
+				{
+					onTouched.dispatch();
 				}
 			}
 			if (!_killed && colliderBody.GetUserData() is Projectile)
 			{
 				e.contact.Disable();
 				_touched = false;
+				setTimeout(_destroyMe, 100);
+
 				_animation = "destroy";
-				// hurt();
+				onDestroyed.dispatch();
 			}
+		}
+
+		private function _destroyMe() : void
+		{
+			_killed = true;
 		}
 	}
 }

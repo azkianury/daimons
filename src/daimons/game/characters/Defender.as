@@ -1,7 +1,12 @@
 package daimons.game.characters
 {
+	import flash.display.MovieClip;
+
+	import com.demonsters.debugger.MonsterDebugger;
+
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
+
 	import com.greensock.TweenLite;
 
 	import daimons.game.hurtingobjects.abstract.AHurtingObject;
@@ -107,6 +112,7 @@ package daimons.game.characters
 		private var _hurt : Boolean = false;
 		private var _prevAnimation : String = "idle";
 		private var _actionManager : ActionManager;
+		private var _theMc : MovieClip;
 
 		/**
 		 * Creates a new hero object.
@@ -121,19 +127,21 @@ package daimons.game.characters
 			onAnimationChange = new Signal();
 			_actionManager = ActionManager.getInstance();
 			_actionManager.onAction.add(_onAction);
+			MonsterDebugger.initialize(this);
 		}
 
 		private function _onAction(action : AAction) : void
 		{
 			if (action.name == ActionManager.PUNCH)
 			{
-				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 70, gravity:0});
+				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 50, gravity:0});
 				CitrusEngine.getInstance().state.add(proj);
 			}
 			else if (action.name == ActionManager.SHIELD)
 			{
 			}
 			_animation = action.name;
+			onAnimationChange.dispatch();
 		}
 
 		override public function destroy() : void
@@ -240,30 +248,33 @@ package daimons.game.characters
 		 */
 		public function hurt() : void
 		{
-			// _hurt = true;
+			
 			controlsEnabled = false;
-			var timer : Timer = new Timer(100,10);
+			var timer : Timer = new Timer(100, 10);
 			timer.addEventListener(TimerEvent.TIMER, _clignote);
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
+			timer.start();
 			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 			onTakeDamage.dispatch();
+			
 		}
 
 		private function _finClignote(event : TimerEvent) : void
 		{
+			_theMc.visible = true;
+			MonsterDebugger.trace(this, _view);
 			event.currentTarget.removeEventListener(TimerEvent.TIMER, _clignote);
 			event.currentTarget.removeEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
 		}
 
 		private function _clignote(event : TimerEvent) : void
 		{
-			_view.visible = !_view.visible;
+			_theMc.visible = !_theMc.visible;
 		}
 
 		private function _onClignote() : void
 		{
 			_view.visible = false;
-			
 		}
 
 		override protected function defineBody() : void
@@ -295,9 +306,9 @@ package daimons.game.characters
 
 			if (_enemyClass && colliderBody.GetUserData() is _enemyClass)
 			{
-				if (_body.GetLinearVelocity().y < killVelocity && !_hurt)
+				if (_body.GetLinearVelocity().y < killVelocity && !_hurt && colliderBody.GetUserData().touched)
 				{
-					hurt();
+					// hurt();
 				}
 			}
 
@@ -374,6 +385,11 @@ package daimons.game.characters
 			_prevAnimation = _animation;
 			_animation = anim;
 			trace(_animation)
+		}
+
+		public function set theMc(theMc : MovieClip) : void
+		{
+			_theMc = theMc;
 		}
 	}
 }

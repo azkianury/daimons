@@ -50,7 +50,7 @@ package daimons.game.levels.abstract
 			addChild(ScoreManager.getInstance().view);
 
 			ActionManager.getInstance().init(new ActionsUIAsset());
-			addChild(ScoreManager.getInstance().view);
+			addChild(ActionManager.getInstance().view);
 
 			super.initialize();
 		}
