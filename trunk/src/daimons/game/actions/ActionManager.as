@@ -1,17 +1,20 @@
 package daimons.game.actions
 {
-	import flash.display.MovieClip;
+	import com.greensock.TweenLite;
+	import flash.display.Sprite;
+	import flash.display.DisplayObject;
 
 	import daimons.game.actions.abstract.AAction;
-
-	import org.osflash.signals.Signal;
-
 	import daimons.game.actions.objects.DefenseAction;
 
 	import fr.lbineau.utils.PerfectTimer;
 
 	import com.citrusengine.core.CitrusEngine;
 
+	import org.osflash.signals.Signal;
+
+	import flash.display.MovieClip;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
@@ -36,10 +39,10 @@ package daimons.game.actions
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 
 			_defendArray = [];
-			_defendArray[NONE] = new DefenseAction(NONE, 100);
-			_defendArray[PUNCH] = new DefenseAction(PUNCH, 1000);
-			_defendArray[SHIELD] = new DefenseAction(SHIELD, 1000);
-			_defendArray[JUMP] = new DefenseAction(JUMP, 1000);
+			_defendArray[NONE] = new DefenseAction(new Sprite(), NONE, 100, true);
+			_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, true);
+			_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1000, true);
+			_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 1000, true);
 
 			_currentAction = _defendArray[NONE];
 
@@ -49,9 +52,44 @@ package daimons.game.actions
 			onAction = new Signal(AAction);
 		}
 
+		public function activateAction(name : String) : void
+		{
+			(_defendArray[name] as AAction).active = true;
+			_updateUI();
+		}
+
+		private function _updateUI() : void
+		{
+			var i : uint;
+			for each (var action : AAction in _defendArray)
+			{
+				if (action.active)
+				{
+					action.view.x = i;
+					_view.addChild(action.view);
+					i += 200;
+				}
+			}
+			TweenLite.to(_view["bg"], 1, {width:_view.width});
+			TweenLite.to(_view, 1, {x:((_view.stage.stageWidth - _view.width) / 2),y:_view.stage.stageHeight - _view.height});
+		}
+
+		public function deactivateAction(name : String) : void
+		{
+			(_defendArray[name] as AAction).active = false;
+			_updateUI();
+		}
+
 		public function init(view : MovieClip) : void
 		{
 			_view = view;
+			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+		}
+
+		private function _onAddedToStage(event : Event) : void
+		{
+			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_updateUI();
 		}
 
 		public static function getInstance() : ActionManager
@@ -66,11 +104,11 @@ package daimons.game.actions
 				var delay : Number;
 				switch(event.keyCode)
 				{
-					case Keyboard.NUMBER_1:
+					case Keyboard.F1:
 						_currentAction = _defendArray[PUNCH];
 						_busy = true;
 						break;
-					case Keyboard.NUMBER_2:
+					case Keyboard.F2:
 						_currentAction = _defendArray[SHIELD];
 						_busy = true;
 						break;
@@ -112,6 +150,11 @@ package daimons.game.actions
 		public function get busy() : Boolean
 		{
 			return _busy;
+		}
+
+		public function get view() : MovieClip
+		{
+			return _view;
 		}
 	}
 }

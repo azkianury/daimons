@@ -11,28 +11,28 @@
         <versionLabel>v1</versionLabel>
 	<filename>MainGame</filename>
 	<description>
-		<text xml:lang="en">This is a sample Adobe AIR application.</text>
-		<text xml:lang="ja">これは Adobe AIR のサンプルアプリケーションです。</text>
+		<text xml:lang="fr">Daïmons</text>
+		<text xml:lang="en">Daïmons</text>
 	</description>
 	<copyright>Copyright 2009, Example Co., Inc.</copyright>
 	<initialWindow>
 		<content>MainGame.swf</content>
-		<title>Example Application</title>
+		<title>Daïmons</title>
 		<systemChrome>standard</systemChrome>
 		<transparent>false</transparent>
 		<visible>true</visible>
 		<minimizable>true</minimizable>
 		<maximizable>true</maximizable>
-		<resizable>true</resizable>
+		<resizable>false</resizable>
 		<width>1280</width>
 		<height>768</height>
-		<x>150</x>
-		<y>150</y>
-		<minSize>300 300</minSize>
-		<maxSize>800 800</maxSize>
+		<x>0</x>
+		<y>0</y>
+		<minSize>1024 768</minSize>
+		<maxSize>1280 768</maxSize>
 	</initialWindow>
-	<installFolder>Example Company/Example Application</installFolder>
-	<programMenuFolder>Example Company/Example Application</programMenuFolder>
+	<installFolder>Daimons/thegame</installFolder>
+	<programMenuFolder>Daimons/thegame</programMenuFolder>
 	
 	<customUpdateUI>false</customUpdateUI>
 	<allowBrowserInvocation>false</allowBrowserInvocation>

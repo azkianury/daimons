@@ -1,5 +1,6 @@
 package daimons.game.hurtingobjects.abstract
 {
+	import org.osflash.signals.Signal;
 	import Box2DAS.Dynamics.ContactEvent;
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
@@ -19,7 +20,7 @@ package daimons.game.hurtingobjects.abstract
 	{
 		public var speed : Number = 1.3;
 		protected var _hurtAction : String;
-		protected var _killed : Boolean;
+		protected var _killed : Boolean = false;
 		public var enemyKillVelocity : Number = 3;
 		public var hurtDuration : Number = 400;
 		protected var _hurtTimeoutID : Number = 0;
@@ -29,9 +30,13 @@ package daimons.game.hurtingobjects.abstract
 		protected var _passed : Boolean = false;
 		protected var _event : ContactEvent;
 		private var _onGround : Boolean = false;
+		public var onTouched : Signal;
+		public var onDestroyed : Signal;
 
 		public function AHurtingObject(name : String, params : Object = null)
 		{
+			onTouched = new Signal();
+			onDestroyed = new Signal();
 			super(name, params);
 		}
 
@@ -41,6 +46,7 @@ package daimons.game.hurtingobjects.abstract
 			clearTimeout(_hurtTimeoutID);
 			_passed = false;
 			_hurt = false;
+			_killed = false;
 			_onGround = false;
 			_animation = "none";
 			setTimeout(changeAnimation, 100, "fall");

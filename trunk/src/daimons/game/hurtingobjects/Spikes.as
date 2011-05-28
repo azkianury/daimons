@@ -36,6 +36,7 @@ package daimons.game.hurtingobjects
 			{
 				e.contact.Disable();
 				_touched = true;
+				onTouched.dispatch();
 			}
 		}
 

@@ -24,7 +24,7 @@ package daimons.score
 		public function init(view : MovieClip) : void
 		{
 			_view = view;
-			updateUI(50);
+			updateUI(_percentage);
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 		}
 

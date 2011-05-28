@@ -62,23 +62,28 @@ package daimons.game.actions.objects
 
 			if (colliderBody.GetUserData() is Wall)
 			{
+				trace((colliderBody.GetUserData() as Wall).killed);
 				if (!(colliderBody.GetUserData() as Wall).killed)
 				{
 					_linearVelocity.x = 0;
 					e.contact.Disable();
 					setTimeout(_destroyMe, 500);
+					trace("!(colliderBody.GetUserData() as Wall).killed");
+				}else{
+					e.contact.Disable();					
 				}
 			}
 			else
 			{
+				_linearVelocity.x = 0;
 				_destroyMe();
 			}
 		}
 
 		private function _destroyMe() : void
 		{
-			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 			CitrusEngine.getInstance().state.remove(this);
+			//kill = true;
 		}
 	}
 }

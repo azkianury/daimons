@@ -1,5 +1,7 @@
 package daimons.game.actions.objects
 {
+	import flash.display.DisplayObject;
+
 	import daimons.game.actions.abstract.AAction;
 
 	/**
@@ -7,9 +9,9 @@ package daimons.game.actions.objects
 	 */
 	public class AttackAction extends AAction
 	{
-		public function AttackAction($name : String, $persistence : Number)
+		public function AttackAction($view : DisplayObject, $name : String, $persistence : Number, $active : Boolean = false)
 		{
-			super($name, $persistence);
+			super($view, $name, $persistence, $active);
 		}
 	}
 }

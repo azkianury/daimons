@@ -18,7 +18,7 @@
 	/**
 	 * @author lbineau
 	 */
-	[SWF(backgroundColor="#FFFFFF", frameRate="31", width="1280", height="768")]
+	[SWF(backgroundColor="#000000", frameRate="31", width="1280", height="768")]
 	public class MainGame extends CitrusEngine
 	{
 		private var _levelManager : LevelManager;
@@ -37,6 +37,7 @@
 			// var objects : Array = [Platform, Hero, CitrusSprite, Sensor, Coin, Baddy, Crate];
 
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
+			loader.append(new SWFLoader(PATHS.CHARACTER_ASSETS + "hero.swf", {name:"hero"}));
 			loader.append(new SWFLoader(PATHS.LEVELS_ASSETS + "level1/decor.swf", {name:"decors1"}));
 			loader.append(new SWFLoader(PATHS.HURTING_OBJECTS_ASSETS + "hurtingObjects.swf", {name:"hurtingObjects1"}));
 			loader.load();
