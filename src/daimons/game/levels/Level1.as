@@ -1,5 +1,6 @@
 package daimons.game.levels
 {
+	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.Rock;
 	import daimons.game.hurtingobjects.Spikes;
@@ -174,9 +175,9 @@ package daimons.game.levels
 			add(_currentFg);
 
 			_containerFg.cacheAsBitmap = true;
-			masque.cacheAsBitmap = true;
+			_tuto.view.cacheAsBitmap = true;
 
-			// _containerFg.mask = masque;
+			_containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
