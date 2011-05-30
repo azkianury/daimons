@@ -19,7 +19,7 @@ package daimons.game.sensors
 		{
 			super.handleBeginContact(e);
 			var colliderBody : b2Body = e.other.GetBody();
-			colliderBody.GetUserData().kill;
+			colliderBody.GetUserData().kill = true;
 			trace("DestroyerSensor has killed " + colliderBody.GetUserData());
 		}
 	}

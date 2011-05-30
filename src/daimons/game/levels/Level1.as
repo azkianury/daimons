@@ -58,7 +58,7 @@ package daimons.game.levels
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
-			box2D.visible = true;
+			box2D.visible = false;
 
 			_initDecor();
 
@@ -231,6 +231,7 @@ package daimons.game.levels
 
 		override public function update(timeDelta : Number) : void
 		{
+			super.update(timeDelta);
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
 				if (!ennemi.passed)
@@ -255,7 +256,6 @@ package daimons.game.levels
 			}
 			_ground.x = _hero.x;
 			_destroyer.x = _hero.x + stage.stageWidth;
-			super.update(timeDelta);
 		}
 
 		override public function pause() : void

@@ -1,6 +1,7 @@
 package daimons.game.actions
 {
 	import com.greensock.TweenLite;
+
 	import flash.display.Sprite;
 	import flash.display.DisplayObject;
 
@@ -39,7 +40,7 @@ package daimons.game.actions
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 
 			_defendArray = [];
-			_defendArray[NONE] = new DefenseAction(new Sprite(), NONE, 100, true);
+			_defendArray[NONE] = new DefenseAction(new MovieClip(), NONE, 100, true);
 			_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, true);
 			_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1000, true);
 			_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 1000, true);
@@ -71,7 +72,7 @@ package daimons.game.actions
 				}
 			}
 			TweenLite.to(_view["bg"], 1, {width:_view.width});
-			TweenLite.to(_view, 1, {x:((_view.stage.stageWidth - _view.width) / 2),y:_view.stage.stageHeight - _view.height});
+			TweenLite.to(_view, 1, {x:((_view.stage.stageWidth - _view.width) / 2), y:_view.stage.stageHeight - _view.height});
 		}
 
 		public function deactivateAction(name : String) : void
@@ -116,6 +117,11 @@ package daimons.game.actions
 						_currentAction = _defendArray[JUMP];
 						break;
 				}
+				for each (var action : AAction in _defendArray)
+				{
+					if (action.active && action === _currentAction)
+						(action.view as MovieClip).gotoAndPlay("active");
+				}
 				onAction.dispatch(_currentAction);
 				if (_busy)
 				{
@@ -137,6 +143,7 @@ package daimons.game.actions
 
 		private function _endBusy(event : TimerEvent) : void
 		{
+			//(_currentAction.view as MovieClip).gotoAndPlay("idle");
 			// Reset the action to none
 			_currentAction = _defendArray[NONE];
 			_busy = false;
