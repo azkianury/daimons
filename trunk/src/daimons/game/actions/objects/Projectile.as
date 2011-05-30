@@ -1,19 +1,14 @@
 package daimons.game.actions.objects
 {
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
-
-	import com.citrusengine.core.CitrusEngine;
-
-	import flash.utils.setTimeout;
+	import Box2DAS.Common.V2;
+	import Box2DAS.Dynamics.ContactEvent;
+	import Box2DAS.Dynamics.b2Body;
 
 	import daimons.game.hurtingobjects.Wall;
 
-	import Box2DAS.Dynamics.ContactEvent;
-	import Box2DAS.Dynamics.b2Body;
-	import Box2DAS.Common.b2Vec2;
-	import Box2DAS.Common.V2;
-
 	import com.citrusengine.objects.platformer.Crate;
+
+	import flash.utils.setTimeout;
 
 	/**
 	 * @author lbineau
@@ -53,6 +48,7 @@ package daimons.game.actions.objects
 
 		override public function update(timeDelta : Number) : void
 		{
+			super.update(timeDelta);
 			_body.SetLinearVelocity(_linearVelocity);
 		}
 
@@ -82,8 +78,8 @@ package daimons.game.actions.objects
 
 		private function _destroyMe() : void
 		{
-			CitrusEngine.getInstance().state.remove(this);
-			//kill = true;
+			//CitrusEngine.getInstance().state.remove(this);
+			kill = true;
 		}
 	}
 }

@@ -38,7 +38,7 @@ package daimons.game.hurtingobjects
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				if (ActionManager.getInstance().currentAction.name == _hurtAction)
+				if (ActionManager.getInstance().currentAction.name == _hurtAction && _touched)
 				{
 					_touched = false;
 					_animation = "destroy";

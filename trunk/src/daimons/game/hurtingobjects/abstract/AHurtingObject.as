@@ -42,7 +42,7 @@ package daimons.game.hurtingobjects.abstract
 
 		public function reset() : void
 		{
-			_event.contact.SetEnabled(true);
+			//_event.contact.SetEnabled(true);
 			clearTimeout(_hurtTimeoutID);
 			_passed = false;
 			_hurt = false;
@@ -69,7 +69,7 @@ package daimons.game.hurtingobjects.abstract
 		override protected function createFixture() : void
 		{
 			super.createFixture();
-			_fixture.SetRestitution(0);
+			//_fixture.SetRestitution(0);
 			_fixture.m_reportBeginContact = true;
 			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact, false, 0, true);
 		}
@@ -88,7 +88,7 @@ package daimons.game.hurtingobjects.abstract
 
 		protected function _handleBeginContact(e : ContactEvent) : void
 		{
-			_event = e;
+			//_event = e;
 						//Collision angle
 			if (e.normal) //The normal property doesn't come through all the time. I think doesn't come through against sensors.
 			{
