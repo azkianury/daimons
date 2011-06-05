@@ -1,36 +1,30 @@
 package daimons.game.characters
 {
-	import flash.display.MovieClip;
-
-	import com.demonsters.debugger.MonsterDebugger;
-
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
-
-	import com.greensock.TweenLite;
-
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
-	import daimons.game.actions.abstract.AAction;
-
-	import com.citrusengine.core.CitrusEngine;
-
-	import daimons.game.actions.objects.Projectile;
-	import daimons.game.actions.ActionManager;
-
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
-
+	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
-	import com.citrusengine.objects.platformer.Baddy;
-
-	import org.osflash.signals.Signal;
-
+	import com.demonsters.debugger.MonsterDebugger;
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.SWFLoader;
+	import daimons.game.actions.ActionManager;
+	import daimons.game.actions.objects.AAction;
+	import daimons.game.actions.objects.Projectile;
+	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import flash.display.MovieClip;
+	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
+	import flash.utils.Timer;
 	import flash.utils.clearTimeout;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
+	import org.osflash.signals.Signal;
+
+
+
+
 
 	/**
 	 * @author lbineau
@@ -134,7 +128,7 @@ package daimons.game.characters
 		{
 			if (action.name == ActionManager.PUNCH)
 			{
-				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {x:this.x + 50, y:this.y - 50, gravity:0});
+				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")),x:this.x + 50, y:this.y - 50, gravity:0});
 				CitrusEngine.getInstance().state.add(proj);
 			}
 			else if (action.name == ActionManager.SHIELD)

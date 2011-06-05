@@ -1,24 +1,22 @@
 package daimons.game.actions
 {
+	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.TweenLite;
 
-	import flash.display.Sprite;
-	import flash.display.DisplayObject;
-
-	import daimons.game.actions.abstract.AAction;
+	import daimons.game.actions.objects.AAction;
 	import daimons.game.actions.objects.DefenseAction;
 
-	import fr.lbineau.utils.PerfectTimer;
-
-	import com.citrusengine.core.CitrusEngine;
-
-	import org.osflash.signals.Signal;
-
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
+
+	import fr.lbineau.utils.PerfectTimer;
+
+	import org.osflash.signals.Signal;
 
 	public final class ActionManager
 	{
@@ -28,6 +26,7 @@ package daimons.game.actions
 		private var _defendArray : Array;
 		private var _currentAction : AAction;
 		private var _timerBusy : PerfectTimer;
+		private var _timerAnim : PerfectTimer;
 		public var onAction : Signal;
 		public static const NONE : String = "none";
 		public static const PUNCH : String = "punch";
@@ -40,10 +39,10 @@ package daimons.game.actions
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 
 			_defendArray = [];
-			_defendArray[NONE] = new DefenseAction(new MovieClip(), NONE, 100, true);
-			_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, true);
-			_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1000, true);
-			_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 1000, true);
+			_defendArray[NONE] = new DefenseAction(new MovieClip(), NONE, 100, 100, true);
+			_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, 1000, true);
+			_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1500, 1500, true);
+			_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 1000, 1000, true);
 
 			_currentAction = _defendArray[NONE];
 
@@ -143,7 +142,7 @@ package daimons.game.actions
 
 		private function _endBusy(event : TimerEvent) : void
 		{
-			//(_currentAction.view as MovieClip).gotoAndPlay("idle");
+			// (_currentAction.view as MovieClip).gotoAndPlay("idle");
 			// Reset the action to none
 			_currentAction = _defendArray[NONE];
 			_busy = false;

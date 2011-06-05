@@ -177,7 +177,7 @@ package daimons.game.levels
 			_containerFg.cacheAsBitmap = true;
 			_tuto.view.cacheAsBitmap = true;
 
-			_containerFg.mask = masque;
+			//_containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
