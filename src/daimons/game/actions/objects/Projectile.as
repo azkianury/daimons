@@ -19,11 +19,7 @@ package daimons.game.actions.objects
 
 		public function Projectile(name : String, params : Object = null)
 		{
-			if (params == null)
-			{
-				params = new Object();
-				params.gravity = 0;
-			}
+			_animation = "create";
 			super(name, params);
 			_linearVelocity = _body.GetLinearVelocity();
 			_linearVelocity.x = 10;
@@ -58,13 +54,12 @@ package daimons.game.actions.objects
 
 			if (colliderBody.GetUserData() is Wall)
 			{
-				trace((colliderBody.GetUserData() as Wall).killed);
 				if (!(colliderBody.GetUserData() as Wall).killed)
 				{
 					_linearVelocity.x = 0;
 					e.contact.Disable();
 					setTimeout(_destroyMe, 500);
-					trace("!(colliderBody.GetUserData() as Wall).killed");
+					_animation = "destroy";
 				}else{
 					e.contact.Disable();					
 				}
