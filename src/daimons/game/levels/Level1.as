@@ -1,32 +1,29 @@
 package daimons.game.levels
 {
-	import flash.geom.Matrix;
-	import flash.display.GradientType;
-	import flash.display.Graphics;
-
+	import daimons.game.grounds.Ground1;
+	import daimons.game.hurtingobjects.projectiles.Lightning;
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.physics.Box2D;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
-
-	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.AHurtingObject;
-	import daimons.game.hurtingobjects.Rock;
-	import daimons.game.hurtingobjects.Spikes;
-	import daimons.game.hurtingobjects.Wall;
+	import daimons.game.hurtingobjects.statics.AHurtingObject;
+	import daimons.game.hurtingobjects.statics.Rock;
+	import daimons.game.hurtingobjects.statics.Spikes;
+	import daimons.game.hurtingobjects.statics.Wall;
 	import daimons.game.sensors.DestroyerSensor;
 	import daimons.score.ScoreManager;
-
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
-
 	import fr.lbineau.utils.PerfectTimer;
 	import fr.lbineau.utils.UMath;
+
+
+
 
 	/**
 	 * @author lbineau
@@ -47,7 +44,7 @@ package daimons.game.levels
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
-		private static const MAX_ENNEMIES : uint = 3;
+		private static const MAX_ENNEMIES : uint = 4;
 
 		public function Level1()
 		{
@@ -68,8 +65,8 @@ package daimons.game.levels
 
 			_initHurtingObjects();
 
-			_hero = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:100, group:2});
-			_hero.offsetY = -30;
+			_hero = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:120, group:2});
+			_hero.offsetY = -20;
 			_hero.offsetX = -80;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
@@ -84,7 +81,7 @@ package daimons.game.levels
 			_hero.x = 200;
 			_hero.y = stage.stageHeight - 300;
 
-			_ground = new Platform("Platform1", {width:stage.stageWidth * 2, height:20});
+			_ground = new Ground1("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
 			_ground.y = stage.stageHeight - 180;
 			_ground.x = -stage.stageWidth;
@@ -108,13 +105,15 @@ package daimons.game.levels
 			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:90, height:40, offsetX:-220, offsetY:-80});
 			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100, offsetY:- 100});
 			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
+			var lightning : Lightning = new Lightning("lightning1", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")), gravity:0});
 			_ennemyArray[0] = spike;
 			_ennemyArray[1] = rock;
 			_ennemyArray[2] = wall;
+			_ennemyArray[3] = lightning;
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				ennemi.x = 800;
-				ennemi.y = 1000;
+				ennemi.x = 7000;
+				ennemi.y = 2000;
 				ennemi.onTouched.add(_onEnnemiTouched);
 				ennemi.onDestroyed.add(_onEnnemiDestroyed);
 				add(ennemi);
@@ -134,8 +133,6 @@ package daimons.game.levels
 
 		private function _initDecor() : void
 		{
-			var masqueClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("Masque"));
-			var masque : Sprite = new Sprite();
 			var fgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("FG"));
 			var bgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("BG"));
 			var mgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("MG"));
@@ -186,11 +183,11 @@ package daimons.game.levels
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			var _ennemi : AHurtingObject = _ennemyArray[UMath.round(UMath.randomRange(-0.51, 2.49))];
-			// var _ennemi : AHurtingObject = _ennemyArray[2];
+			//var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, MAX_ENNEMIES - 0.01))];
+			 var _ennemi : AHurtingObject = _ennemyArray[3];
 			_ennemi.reset();
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
-			_ennemi.y = _ground.y - _ennemi.height - 100;
+			_ennemi.y = _ground.y - _ennemi.height - 90;
 
 			/*_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
 

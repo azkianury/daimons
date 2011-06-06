@@ -11,8 +11,8 @@ package daimons.game.characters
 	import com.greensock.loading.SWFLoader;
 	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
-	import daimons.game.hurtingobjects.AHurtingObject;
-	import daimons.game.hurtingobjects.Projectile;
+	import daimons.game.hurtingobjects.projectiles.Plasma;
+	import daimons.game.hurtingobjects.statics.AHurtingObject;
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
@@ -128,7 +128,7 @@ package daimons.game.characters
 		{
 			if (action.name == ActionManager.PUNCH)
 			{
-				var proj : Projectile = new Projectile("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")),x:this.x + 50, y:this.y - 50, gravity:0});
+				var proj : Plasma = new Plasma("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")),x:this.x + 50, y:this.y - 50, gravity:0});
 				CitrusEngine.getInstance().state.add(proj);
 			}
 			else if (action.name == ActionManager.SHIELD)
