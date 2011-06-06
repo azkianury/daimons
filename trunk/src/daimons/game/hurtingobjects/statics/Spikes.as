@@ -1,4 +1,4 @@
-package daimons.game.hurtingobjects
+package daimons.game.hurtingobjects.statics
 {
 	import Box2DAS.Collision.Shapes.b2PolygonShape;
 	import Box2DAS.Dynamics.ContactEvent;

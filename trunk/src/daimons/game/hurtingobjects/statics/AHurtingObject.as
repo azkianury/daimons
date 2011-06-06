@@ -1,9 +1,12 @@
-package daimons.game.hurtingobjects
+package daimons.game.hurtingobjects.statics
 {
 	import org.osflash.signals.Signal;
+
 	import Box2DAS.Dynamics.ContactEvent;
+
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
+
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
@@ -42,7 +45,7 @@ package daimons.game.hurtingobjects
 
 		public function reset() : void
 		{
-			//_event.contact.SetEnabled(true);
+			// _event.contact.SetEnabled(true);
 			clearTimeout(_hurtTimeoutID);
 			_passed = false;
 			_hurt = false;
@@ -57,6 +60,9 @@ package daimons.game.hurtingobjects
 			// trace(this + ":Destroyed");
 			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact);
 			clearTimeout(_hurtTimeoutID);
+			onTouched.removeAll();
+			onTouched = null;
+			onDestroyed = null;
 			super.destroy();
 		}
 
@@ -69,7 +75,7 @@ package daimons.game.hurtingobjects
 		override protected function createFixture() : void
 		{
 			super.createFixture();
-			//_fixture.SetRestitution(0);
+			// _fixture.SetRestitution(0);
 			_fixture.m_reportBeginContact = true;
 			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact, false, 0, true);
 		}
@@ -88,11 +94,11 @@ package daimons.game.hurtingobjects
 
 		protected function _handleBeginContact(e : ContactEvent) : void
 		{
-			//_event = e;
-						//Collision angle
-			if (e.normal) //The normal property doesn't come through all the time. I think doesn't come through against sensors.
+			// _event = e;
+			// Collision angle
+			if (e.normal) // The normal property doesn't come through all the time. I think doesn't come through against sensors.
 			{
-				var collisionAngle:Number = new MathVector(e.normal.x, e.normal.y).angle * 180 / Math.PI;
+				var collisionAngle : Number = new MathVector(e.normal.x, e.normal.y).angle * 180 / Math.PI;
 				if (collisionAngle > 45 && collisionAngle < 135)
 				{
 					_onGround = true;
