@@ -28,7 +28,6 @@ package daimons.game.time
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 			_view.x = int(_view.stage.stageWidth - _view.width) / 2;
-			_view.y = _view.height + 10;
 		}
 		public function init(repeatCountDown : uint) : void
 		{
@@ -63,7 +62,7 @@ package daimons.game.time
 			sec = sec % 60;
 			min = min % 60;
 
-			update(_digit2String(min) + " : " + _digit2String(sec));
+			update(min.toString() + ":" + _digit2String(sec));
 		}
 
 		public function get view() : MovieClip

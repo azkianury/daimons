@@ -9,10 +9,10 @@ package daimons.game.characters
 	import com.demonsters.debugger.MonsterDebugger;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
+	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
-	import daimons.game.actions.objects.AAction;
-	import daimons.game.actions.objects.Projectile;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import daimons.game.hurtingobjects.AHurtingObject;
+	import daimons.game.hurtingobjects.Projectile;
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;

@@ -3,10 +3,9 @@ package daimons.game.hurtingobjects
 	import Box2DAS.Collision.Shapes.b2CircleShape;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
-
 	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+
 
 	/**
 	 * @author lbineau

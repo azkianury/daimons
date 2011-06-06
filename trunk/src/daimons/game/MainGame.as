@@ -1,19 +1,21 @@
 ﻿package daimons.game
 {
-	import fr.lbineau.utils.Stats;
-	import flash.display.Stage;
-	import flash.events.Event;
 	import daimons.core.consts.PATHS;
+	import daimons.game.levels.ALevel;
 	import daimons.game.levels.LevelManager;
-	import daimons.game.levels.abstract.ALevel;
+
+	import fr.lbineau.utils.Stats;
 
 	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
 
+	import flash.display.Stage;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
+
+
 
 	/**
 	 * @author lbineau
@@ -33,8 +35,6 @@
 			console.openKey = Keyboard.TAB;
 			console.enabled = true;
 			console.addCommand("togglebox2d", _togglebox2d);
-
-			// var objects : Array = [Platform, Hero, CitrusSprite, Sensor, Coin, Baddy, Crate];
 
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
 			loader.append(new SWFLoader(PATHS.CHARACTER_ASSETS + "hero.swf", {name:"hero"}));

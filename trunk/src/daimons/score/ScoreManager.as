@@ -32,8 +32,8 @@ package daimons.score
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 			trace(_view.stage.stageWidth, _view.width);
-			_view.x = (_view.stage.stageWidth) / 2;
-			_view.y = _view.height;
+			_view.x = (_view.stage.stageWidth) / 2 + 180;
+			_view.y = 40;
 		}
 		
 		public function add(ponderation:Number) : void

@@ -1,14 +1,12 @@
 package daimons.game.hurtingobjects
 {
-	import flash.utils.setTimeout;
-
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
-
 	import daimons.game.actions.ActionManager;
-	import daimons.game.actions.objects.Projectile;
 	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
+	import flash.utils.setTimeout;
+
+
 
 	/**
 	 * @author lbineau
