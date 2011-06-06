@@ -1,7 +1,5 @@
 package daimons.game.levels
 {
-	import daimons.game.levels.abstract.ALevel;
-
 	import com.citrusengine.core.CitrusEngine;
 
 	import org.osflash.signals.Signal;
@@ -72,7 +70,8 @@ package daimons.game.levels
 
 		public function gotoLevel(lvl : uint) : void
 		{
-			if (_currentLevel != null){
+			if (_currentLevel != null)
+			{
 				_currentLevel.lvlEnded.remove(_onLevelEnded);
 			}
 			_currentLevel = ALevel(new _levels[_currentIndex]());
@@ -87,7 +86,12 @@ package daimons.game.levels
 
 		public function init(level : uint) : void
 		{
-			gotoLevel(0);			
+			gotoLevel(0);
+		}
+
+		public function get currentLevel() : ALevel
+		{
+			return _currentLevel;
 		}
 	}
 }

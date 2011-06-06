@@ -1,17 +1,8 @@
 package daimons.game.levels
 {
-	import daimons.game.actions.ActionManager;
-	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.Rock;
-	import daimons.game.hurtingobjects.Spikes;
-	import daimons.game.hurtingobjects.Wall;
-	import daimons.game.hurtingobjects.abstract.AHurtingObject;
-	import daimons.game.levels.abstract.ALevel;
-	import daimons.game.sensors.DestroyerSensor;
-	import daimons.score.ScoreManager;
-
-	import fr.lbineau.utils.PerfectTimer;
-	import fr.lbineau.utils.UMath;
+	import flash.geom.Matrix;
+	import flash.display.GradientType;
+	import flash.display.Graphics;
 
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
@@ -20,10 +11,22 @@ package daimons.game.levels
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
 
+	import daimons.game.actions.ActionManager;
+	import daimons.game.characters.Defender;
+	import daimons.game.hurtingobjects.AHurtingObject;
+	import daimons.game.hurtingobjects.Rock;
+	import daimons.game.hurtingobjects.Spikes;
+	import daimons.game.hurtingobjects.Wall;
+	import daimons.game.sensors.DestroyerSensor;
+	import daimons.score.ScoreManager;
+
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
+
+	import fr.lbineau.utils.PerfectTimer;
+	import fr.lbineau.utils.UMath;
 
 	/**
 	 * @author lbineau
@@ -33,7 +36,7 @@ package daimons.game.levels
 		private var _tutorial : Boolean = true;
 		private var _hero : Defender;
 		private var _ground : Platform;
-		private var _destroyer: DestroyerSensor;
+		private var _destroyer : DestroyerSensor;
 		// Arrière plan
 		private var _containerBg : Sprite;
 		private var _currentBg : CitrusSprite;
@@ -59,14 +62,14 @@ package daimons.game.levels
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
-			box2D.visible = false;
+			box2D.visible = true;
 
 			_initDecor();
 
 			_initHurtingObjects();
 
 			_hero = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:100, group:2});
-			_hero.offsetY = -20;
+			_hero.offsetY = -30;
 			_hero.offsetX = -80;
 			_hero.hurtVelocityX = 1;
 			_hero.hurtVelocityY = 1;
@@ -74,24 +77,25 @@ package daimons.game.levels
 			_hero.acceleration = 6;
 			_hero.maxVelocity = 6;
 			_hero.skidFriction = 1;
-			
+
 			add(_hero);
-			_hero.theMc = MovieClip(view.getArt(_hero)); // Obligé d'attendre qu'il soit ajouté au state
+			_hero.theMc = MovieClip(view.getArt(_hero));
+			// Obligé d'attendre qu'il soit ajouté au state
 			_hero.x = 200;
-			_hero.y = stage.stageHeight - 400;
+			_hero.y = stage.stageHeight - 300;
 
 			_ground = new Platform("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
 			_ground.y = stage.stageHeight - 180;
 			_ground.x = -stage.stageWidth;
-			
-			_destroyer = new DestroyerSensor("theDestroyer",{width:100,height:stage.stageHeight});
+
+			_destroyer = new DestroyerSensor("theDestroyer", {width:100, height:stage.stageHeight});
 			_destroyer.x = stage.stageWidth;
 			_destroyer.y = 100;
 			add(_destroyer);
 
 			view.cameraTarget = _hero;
-			view.cameraOffset = new MathVector(50, 200);
+			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 
 			_timerGame = new PerfectTimer(6000, 0);
@@ -101,7 +105,7 @@ package daimons.game.levels
 
 		private function _initHurtingObjects() : void
 		{
-			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:180, height:40, offsetX:-150, offsetY:-80});
+			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:90, height:40, offsetX:-220, offsetY:-80});
 			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100, offsetY:- 100});
 			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
 			_ennemyArray[0] = spike;
@@ -109,7 +113,8 @@ package daimons.game.levels
 			_ennemyArray[2] = wall;
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				ennemi.x = -500;
+				ennemi.x = 800;
+				ennemi.y = 1000;
 				ennemi.onTouched.add(_onEnnemiTouched);
 				ennemi.onDestroyed.add(_onEnnemiDestroyed);
 				add(ennemi);
@@ -130,7 +135,7 @@ package daimons.game.levels
 		private function _initDecor() : void
 		{
 			var masqueClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("Masque"));
-			var masque : Sprite = new masqueClass();
+			var masque : Sprite = new Sprite();
 			var fgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("FG"));
 			var bgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("BG"));
 			var mgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("MG"));
@@ -175,9 +180,8 @@ package daimons.game.levels
 			add(_currentFg);
 
 			_containerFg.cacheAsBitmap = true;
-			_tuto.view.cacheAsBitmap = true;
 
-			//_containerFg.mask = masque;
+			// _containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
