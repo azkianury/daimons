@@ -40,7 +40,8 @@
 			console.enabled = true;
 
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
-			loader.append(new MP3Loader(PATHS.SOUND_ASSETS + "music.mp3", {name:"music", repeat:-1, volume:0.5}));
+			loader.append(new MP3Loader(PATHS.SOUND_ASSETS + "music.mp3", {name:"introMusic", autoPlay:false,repeat:-1, volume:0.5}));
+			loader.append(new MP3Loader(PATHS.SOUND_ASSETS + "music.mp3", {name:"gameMusic", autoPlay:false,repeat:-1, volume:0.5}));
 			loader.append(new XMLLoader(PATHS.XML_CONFIG + "config.xml", {name:"xmlConfig"}));
 			loader.load();
 		}

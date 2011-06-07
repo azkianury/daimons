@@ -3,16 +3,19 @@ package daimons.game.characters
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
+
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
 	import com.demonsters.debugger.MonsterDebugger;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
+
 	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
 	import daimons.game.hurtingobjects.projectiles.Plasma;
 	import daimons.game.hurtingobjects.statics.AHurtingObject;
+
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
@@ -20,11 +23,8 @@ package daimons.game.characters
 	import flash.utils.clearTimeout;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
+
 	import org.osflash.signals.Signal;
-
-
-
-
 
 	/**
 	 * @author lbineau
@@ -126,13 +126,17 @@ package daimons.game.characters
 
 		private function _onAction(action : AAction) : void
 		{
-			if (action.name == ActionManager.PUNCH)
+			switch(action.name)
 			{
-				var proj : Plasma = new Plasma("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")),x:this.x + 50, y:this.y - 50, gravity:0});
-				CitrusEngine.getInstance().state.add(proj);
-			}
-			else if (action.name == ActionManager.SHIELD)
-			{
+				case ActionManager.NONE:
+					break;
+				case ActionManager.PUNCH:
+					var proj : Plasma = new Plasma("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")), x:this.x + 50, y:this.y - 50, gravity:0});
+					CitrusEngine.getInstance().state.add(proj);
+					break;
+				case ActionManager.CROUCH:
+					break;
+				default:
 			}
 			_animation = action.name;
 			onAnimationChange.dispatch();
@@ -242,7 +246,6 @@ package daimons.game.characters
 		 */
 		public function hurt() : void
 		{
-			
 			controlsEnabled = false;
 			var timer : Timer = new Timer(100, 10);
 			timer.addEventListener(TimerEvent.TIMER, _clignote);
@@ -250,7 +253,6 @@ package daimons.game.characters
 			timer.start();
 			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 			onTakeDamage.dispatch();
-			
 		}
 
 		private function _finClignote(event : TimerEvent) : void

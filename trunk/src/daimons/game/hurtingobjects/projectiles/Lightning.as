@@ -4,6 +4,7 @@ package daimons.game.hurtingobjects.projectiles
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
+	import daimons.game.actions.ActionManager;
 	import daimons.game.characters.Defender;
 
 	/**
@@ -38,8 +39,15 @@ package daimons.game.hurtingobjects.projectiles
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				_touched = true;
-				onTouched.dispatch();
+				if (ActionManager.getInstance().currentAction.name == ActionManager.CROUCH)
+				{
+					_touched = false;
+				}
+				else
+				{
+					_touched = true;
+					onTouched.dispatch();
+				}
 			}
 		}
 	}
