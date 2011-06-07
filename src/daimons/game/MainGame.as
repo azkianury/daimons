@@ -1,5 +1,6 @@
 ﻿package daimons.game
 {
+	import flash.utils.getDefinitionByName;
 	import daimons.core.consts.CONFIG;
 
 	import com.greensock.loading.XMLLoader;
@@ -47,7 +48,15 @@
 		private function _onComplete(event : LoaderEvent) : void
 		{
 			_initConfig();
-			_levelManager = new LevelManager();
+			var arr:Array = [];
+			var xml : XML = LoaderMax.getContent("xmlConfig") as XML;
+			for each (var lvl : * in xml.levels.level) {
+				var o :Object = new Object();
+				o.lvlname = "daimons.game.levels.Level"+lvl.@id;
+				o.duration = lvl.duration;
+				arr.push(o);
+			}
+			_levelManager = new LevelManager(arr);
 			_levelManager.onLevelChanged.add(_onLevelChanged);
 			_levelManager.init(0);
 
@@ -57,8 +66,8 @@
 		private function _initConfig() : void
 		{
 			var xml : XML = LoaderMax.getContent("xmlConfig") as XML;
-			CONFIG.BOX2D = Boolean(xml.configuration.box2D);
-			CONFIG.ENNEMI_AUTO = Boolean(xml.configuration.ennemiAuto);
+			CONFIG.BOX2D = String(xml.configuration.box2D) == "true";
+			CONFIG.ENNEMI_AUTO = String(xml.configuration.ennemiAuto) == "true";
 			CONFIG.ENNEMI_INTERVAL = uint(xml.configuration.enneminterval);
 		}
 

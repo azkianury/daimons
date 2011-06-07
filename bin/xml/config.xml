@@ -3,15 +3,12 @@
 
 	<configuration>
 		<enneminterval>6000</enneminterval>
-		<box2D>0</box2D>
-		<ennemiAuto>1</ennemiAuto>
+		<box2D><![CDATA[false]]></box2D>
+		<ennemiAuto><![CDATA[true]]></ennemiAuto>
 	</configuration>
 	<levels>
-		<level id="0">
-
-		</level>
 		<level id="1">
-
+			<duration>3</duration>
 		</level>
 	</levels>
 

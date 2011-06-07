@@ -56,6 +56,7 @@ package com.citrusengine.objects.platformer
 		override protected function defineFixture():void
 		{
 			super.defineFixture();
+			_fixtureDef.density = 0.1;
 			_fixtureDef.restitution = 0;
 		}
 		

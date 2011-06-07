@@ -47,9 +47,9 @@ package daimons.game.levels
 		private var _ennemyArray : Vector.<AHurtingObject>;
 		private static const MAX_ENNEMIES : uint = 4;
 
-		public function Level1()
+		public function Level1($duration:uint)
 		{
-			super();
+			super($duration);
 		}
 
 		override public function initialize() : void
@@ -116,8 +116,7 @@ package daimons.game.levels
 			_ennemyArray[3] = lightning;
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				ennemi.x = 7000;
-				ennemi.y = 2000;
+				ennemi.x = 20000;
 				ennemi.onTouched.add(_onEnnemiTouched);
 				ennemi.onDestroyed.add(_onEnnemiDestroyed);
 				add(ennemi);
@@ -147,36 +146,38 @@ package daimons.game.levels
 			_containerMg = new Sprite();
 
 			bmp0 = new Bitmap(new bgClass());
+			bmp0.cacheAsBitmap = true;
 			_containerBg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new bgClass());
+			bmp1.cacheAsBitmap = true;
 			bmp1.x = _containerBg.width - 10;
 			_containerBg.addChild(bmp1);
 			_currentBg = new CitrusSprite("Background", {view:_containerBg, parallax:0.5, group:0});
 			add(_currentBg);
 
 			bmp0 = new Bitmap(new mgClass());
+			bmp0.cacheAsBitmap = true;
 			_containerMg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new mgClass());
+			bmp1.cacheAsBitmap = true;
 			bmp1.x = _containerMg.width - 10;
 			_containerMg.addChild(bmp1);
 			_currentMg = new CitrusSprite("Middleground", {view:_containerMg, parallax:1, group:0});
 			add(_currentMg);
 
 			bmp0 = new Bitmap(new fgClass());
-			_containerFg.addChild(bmp0);
 			bmp0.cacheAsBitmap = true;
+			_containerFg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new fgClass());
-			bmp1.x = _containerFg.width - 10;
 			bmp1.cacheAsBitmap = true;
+			bmp1.x = _containerFg.width - 10;
 			_containerFg.addChild(bmp1);
 
 			_currentFg = new CitrusSprite("Foreground", {view:_containerFg, parallax:2, group:4});
 			add(_currentFg);
-
-			// _containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
@@ -195,9 +196,7 @@ package daimons.game.levels
 			{
 			if (ennemi != null && ennemi.x < _hero.x - 100)
 			{
-			// ennemi.destroy(); // BUG
 			ennemi.kill = true;
-			remove(ennemi);				  
 			}
 			}*/
 

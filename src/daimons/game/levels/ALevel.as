@@ -1,5 +1,7 @@
 package daimons.game.levels
 {
+	import flash.events.Event;
+
 	import daimons.game.MainGame;
 	import daimons.game.actions.ActionManager;
 	import daimons.game.time.CountdownManager;
@@ -28,19 +30,19 @@ package daimons.game.levels
 		private var _bmp : Bitmap;
 		private var _head : EonHeadUIAsset;
 
-		public function ALevel()
+		public function ALevel($duration:uint)
 		{
 			super();
 			lvlEnded = new Signal();
+			_countdown = new CountdownManager(new CountdownUIAsset());
+			_countdown.init($duration);
 		}
 
 		override public function initialize() : void
 		{
-			_countdown = new CountdownManager(new CountdownUIAsset());
-			_countdown.init(3);
 			_countdown.start();
 			addChild(_countdown.view);
-			_countdown.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+			_countdown.addEventListener(Event.COMPLETE, _onGameComplete);
 
 			_tuto = new TutorialManager(new TutorialUIAsset());
 			addChild(_tuto.view);
@@ -76,9 +78,9 @@ package daimons.game.levels
 			super.destroy();
 		}
 
-		private function _onTimerComplete(event : TimerEvent) : void
+		private function _onGameComplete(event : TimerEvent) : void
 		{
-			_countdown.removeEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+			_countdown.removeEventListener(Event.COMPLETE, _onGameComplete);
 			lvlEnded.dispatch();
 		}
 
