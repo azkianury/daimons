@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+
+	<configuration>
+		<enneminterval>6000</enneminterval>
+		<box2D>0</box2D>
+		<ennemiAuto>1</ennemiAuto>
+	</configuration>
+	<levels>
+		<level id="0">
+
+		</level>
+		<level id="1">
+
+		</level>
+	</levels>
+
+</root>

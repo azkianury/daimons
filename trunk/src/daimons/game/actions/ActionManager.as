@@ -31,6 +31,7 @@ package daimons.game.actions
 		public static const PUNCH : String = "punch";
 		public static const SHIELD : String = "shield";
 		public static const JUMP : String = "jump";
+		public static const CROUCH : String = "crouch";
 
 		public function ActionManager()
 		{
@@ -45,6 +46,7 @@ package daimons.game.actions
 					_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, 1000, true);
 					_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1500, 1500, true);
 					_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 500, 500, true);
+					_defendArray[CROUCH] = new DefenseAction(new CrouchAction(), CROUCH, 500, 500, true);
 					_currentAction = _defendArray[NONE];
 					break;
 				case CONFIG.ATTACKER:
@@ -79,16 +81,16 @@ package daimons.game.actions
 
 		private function _updateUI() : void
 		{
-			var i : uint = 30;
+			var i : uint = 40;
 			(view as Sprite).graphics.lineStyle(2, 0x606060, 0.4, true);
 			for each (var action : AAction in _defendArray)
 			{
 				if (action != _defendArray[NONE] && action.active)
 				{
-					action.view.x = i;
+					action.view.x = i + 20;
 					action.view.y = 10;
 					_view.addChild(action.view);
-					i += 200;
+					i = action.view.x + action.view.width + 40;
 					(view as Sprite).graphics.moveTo(i, 20);
 					(view as Sprite).graphics.lineTo(i, 125);
 					(view as Sprite).graphics.endFill();
