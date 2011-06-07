@@ -10,6 +10,7 @@ package daimons.game.grounds
 		public function Ground1(name : String, params : Object = null)
 		{
 			super(name, params);
+			_fixtureDef.density = 0.1;
 		}
 	}
 }

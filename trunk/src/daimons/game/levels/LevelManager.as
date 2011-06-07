@@ -11,21 +11,24 @@ package daimons.game.levels
 
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
+	import flash.utils.getDefinitionByName;
 
 	/**
 	 * @author lbineau
 	 */
 	public class LevelManager
 	{
-		private var _levels : Array = [Level1];
+		private var _imports : Array = [Level1]; // Importer les classe pour pouvoir créer des instances dynamiquement
+		private var _levels : Array;
 		private var _currentIndex : uint;
 		private var _loader : LoaderMax;
 		private var _currentLevel : ALevel;
 		public var onLevelChanged : Signal;
 		public var onLevelLoaded : Signal;
 
-		public function LevelManager()
+		public function LevelManager($lvls : Array)
 		{
+			_levels = $lvls;
 			onLevelChanged = new Signal(ALevel);
 			onLevelLoaded = new Signal(ALevel);
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
@@ -96,7 +99,8 @@ package daimons.game.levels
 
 		private function _onComplete(event : LoaderEvent) : void
 		{
-			_currentLevel = ALevel(new _levels[_currentIndex]());
+			var C : Class = getDefinitionByName(_levels[_currentIndex].lvlname) as Class;
+			_currentLevel = ALevel(new C(_levels[_currentIndex].duration));
 			_currentLevel.lvlEnded.add(_onLevelEnded);
 			onLevelChanged.dispatch(_currentLevel);
 			onLevelLoaded.dispatch(_currentLevel);
@@ -109,7 +113,7 @@ package daimons.game.levels
 
 		public function init(level : uint) : void
 		{
-			gotoLevel(0);
+			gotoLevel(level);
 		}
 
 		public function get currentLevel() : ALevel

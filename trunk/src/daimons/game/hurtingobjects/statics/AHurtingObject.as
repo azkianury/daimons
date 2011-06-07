@@ -79,7 +79,11 @@ package daimons.game.hurtingobjects.statics
 			_fixture.m_reportBeginContact = true;
 			_fixture.addEventListener(ContactEvent.BEGIN_CONTACT, _handleBeginContact, false, 0, true);
 		}
-
+		override protected function defineFixture():void
+		{
+			super.defineFixture();
+			_fixtureDef.restitution = 0;
+		}
 		override public function update(timeDelta : Number) : void
 		{
 			super.update(timeDelta);

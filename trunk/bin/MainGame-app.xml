@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><application xmlns="http://ns.adobe.com/air/application/2.6" minimumPatchLevel="0">
-<!-- AIR Application Descriptor File. See http://www.adobe.com/go/learn_air_1.0_application_descriptor_en. -->
+	<!-- AIR Application Descriptor File. See http://www.adobe.com/go/learn_air_1.0_application_descriptor_en. -->
 	<id>MainGame</id>
 	<name>MainGame</name>
-        <!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade. 
-             Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
-             An updated version of application must have a versionNumber value higher than the previous version. Required for namespace >= 2.5 . -->
-        <versionNumber>1.0.0</versionNumber>
+	<!-- A string value of the format <0-999>.<0-999>.<0-999> that represents 
+		application version which can be used to check for application upgrade. Values 
+		can also be 1-part or 2-part. It is not necessary to have a 3-part value. 
+		An updated version of application must have a versionNumber value higher 
+		than the previous version. Required for namespace >= 2.5 . -->
+	<versionNumber>1.0.0</versionNumber>
 
-        <!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents the version of the application, as it should be shown to users. Optional. -->
-        <versionLabel>v1</versionLabel>
+	<!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents 
+		the version of the application, as it should be shown to users. Optional. -->
+	<versionLabel>v1</versionLabel>
 	<filename>MainGame</filename>
 	<description>
 		<text xml:lang="fr">Daïmons</text>
@@ -18,8 +21,9 @@
 	<initialWindow>
 		<content>MainGame.swf</content>
 		<title>Daïmons</title>
-		<systemChrome>standard</systemChrome>
-		<transparent>false</transparent>
+		<systemChrome>none</systemChrome>
+		<transparent>true</transparent>
+		<renderMode>gpu</renderMode>
 		<visible>true</visible>
 		<minimizable>true</minimizable>
 		<maximizable>true</maximizable>
@@ -33,7 +37,7 @@
 	</initialWindow>
 	<installFolder>Daimons/thegame</installFolder>
 	<programMenuFolder>Daimons/thegame</programMenuFolder>
-	
+
 	<customUpdateUI>false</customUpdateUI>
 	<allowBrowserInvocation>false</allowBrowserInvocation>
 	<fileTypes>
@@ -42,7 +46,7 @@
 			<extension>xmpl</extension>
 			<description>Example file</description>
 			<contentType>example/x-data-type</contentType>
-			
+
 		</fileType>
 	</fileTypes>
 </application>
