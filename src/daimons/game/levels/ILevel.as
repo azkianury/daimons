@@ -7,5 +7,6 @@ package daimons.game.levels
 	{
 		function pause():void;
 		function resume():void;
+		function destroy():void;
 	}
 }

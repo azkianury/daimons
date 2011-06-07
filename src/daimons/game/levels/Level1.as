@@ -1,5 +1,6 @@
 package daimons.game.levels
 {
+	import daimons.core.consts.CONFIG;
 	import daimons.game.grounds.Ground1;
 	import daimons.game.hurtingobjects.projectiles.Lightning;
 	import com.citrusengine.math.MathVector;
@@ -59,7 +60,8 @@ package daimons.game.levels
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
-			box2D.visible = true;
+			box2D.visible = CONFIG.BOX2D;
+			trace(CONFIG.BOX2D);
 
 			_initDecor();
 
@@ -95,9 +97,11 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 
-			_timerGame = new PerfectTimer(6000, 0);
-			_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
-			_timerGame.start();
+			if(CONFIG.ENNEMI_AUTO){
+				_timerGame = new PerfectTimer(CONFIG.ENNEMI_INTERVAL, 0);
+				_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
+				_timerGame.start();
+			}
 		}
 
 		private function _initHurtingObjects() : void
@@ -105,7 +109,7 @@ package daimons.game.levels
 			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:90, height:40, offsetX:-220, offsetY:-80});
 			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100, offsetY:- 100});
 			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
-			var lightning : Lightning = new Lightning("lightning1", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")), gravity:0});
+			var lightning : Lightning = new Lightning("lightning1", {view:((LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Lightning")), gravity:0,width:250, height:20});
 			_ennemyArray[0] = spike;
 			_ennemyArray[1] = rock;
 			_ennemyArray[2] = wall;
@@ -144,22 +148,18 @@ package daimons.game.levels
 
 			bmp0 = new Bitmap(new bgClass());
 			_containerBg.addChild(bmp0);
-			bmp0.cacheAsBitmap = true;
 
 			bmp1 = new Bitmap(new bgClass());
 			bmp1.x = _containerBg.width - 10;
-			bmp1.cacheAsBitmap = true;
 			_containerBg.addChild(bmp1);
 			_currentBg = new CitrusSprite("Background", {view:_containerBg, parallax:0.5, group:0});
 			add(_currentBg);
 
 			bmp0 = new Bitmap(new mgClass());
 			_containerMg.addChild(bmp0);
-			bmp0.cacheAsBitmap = true;
 
 			bmp1 = new Bitmap(new mgClass());
 			bmp1.x = _containerMg.width - 10;
-			bmp1.cacheAsBitmap = true;
 			_containerMg.addChild(bmp1);
 			_currentMg = new CitrusSprite("Middleground", {view:_containerMg, parallax:1, group:0});
 			add(_currentMg);
@@ -176,15 +176,13 @@ package daimons.game.levels
 			_currentFg = new CitrusSprite("Foreground", {view:_containerFg, parallax:2, group:4});
 			add(_currentFg);
 
-			_containerFg.cacheAsBitmap = true;
-
 			// _containerFg.mask = masque;
 		}
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			//var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, MAX_ENNEMIES - 0.01))];
-			 var _ennemi : AHurtingObject = _ennemyArray[3];
+			var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, MAX_ENNEMIES - 0.01))];
+			//var _ennemi : AHurtingObject = _ennemyArray[3];
 			_ennemi.reset();
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
 			_ennemi.y = _ground.y - _ennemi.height - 90;
@@ -240,7 +238,7 @@ package daimons.game.levels
 				{
 					if ((ennemi.x + ennemi.width < _hero.x))
 					{
-						if (ennemi is Spikes && !ennemi.touched)
+						if ((ennemi is Spikes || ennemi is Lightning) && !ennemi.touched)
 							ScoreManager.getInstance().add(1);
 						ennemi.passed = true;
 					}

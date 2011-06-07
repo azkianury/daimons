@@ -1,5 +1,10 @@
 ﻿package daimons.game
 {
+	import daimons.core.consts.CONFIG;
+
+	import com.greensock.loading.XMLLoader;
+	import com.greensock.loading.MP3Loader;
+
 	import daimons.core.consts.PATHS;
 	import daimons.game.levels.ALevel;
 	import daimons.game.levels.LevelManager;
@@ -14,8 +19,6 @@
 	import flash.display.Stage;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
-
-
 
 	/**
 	 * @author lbineau
@@ -34,26 +37,29 @@
 			stage.addChild(new Stats());
 			console.openKey = Keyboard.TAB;
 			console.enabled = true;
-			console.addCommand("togglebox2d", _togglebox2d);
 
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
-			loader.append(new SWFLoader(PATHS.CHARACTER_ASSETS + "hero.swf", {name:"hero"}));
-			loader.append(new SWFLoader(PATHS.LEVELS_ASSETS + "level1/decor.swf", {name:"decors1"}));
-			loader.append(new SWFLoader(PATHS.HURTING_OBJECTS_ASSETS + "hurtingObjects.swf", {name:"hurtingObjects1"}));
+			loader.append(new MP3Loader(PATHS.SOUND_ASSETS + "music.mp3", {name:"music", repeat:-1, volume:0.5}));
+			loader.append(new XMLLoader(PATHS.XML_CONFIG + "config.xml", {name:"xmlConfig"}));
 			loader.load();
-		}
-
-		private function _togglebox2d() : void
-		{
 		}
 
 		private function _onComplete(event : LoaderEvent) : void
 		{
+			_initConfig();
 			_levelManager = new LevelManager();
 			_levelManager.onLevelChanged.add(_onLevelChanged);
 			_levelManager.init(0);
 
 			// this.enabled = false;
+		}
+
+		private function _initConfig() : void
+		{
+			var xml : XML = LoaderMax.getContent("xmlConfig") as XML;
+			CONFIG.BOX2D = Boolean(xml.configuration.box2D);
+			CONFIG.ENNEMI_AUTO = Boolean(xml.configuration.ennemiAuto);
+			CONFIG.ENNEMI_INTERVAL = uint(xml.configuration.enneminterval);
 		}
 
 		private function _onLevelChanged(lvl : ALevel) : void

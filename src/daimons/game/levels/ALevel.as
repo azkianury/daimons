@@ -1,11 +1,6 @@
 package daimons.game.levels
 {
 	import daimons.game.MainGame;
-	import com.citrusengine.core.CitrusEngine;
-
-	import flash.display.BitmapData;
-	import flash.display.Bitmap;
-
 	import daimons.game.actions.ActionManager;
 	import daimons.game.time.CountdownManager;
 	import daimons.game.tutorial.TutorialManager;
@@ -17,6 +12,8 @@ package daimons.game.levels
 
 	import org.osflash.signals.Signal;
 
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.events.TimerEvent;
 
 	/**
@@ -40,7 +37,7 @@ package daimons.game.levels
 		override public function initialize() : void
 		{
 			_countdown = new CountdownManager(new CountdownUIAsset());
-			_countdown.init(300);
+			_countdown.init(3);
 			_countdown.start();
 			addChild(_countdown.view);
 			_countdown.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
@@ -62,16 +59,27 @@ package daimons.game.levels
 			super.initialize();
 		}
 
+		override public function destroy() : void
+		{
+			_timerGame = null;
+			removeChild(_tuto.view);
+			_tuto = null;
+			removeChild(_countdown.view);
+			_countdown = null;
+			removeChild(ScoreManager.getInstance().view);
+			removeChild(ActionManager.getInstance().view);
+			_head = null;
+			_tuto = null;
+			_bmp = null;
+			lvlEnded.removeAll();
+			lvlEnded = null;
+			super.destroy();
+		}
+
 		private function _onTimerComplete(event : TimerEvent) : void
 		{
 			_countdown.removeEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
 			lvlEnded.dispatch();
-		}
-
-		override public function destroy() : void
-		{
-			lvlEnded.removeAll();
-			super.destroy();
 		}
 
 		override public function update(timeDelta : Number) : void

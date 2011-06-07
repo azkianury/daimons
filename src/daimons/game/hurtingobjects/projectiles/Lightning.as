@@ -4,18 +4,17 @@ package daimons.game.hurtingobjects.projectiles
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
 
-	import daimons.game.hurtingobjects.statics.Wall;
-
-	import flash.utils.setTimeout;
+	import daimons.game.characters.Defender;
 
 	/**
 	 * @author lbineau
 	 */
 	public class Lightning extends AHurtingProjectile
 	{
+		public var enemyClass : Class = Defender;
+
 		public function Lightning(name : String, params : Object = null)
 		{
-			_animation = "create";
 			super(name, params);
 			_linearVelocity = _body.GetLinearVelocity();
 			_linearVelocity.x = -10;
@@ -25,32 +24,23 @@ package daimons.game.hurtingobjects.projectiles
 			// _body.ApplyImpulse(new b2Vec2(0.5) as V2, new V2(this.x,this.y))
 		}
 
+		override public function reset() : void
+		{
+			super.reset();
+			_touched = false;
+		}
+
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
-			/*var colliderBody : b2Body = e.other.GetBody();
+			super._handleBeginContact(e);
+			var colliderBody : b2Body = e.other.GetBody();
 
-			if (colliderBody.GetUserData() is Wall)
+			if (colliderBody.GetUserData() is enemyClass)
 			{
-				if (!(colliderBody.GetUserData() as Wall).killed)
-				{
-					_linearVelocity.x = 0;
-					e.contact.Disable();
-					setTimeout(_destroyMe, 500);
-					_animation = "destroy";
-				}
-				else
-				{
-					e.contact.Disable();
-				}
+				e.contact.Disable();
+				_touched = true;
+				onTouched.dispatch();
 			}
-			else
-			{
-				_linearVelocity.x = 0;
-				_animation = "destroy";
-				setTimeout(_destroyMe, 300);
-				// _destroyMe();
-			}
-			super._handleBeginContact(e);*/
 		}
 	}
 }

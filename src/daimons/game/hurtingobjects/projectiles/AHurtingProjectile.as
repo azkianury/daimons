@@ -55,6 +55,7 @@ package daimons.game.hurtingobjects.projectiles
 
 		override protected function _handleBeginContact(e : ContactEvent) : void
 		{
+			super._handleBeginContact(e);
 		}
 
 		protected function _destroyMe() : void
