@@ -1,5 +1,7 @@
 package daimons.game.actions
 {
+	import com.greensock.TimelineLite;
+	import flash.display.Graphics;
 	import daimons.core.consts.CONFIG;
 
 	import fr.lbineau.utils.PerfectTimer;
@@ -21,11 +23,10 @@ package daimons.game.actions
 		private static var instance : ActionManager = new ActionManager();
 		private var _view : MovieClip;
 		private var _busy : Boolean = false;
-		private var _defendArray : Array;
-		private var _attackArray : Array;
+		private var _defendArray : Object, _attackArray : Object;
+		private var _defendArrayLength : uint, _attackArrayLength : uint;
+		private var _timerBusy : PerfectTimer, _timerAnim : PerfectTimer;
 		private var _currentAction : AAction;
-		private var _timerBusy : PerfectTimer;
-		private var _timerAnim : PerfectTimer;
 		public var onAction : Signal;
 		public static const NONE : String = "none";
 		public static const PUNCH : String = "punch";
@@ -42,20 +43,22 @@ package daimons.game.actions
 			{
 				case CONFIG.DEFENDER:
 					_defendArray = [];
-					_defendArray[NONE] = new DefenseAction(new MovieClip(), NONE, 100, 100, true);
-					_defendArray[PUNCH] = new DefenseAction(new PunchAction(), PUNCH, 1000, 1000, true);
-					_defendArray[SHIELD] = new DefenseAction(new ShieldAction(), SHIELD, 1500, 1500, true);
-					_defendArray[JUMP] = new DefenseAction(new JumpAction(), JUMP, 500, 500, true);
-					_defendArray[CROUCH] = new DefenseAction(new CrouchAction(), CROUCH, 500, 500, true);
+					_defendArray.none = new DefenseAction(new MovieClip(), NONE, 100, 100, true);
+					_defendArray.punch = new DefenseAction(new PunchAction(), PUNCH, 900, 900, true);
+					_defendArray.shield = new DefenseAction(new ShieldAction(), SHIELD, 1500, 1500, true);
+					_defendArray.jump = new DefenseAction(new JumpAction(), JUMP, 500, 500, true);
+					_defendArray.crouch = new DefenseAction(new CrouchAction(), CROUCH, 1000, 1000, true);
 					_currentAction = _defendArray[NONE];
+					for (var sd:String in _defendArray) _defendArrayLength++;
 					break;
 				case CONFIG.ATTACKER:
 					_attackArray = [];
-					_attackArray[NONE] = new AttackAction(new MovieClip(), NONE, 100, 100, true);
-					_attackArray[PUNCH] = new AttackAction(new PunchAction(), PUNCH, 1000, 1000, true);
-					_attackArray[SHIELD] = new AttackAction(new ShieldAction(), SHIELD, 1500, 1500, true);
-					_attackArray[JUMP] = new AttackAction(new JumpAction(), JUMP, 500, 500, true);
+					_attackArray.none = new AttackAction(new MovieClip(), NONE, 100, 100, true);
+					_attackArray.punch = new AttackAction(new PunchAction(), PUNCH, 1000, 1000, true);
+					_attackArray.shield = new AttackAction(new ShieldAction(), SHIELD, 1500, 1500, true);
+					_attackArray.jump = new AttackAction(new JumpAction(), JUMP, 500, 500, true);
 					_currentAction = _attackArray[NONE];
+					for (var sa:String in _defendArray) _attackArrayLength++;
 					break;
 				default:
 			}
@@ -82,22 +85,33 @@ package daimons.game.actions
 		private function _updateUI() : void
 		{
 			var i : uint = 40;
-			(view as Sprite).graphics.lineStyle(2, 0x606060, 0.4, true);
+			var graph:Graphics = (view as Sprite).graphics;
+			graph.clear();
+			graph.lineStyle(2, 0x606060, 0.4, true);
 			for each (var action : AAction in _defendArray)
 			{
-				if (action != _defendArray[NONE] && action.active)
+				if (action != _defendArray[NONE])
 				{
-					action.view.x = i + 20;
-					action.view.y = 10;
-					_view.addChild(action.view);
-					i = action.view.x + action.view.width + 40;
-					(view as Sprite).graphics.moveTo(i, 20);
-					(view as Sprite).graphics.lineTo(i, 125);
-					(view as Sprite).graphics.endFill();
+					if(action.active){
+						action.view.x = i + 20;
+						action.view.y = 10;
+						_view.addChild(action.view);
+						i = action.view.x + action.view.width + 40;
+						graph.moveTo(i, 20);
+						graph.lineTo(i, 125);
+						graph.endFill();
+					}else{
+						for (var j : int = 0; j < view.numChildren; j++) {
+							if(view.getChildAt(j) == action.view)
+								_view.removeChild(action.view);
+						}
+					}
 				}
 			}
-			TweenLite.to(_view["bg"], 1, {width:_view.width + 40});
-			TweenLite.to(_view, 1, {x:((_view.stage.stageWidth - _view.width) / 2 - 200), y:_view.stage.stageHeight - _view.height});
+			var tl : TimelineLite = new TimelineLite();
+			tl.append(TweenLite.to(_view["bg"], 0.5, {width:i+50}));
+			tl.append(TweenLite.to(_view, 0.5, {x:((_view.stage.stageWidth - _view.width) / 2 - 200), y:_view.stage.stageHeight - _view.height}));
+			
 		}
 
 		public function init(view : MovieClip) : void
@@ -109,6 +123,7 @@ package daimons.game.actions
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_view.y = _view.stage.stageHeight;
 			_updateUI();
 		}
 
@@ -134,6 +149,10 @@ package daimons.game.actions
 						break;
 					case Keyboard.SPACE:
 						_currentAction = _defendArray[JUMP];
+						_busy = true;
+						break;
+					case Keyboard.DOWN:
+						_currentAction = _defendArray[CROUCH];
 						_busy = true;
 						break;
 				}
@@ -163,6 +182,7 @@ package daimons.game.actions
 
 		private function _endBusy(event : TimerEvent) : void
 		{
+			deactivateAction(ActionManager.JUMP);
 			(_currentAction.view as MovieClip).gotoAndPlay("idle");
 			// Reset the action to none
 			_currentAction = _defendArray[NONE];
