@@ -3,7 +3,8 @@ package daimons.game.hurtingobjects.statics
 	import Box2DAS.Collision.Shapes.b2PolygonShape;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
-	import daimons.game.actions.ActionManager;
+
+	import daimons.game.actions.Actions;
 	import daimons.game.characters.Defender;
 
 
@@ -16,7 +17,8 @@ package daimons.game.hurtingobjects.statics
 
 		public function Spikes(name : String, params : Object = null)
 		{
-			_hurtAction = ActionManager.JUMP;
+			_initialHeight = 0;
+			_hurtAction = Actions.JUMP;
 			super(name, params);
 		}
 

@@ -29,9 +29,10 @@ package daimons.game.time
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 			_view.x = int(_view.stage.stageWidth - _view.width) / 2;
 		}
-		public function init(countMinutes:uint) : void
+
+		public function init(countMinutes : uint) : void
 		{
-			var repeatCountDown : uint = countMinutes * 60;
+			var repeatCountDown : uint = countMinutes * 60 - 1;
 			_timerSec = new PerfectTimer(1000, repeatCountDown);
 			_timerSec.addEventListener(TimerEvent.TIMER, _onSecond);
 			_timerSec.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);

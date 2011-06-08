@@ -3,12 +3,14 @@ package daimons.game.levels
 	import daimons.core.consts.CONFIG;
 	import daimons.game.grounds.Ground1;
 	import daimons.game.hurtingobjects.projectiles.Lightning;
+
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.citrusengine.physics.Box2D;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
+
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.statics.AHurtingObject;
 	import daimons.game.hurtingobjects.statics.Rock;
@@ -16,15 +18,14 @@ package daimons.game.levels
 	import daimons.game.hurtingobjects.statics.Wall;
 	import daimons.game.sensors.DestroyerSensor;
 	import daimons.score.ScoreManager;
+
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
+
 	import fr.lbineau.utils.PerfectTimer;
 	import fr.lbineau.utils.UMath;
-
-
-
 
 	/**
 	 * @author lbineau
@@ -47,7 +48,7 @@ package daimons.game.levels
 		private var _ennemyArray : Vector.<AHurtingObject>;
 		private static const MAX_ENNEMIES : uint = 4;
 
-		public function Level1($duration:uint)
+		public function Level1($duration : uint)
 		{
 			super($duration);
 		}
@@ -97,11 +98,21 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 
-			if(CONFIG.ENNEMI_AUTO){
+			if (CONFIG.ENNEMI_AUTO)
+			{
 				_timerGame = new PerfectTimer(CONFIG.ENNEMI_INTERVAL, 0);
 				_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
 				_timerGame.start();
 			}
+		}
+
+		override public function destroy() : void
+		{
+			_hero.destroy();
+			_hero = null;
+			_timerGame.stop();
+			_timerGame.removeEventListener(TimerEvent.TIMER, _onTick);
+			super.destroy();
 		}
 
 		private function _initHurtingObjects() : void
@@ -109,14 +120,14 @@ package daimons.game.levels
 			var spike : Spikes = new Spikes("spikes1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Spike"), width:90, height:40, offsetX:-220, offsetY:-80});
 			var rock : Rock = new Rock("rock1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Rock"), radius:80, offsetX:- 100, offsetY:- 100});
 			var wall : Wall = new Wall("wall1", {view:(LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Wall"), width:20, height:220, offsetX:- 40, offsetY:- 280});
-			var lightning : Lightning = new Lightning("lightning1", {view:((LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Lightning")), gravity:0,width:250, height:20});
+			var lightning : Lightning = new Lightning("lightning1", {view:((LoaderMax.getLoader("hurtingObjects1") as SWFLoader).getClass("Lightning")), gravity:0, width:250, height:20});
 			_ennemyArray[0] = spike;
 			_ennemyArray[1] = rock;
 			_ennemyArray[2] = wall;
 			_ennemyArray[3] = lightning;
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				ennemi.x = 20000;
+				ennemi.x = - 200;
 				ennemi.onTouched.add(_onEnnemiTouched);
 				ennemi.onDestroyed.add(_onEnnemiDestroyed);
 				add(ennemi);
@@ -183,10 +194,10 @@ package daimons.game.levels
 		private function _onTick(event : TimerEvent) : void
 		{
 			var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, MAX_ENNEMIES - 0.01))];
-			//var _ennemi : AHurtingObject = _ennemyArray[3];
+			// var _ennemi : AHurtingObject = _ennemyArray[1];
 			_ennemi.reset();
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
-			_ennemi.y = _ground.y - _ennemi.height - 90;
+			_ennemi.y = _ground.y - _ennemi.height - _ennemi.initialHeight;
 
 			/*_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
 
@@ -245,11 +256,9 @@ package daimons.game.levels
 					{
 						if (ennemi.x < (_hero.x + 600))
 						{
-							_tuto.show();
 							_tuto.displayPicto(ennemi.hurtAction);
+							_tuto.show();
 						}
-						else
-							_tuto.hide();
 					}
 				}
 			}

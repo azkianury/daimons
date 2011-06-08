@@ -25,7 +25,7 @@ package daimons.game.tutorial
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			_view.x = int(_view.stage.stageWidth - _view.width) / 2;
+			_view.x = int(_view.stage.stageWidth) / 2;
 			_view.y = _view.height + 10;
 		}
 
@@ -39,21 +39,27 @@ package daimons.game.tutorial
 		{
 			if (!_busy)
 			{
-				TweenMax.to(_view, 0.5, {alpha:0, onComplete:_endBusy});
+				TweenMax.to(_view, 0.5, {delay:1.5, alpha:0, onComplete:_hideComplete});
 				_busy = true;
 			}
 		}
 
-		private function _endBusy() : void
+		private function _hideComplete() : void
 		{
 			_busy = false;
+		}
+
+		private function _showComplete() : void
+		{
+			_busy = false;
+			hide();
 		}
 
 		public function show() : void
 		{
 			if (!_busy)
 			{
-				TweenMax.to(_view, 0.5, {alpha:1, onComplete:_endBusy});
+				TweenMax.to(_view, 0.5, {alpha:1, onComplete:_showComplete});
 				_busy = true;
 			}
 		}

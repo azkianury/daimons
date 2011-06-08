@@ -1,5 +1,6 @@
 package daimons.game.characters
 {
+	import daimons.game.actions.Actions;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -128,13 +129,13 @@ package daimons.game.characters
 		{
 			switch(action.name)
 			{
-				case ActionManager.NONE:
+				case Actions.NONE:
 					break;
-				case ActionManager.PUNCH:
+				case Actions.PUNCH:
 					var proj : Plasma = new Plasma("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")), x:this.x + 50, y:this.y - 50, gravity:0});
 					CitrusEngine.getInstance().state.add(proj);
 					break;
-				case ActionManager.CROUCH:
+				case Actions.CROUCH:
 					break;
 				default:
 			}
@@ -210,16 +211,6 @@ package daimons.game.characters
 				if (_ce.input.isDown(Keyboard.SPACE) && !_onGround && velocity.y < 0 && _actionManager.currentAction.name == "jump")
 				{
 					velocity.y -= jumpAcceleration;
-				}
-
-				if (_springOffEnemy != -1)
-				{
-					y = _springOffEnemy;
-					if (_ce.input.isDown(Keyboard.SPACE) && _actionManager.currentAction.name == "jump")
-						velocity.y = -enemySpringJumpHeight;
-					else
-						velocity.y = -enemySpringHeight;
-					_springOffEnemy = -1;
 				}
 			}
 
@@ -380,7 +371,6 @@ package daimons.game.characters
 		{
 			_prevAnimation = _animation;
 			_animation = anim;
-			trace(_animation)
 		}
 
 		public function set theMc(theMc : MovieClip) : void
