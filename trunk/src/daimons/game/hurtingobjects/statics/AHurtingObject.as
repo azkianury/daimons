@@ -21,6 +21,7 @@ package daimons.game.hurtingobjects.statics
 	 */
 	public class AHurtingObject extends PhysicsObject
 	{
+		protected var _initialHeight : uint;
 		public var speed : Number = 1.3;
 		protected var _hurtAction : String;
 		protected var _killed : Boolean = false;
@@ -30,7 +31,7 @@ package daimons.game.hurtingobjects.statics
 		protected var _hurt : Boolean = false;
 		protected var _prevAnimation : String = "idle";
 		protected var _touched : Boolean = false;
-		protected var _passed : Boolean = false;
+		protected var _passed : Boolean = true; // Sera initialisé dans le reset
 		protected var _event : ContactEvent;
 		private var _onGround : Boolean = false;
 		public var onTouched : Signal;
@@ -154,6 +155,11 @@ package daimons.game.hurtingobjects.statics
 		public function get hurtAction() : String
 		{
 			return _hurtAction;
+		}
+
+		public function get initialHeight() : uint
+		{
+			return _initialHeight;
 		}
 	}
 }

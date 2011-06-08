@@ -2,9 +2,12 @@ package daimons.game.hurtingobjects.statics
 {
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
+
 	import daimons.game.actions.ActionManager;
+	import daimons.game.actions.Actions;
 	import daimons.game.characters.Defender;
 	import daimons.game.hurtingobjects.projectiles.Plasma;
+
 	import flash.utils.setTimeout;
 
 
@@ -18,7 +21,8 @@ package daimons.game.hurtingobjects.statics
 
 		public function Wall(name : String, params : Object = null)
 		{
-			_hurtAction = ActionManager.PUNCH;
+			_initialHeight = 10;
+			_hurtAction = Actions.PUNCH;
 			_touched = true;
 			super(name, params);
 		}

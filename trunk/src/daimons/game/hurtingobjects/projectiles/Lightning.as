@@ -1,5 +1,6 @@
 package daimons.game.hurtingobjects.projectiles
 {
+	import daimons.game.actions.Actions;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -16,13 +17,13 @@ package daimons.game.hurtingobjects.projectiles
 
 		public function Lightning(name : String, params : Object = null)
 		{
+			_initialHeight = 100;
 			super(name, params);
 			_linearVelocity = _body.GetLinearVelocity();
 			_linearVelocity.x = -10;
 			var pHitVector : V2 = new V2(this.x, this.y);
 			var appForce : V2 = new V2(pHitVector.x * .1, pHitVector.y * .1);
 			_body.ApplyImpulse(appForce, _body.GetWorldCenter());
-			// _body.ApplyImpulse(new b2Vec2(0.5) as V2, new V2(this.x,this.y))
 		}
 
 		override public function reset() : void
@@ -39,7 +40,7 @@ package daimons.game.hurtingobjects.projectiles
 			if (colliderBody.GetUserData() is enemyClass)
 			{
 				e.contact.Disable();
-				if (ActionManager.getInstance().currentAction.name == ActionManager.CROUCH)
+				if (ActionManager.getInstance().currentAction.name == Actions.CROUCH)
 				{
 					_touched = false;
 				}

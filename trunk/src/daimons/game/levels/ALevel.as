@@ -78,7 +78,7 @@ package daimons.game.levels
 			super.destroy();
 		}
 
-		private function _onGameComplete(event : TimerEvent) : void
+		private function _onGameComplete(event : Event) : void
 		{
 			_countdown.removeEventListener(Event.COMPLETE, _onGameComplete);
 			lvlEnded.dispatch();

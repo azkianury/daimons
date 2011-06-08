@@ -18,7 +18,7 @@ package daimons.game.levels
 	 */
 	public class LevelManager
 	{
-		private var _imports : Array = [Level1]; // Importer les classe pour pouvoir créer des instances dynamiquement
+		private var _imports : Array = [Level1]; // Import des classes pour pouvoir créer des instances dynamiquement
 		private var _levels : Array;
 		private var _currentIndex : uint;
 		private var _loader : LoaderMax;
@@ -102,6 +102,7 @@ package daimons.game.levels
 			var C : Class = getDefinitionByName(_levels[_currentIndex].lvlname) as Class;
 			_currentLevel = ALevel(new C(_levels[_currentIndex].duration));
 			_currentLevel.lvlEnded.add(_onLevelEnded);
+			trace("_currentLevel"+_currentLevel);
 			onLevelChanged.dispatch(_currentLevel);
 			onLevelLoaded.dispatch(_currentLevel);
 		}
