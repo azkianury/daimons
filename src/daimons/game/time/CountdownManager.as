@@ -32,7 +32,7 @@ package daimons.game.time
 
 		public function init(countMinutes : uint) : void
 		{
-			var repeatCountDown : uint = countMinutes * 60 - 1;
+			var repeatCountDown : uint = countMinutes * 60 - 2;
 			_timerSec = new PerfectTimer(1000, repeatCountDown);
 			_timerSec.addEventListener(TimerEvent.TIMER, _onSecond);
 			_timerSec.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
@@ -43,6 +43,9 @@ package daimons.game.time
 
 		private function _onTimerComplete(event : TimerEvent) : void
 		{
+			_timerSec.stop();
+			_timerSec.removeEventListener(TimerEvent.TIMER, _onSecond);
+			_timerSec.removeEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 

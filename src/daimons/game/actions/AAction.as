@@ -18,7 +18,7 @@ package daimons.game.actions
 			_view = $view;
 			_name = $name;
 			_persistence = $persistence;
-			_persistence = $idleGameDelay;
+			_idleGameDelay = $idleGameDelay;
 			_active = $active;
 		}
 

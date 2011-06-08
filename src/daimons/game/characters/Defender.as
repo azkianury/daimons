@@ -1,9 +1,14 @@
 package daimons.game.characters
 {
-	import daimons.game.actions.Actions;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
+
+	import daimons.game.actions.AAction;
+	import daimons.game.actions.ActionManager;
+	import daimons.game.actions.Actions;
+	import daimons.game.hurtingobjects.projectiles.Plasma;
+	import daimons.game.hurtingobjects.statics.AHurtingObject;
 
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.math.MathVector;
@@ -12,10 +17,7 @@ package daimons.game.characters
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
 
-	import daimons.game.actions.AAction;
-	import daimons.game.actions.ActionManager;
-	import daimons.game.hurtingobjects.projectiles.Plasma;
-	import daimons.game.hurtingobjects.statics.AHurtingObject;
+	import org.osflash.signals.Signal;
 
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;
@@ -24,8 +26,6 @@ package daimons.game.characters
 	import flash.utils.clearTimeout;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
-
-	import org.osflash.signals.Signal;
 
 	/**
 	 * @author lbineau
@@ -97,17 +97,12 @@ package daimons.game.characters
 		/**
 		 * Dispatched whenever the hero's animation changes. 
 		 */
-		public var onAnimationChange : Signal;
 		private var _groundContacts : Array = [];
 		// Used to determine if he's on ground or not.
 		private var _enemyClass : Class = AHurtingObject;
 		private var _onGround : Boolean = false;
-		private var _springOffEnemy : Number = -1;
-		private var _hurtTimeoutID : Number;
 		private var _hurt : Boolean = false;
-		private var _prevAnimation : String = "idle";
 		private var _actionManager : ActionManager;
-		private var _theMc : MovieClip;
 
 		/**
 		 * Creates a new hero object.
@@ -119,18 +114,20 @@ package daimons.game.characters
 			onJump = new Signal();
 			onGiveDamage = new Signal();
 			onTakeDamage = new Signal();
-			onAnimationChange = new Signal();
 			_actionManager = ActionManager.getInstance();
 			_actionManager.onAction.add(_onAction);
-			MonsterDebugger.initialize(this);
+			_actionManager.onEndedAnim.add(_onEndedAnim);
+		}
+
+		private function _onEndedAnim() : void
+		{
+			
 		}
 
 		private function _onAction(action : AAction) : void
 		{
 			switch(action.name)
 			{
-				case Actions.NONE:
-					break;
 				case Actions.PUNCH:
 					var proj : Plasma = new Plasma("projectile" + (new Date()).toTimeString(), {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Boule")), x:this.x + 50, y:this.y - 50, gravity:0});
 					CitrusEngine.getInstance().state.add(proj);
@@ -140,18 +137,15 @@ package daimons.game.characters
 				default:
 			}
 			_animation = action.name;
-			onAnimationChange.dispatch();
 		}
 
 		override public function destroy() : void
 		{
 			_fixture.removeEventListener(ContactEvent.BEGIN_CONTACT, handleBeginContact);
 			_fixture.removeEventListener(ContactEvent.END_CONTACT, handleEndContact);
-			clearTimeout(_hurtTimeoutID);
 			onJump.removeAll();
 			onGiveDamage.removeAll();
 			onTakeDamage.removeAll();
-			onAnimationChange.removeAll();
 			super.destroy();
 		}
 
@@ -237,17 +231,16 @@ package daimons.game.characters
 		 */
 		public function hurt() : void
 		{
-			controlsEnabled = false;
 			var timer : Timer = new Timer(100, 10);
 			timer.addEventListener(TimerEvent.TIMER, _clignote);
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
 			timer.start();
-			_hurtTimeoutID = setTimeout(endHurtState, hurtDuration);
 			onTakeDamage.dispatch();
 		}
 
 		private function _finClignote(event : TimerEvent) : void
 		{
+			var _theMc : MovieClip = (_ce.state.view.getArt(this) as MovieClip);
 			_theMc.visible = true;
 			MonsterDebugger.trace(this, _view);
 			event.currentTarget.removeEventListener(TimerEvent.TIMER, _clignote);
@@ -256,6 +249,7 @@ package daimons.game.characters
 
 		private function _clignote(event : TimerEvent) : void
 		{
+			var _theMc : MovieClip = (_ce.state.view.getArt(this) as MovieClip);
 			_theMc.visible = !_theMc.visible;
 		}
 
@@ -323,24 +317,12 @@ package daimons.game.characters
 			}
 		}
 
-		private function endHurtState() : void
-		{
-			_hurt = false;
-			controlsEnabled = true;
-		}
-
 		private function updateAnimation() : void
 		{
-			var prevAnimation : String = _animation;
-
 			var velocity : V2 = _body.GetLinearVelocity();
-			if (!_actionManager.busy)
+			if (!_actionManager.animBusy)
 			{
-				if (_hurt)
-				{
-					_animation = "hurt";
-				}
-				else if (!_onGround)
+				if (!_onGround)
 				{
 					if (velocity.y < 5)
 						_animation = "jump";
@@ -354,28 +336,8 @@ package daimons.game.characters
 						_inverted = false;
 						_animation = "walk";
 					}
-					else
-					{
-						_animation = "idle";
-					}
 				}
 			}
-
-			if (prevAnimation != _animation)
-			{
-				onAnimationChange.dispatch();
-			}
-		}
-
-		public function changeAnimation(anim : String) : void
-		{
-			_prevAnimation = _animation;
-			_animation = anim;
-		}
-
-		public function set theMc(theMc : MovieClip) : void
-		{
-			_theMc = theMc;
 		}
 	}
 }

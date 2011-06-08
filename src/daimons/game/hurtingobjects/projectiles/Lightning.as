@@ -18,6 +18,7 @@ package daimons.game.hurtingobjects.projectiles
 		public function Lightning(name : String, params : Object = null)
 		{
 			_initialHeight = 100;
+			_hurtAction = Actions.CROUCH;
 			super(name, params);
 			_linearVelocity = _body.GetLinearVelocity();
 			_linearVelocity.x = -10;

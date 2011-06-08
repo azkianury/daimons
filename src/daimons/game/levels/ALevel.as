@@ -1,5 +1,7 @@
 package daimons.game.levels
 {
+	import com.greensock.TweenMax;
+
 	import flash.events.Event;
 
 	import daimons.game.MainGame;
@@ -30,7 +32,7 @@ package daimons.game.levels
 		private var _bmp : Bitmap;
 		private var _head : EonHeadUIAsset;
 
-		public function ALevel($duration:uint)
+		public function ALevel($duration : uint)
 		{
 			super();
 			lvlEnded = new Signal();
@@ -81,6 +83,7 @@ package daimons.game.levels
 		private function _onGameComplete(event : Event) : void
 		{
 			_countdown.removeEventListener(Event.COMPLETE, _onGameComplete);
+			trace("END");
 			lvlEnded.dispatch();
 		}
 
@@ -96,6 +99,7 @@ package daimons.game.levels
 			bitmapdata.draw(stage);
 
 			_bmp = new Bitmap(bitmapdata);
+			TweenMax.to(_bmp, 0.5, {blurFilter:{blurX:10, blurY:10}});
 
 			addChild(_bmp);
 		}
