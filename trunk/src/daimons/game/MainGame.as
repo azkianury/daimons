@@ -56,6 +56,7 @@
 			}
 			_levelManager = new LevelManager(arr);
 			_levelManager.onLevelChanged.add(_onLevelChanged);
+			_levelManager.onLevelEnded.add(_onLevelEnd);
 			_levelManager.init(0);
 
 			// this.enabled = false;
@@ -72,8 +73,12 @@
 		private function _onLevelChanged(lvl : ALevel) : void
 		{
 			trace("_onLevelChanged" + lvl);
-
 			state = lvl;
+		}
+
+		private function _onLevelEnd(lvl : ALevel) : void
+		{
+			trace("_onLevelEnded" + lvl);
 		}
 	}
 }

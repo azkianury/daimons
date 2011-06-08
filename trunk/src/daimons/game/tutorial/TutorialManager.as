@@ -35,33 +35,19 @@ package daimons.game.tutorial
 				_view.gotoAndPlay($name);
 		}
 
-		public function hide() : void
+		public function hide(delay : uint = 0) : void
 		{
-			if (!_busy)
-			{
-				TweenMax.to(_view, 0.5, {delay:1.5, alpha:0, onComplete:_hideComplete});
-				_busy = true;
-			}
+			TweenMax.to(_view, 0.5, {autoAlpha:0, onComplete:_onComplete});
 		}
 
-		private function _hideComplete() : void
+		private function _onComplete() : void
 		{
 			_busy = false;
-		}
-
-		private function _showComplete() : void
-		{
-			_busy = false;
-			hide();
 		}
 
 		public function show() : void
 		{
-			if (!_busy)
-			{
-				TweenMax.to(_view, 0.5, {alpha:1, onComplete:_showComplete});
-				_busy = true;
-			}
+			TweenMax.to(_view, 0.5, {autoAlpha:1, onComplete:_onComplete});
 		}
 
 		public function get view() : MovieClip

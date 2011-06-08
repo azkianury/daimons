@@ -24,12 +24,14 @@ package daimons.game.levels
 		private var _loader : LoaderMax;
 		private var _currentLevel : ALevel;
 		public var onLevelChanged : Signal;
+		public var onLevelEnded : Signal;
 		public var onLevelLoaded : Signal;
 
 		public function LevelManager($lvls : Array)
 		{
 			_levels = $lvls;
 			onLevelChanged = new Signal(ALevel);
+			onLevelEnded = new Signal(ALevel);
 			onLevelLoaded = new Signal(ALevel);
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 			_loader = new LoaderMax({onComplete:_onComplete});
@@ -102,7 +104,6 @@ package daimons.game.levels
 			var C : Class = getDefinitionByName(_levels[_currentIndex].lvlname) as Class;
 			_currentLevel = ALevel(new C(_levels[_currentIndex].duration));
 			_currentLevel.lvlEnded.add(_onLevelEnded);
-			trace("_currentLevel"+_currentLevel);
 			onLevelChanged.dispatch(_currentLevel);
 			onLevelLoaded.dispatch(_currentLevel);
 		}
@@ -110,6 +111,7 @@ package daimons.game.levels
 		private function _onLevelEnded() : void
 		{
 			_currentLevel.pause();
+			onLevelEnded.dispatch(_currentLevel);
 		}
 
 		public function init(level : uint) : void

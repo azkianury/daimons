@@ -1,13 +1,9 @@
 package daimons.game.hurtingobjects.projectiles
 {
-	import daimons.game.hurtingobjects.statics.AHurtingObject;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
-	import Box2DAS.Dynamics.b2Body;
 
-	import com.citrusengine.objects.platformer.Crate;
-
-	import flash.utils.setTimeout;
+	import daimons.game.hurtingobjects.statics.AHurtingObject;
 
 	/**
 	 * @author lbineau

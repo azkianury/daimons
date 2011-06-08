@@ -79,8 +79,6 @@ package daimons.game.levels
 			_hero.skidFriction = 1;
 
 			add(_hero);
-			_hero.theMc = MovieClip(view.getArt(_hero));
-			// Obligé d'attendre qu'il soit ajouté au state
 			_hero.x = 200;
 			_hero.y = stage.stageHeight - 300;
 
@@ -137,12 +135,18 @@ package daimons.game.levels
 		private function _onEnnemiDestroyed() : void
 		{
 			ScoreManager.getInstance().add(1);
+
+			if (_tutorial)
+				_tuto.hide();
 		}
 
 		private function _onEnnemiTouched() : void
 		{
 			_hero.hurt();
 			ScoreManager.getInstance().remove(1);
+
+			if (_tutorial)
+				_tuto.hide();
 		}
 
 		private function _initDecor() : void
@@ -251,10 +255,12 @@ package daimons.game.levels
 						if ((ennemi is Spikes || ennemi is Lightning) && !ennemi.touched)
 							ScoreManager.getInstance().add(1);
 						ennemi.passed = true;
+						if (_tutorial)
+							_tuto.hide();
 					}
-					if (_tutorial)
+					else if (ennemi.x < (_hero.x + 600))
 					{
-						if (ennemi.x < (_hero.x + 600))
+						if (_tutorial)
 						{
 							_tuto.displayPicto(ennemi.hurtAction);
 							_tuto.show();
@@ -276,7 +282,6 @@ package daimons.game.levels
 					ennemi.changeAnimation("idle");
 				}
 			}
-			_hero.changeAnimation("idle");
 			_timerGame.pause();
 			_countdown.pause();
 		}
@@ -291,7 +296,6 @@ package daimons.game.levels
 					ennemi.changeAnimation(ennemi.prevAnimation);
 				}
 			}
-			_hero.changeAnimation("walk");
 			_timerGame.resume();
 			_countdown.resume();
 		}

@@ -24,7 +24,7 @@ package daimons.game.actions
 	{
 		private static var instance : ActionManager = new ActionManager();
 		private var _view : MovieClip;
-		private var _busy : Boolean = false;
+		private var _busy : Boolean = false, _animBusy : Boolean = false;
 		private var _defendArray : Object, _attackArray : Object;
 		private var _defendArrayLength : uint, _attackArrayLength : uint;
 		private var _timerBusy : PerfectTimer, _timerAnim : PerfectTimer;
@@ -32,6 +32,7 @@ package daimons.game.actions
 		public var onAction : Signal;
 		private var addAction : Signal;
 		private var removeAction : Signal;
+		public var onEndedAnim : Signal;
 
 		public function ActionManager()
 		{
@@ -41,32 +42,32 @@ package daimons.game.actions
 			{
 				case CONFIG.DEFENDER:
 					_defendArray = [];
-					_defendArray.none = new DefenseAction(new MovieClip(), Actions.NONE, 100, 100, true);
-					_defendArray.punch = new DefenseAction(new PunchAction(), Actions.PUNCH, 900, 900, true);
-					_defendArray.shield = new DefenseAction(new ShieldAction(), Actions.SHIELD, 2000, 2000, true);
-					_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, 500, 500, true);
-					_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, 1000, 1000, true);
-					_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, 1300, 1300, true);
+					_defendArray.none = new DefenseAction(new MovieClip(), Actions.NONE, 100, 100, false);
+					_defendArray.punch = new DefenseAction(new PunchAction(), Actions.PUNCH, 1000, 900, true);
+					_defendArray.shield = new DefenseAction(new ShieldAction(), Actions.SHIELD, 2000, 1300, true);
+					_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, 1000, 500, true);
+					_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, 1200, 1000, true);
+					_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, 3000, 2000, true);
 					_currentAction = _defendArray[Actions.NONE];
-					for each (var a : AAction in _defendArray)
-						if ((a as AAction).active) _defendArrayLength++;
+					for each (var d : AAction in _defendArray)
+						if ((d as AAction).active) _defendArrayLength++;
 					break;
 				case CONFIG.ATTACKER:
 					_attackArray = [];
-					_attackArray.none = new AttackAction(new MovieClip(), Actions.NONE, 100, 100, true);
 					_attackArray.punch = new AttackAction(new PunchAction(), Actions.PUNCH, 1000, 1000, true);
 					_attackArray.shield = new AttackAction(new ShieldAction(), Actions.SHIELD, 1500, 1500, true);
 					_attackArray.jump = new AttackAction(new JumpAction(), Actions.JUMP, 500, 500, true);
-					_currentAction = _attackArray[Actions.NONE];
 					for each (var a : AAction in _attackArray)
 						if ((a as AAction).active) _attackArrayLength++;
 					break;
 				default:
 			}
-
 			_timerBusy = new PerfectTimer(1000, 1);
 			_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
+			_timerAnim = new PerfectTimer(1000, 1);
+			_timerAnim.addEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy);
 
+			onEndedAnim = new Signal();
 			onAction = new Signal(AAction);
 			addAction = new Signal(AAction);
 			removeAction = new Signal(AAction);
@@ -91,34 +92,30 @@ package daimons.game.actions
 		private function _updateUI() : void
 		{
 			var i : uint = 40;
-			var nb : uint = _defendArrayLength - 2;
-			trace(nb)
+			var nb : uint = _defendArrayLength - 1;
 			var graph : Graphics = (view as Sprite).graphics;
 			graph.clear();
 			graph.lineStyle(2, 0x606060, 0.4, true);
 			for each (var action : AAction in _defendArray)
 			{
-				if (action != _defendArray[Actions.NONE])
+				if (action.active)
 				{
-					if (action.active)
+					action.view.x = i + 10;
+					action.view.y = 10;
+					_view.addChild(action.view);
+					i = action.view.x + action.view.width + 20;
+					if (nb > 0)
 					{
-						action.view.x = i + 10;
-						action.view.y = 10;
-						_view.addChild(action.view);
-						i = action.view.x + action.view.width + 20;
-						if (nb > 0)
-						{
-							graph.moveTo(i, 20);
-							graph.lineTo(i, 125);
-							graph.endFill();
-							nb--;
-						}
+						graph.moveTo(i, 20);
+						graph.lineTo(i, 125);
+						graph.endFill();
+						nb--;
 					}
-					else
-					{
-						if (_view.contains(action.view))
-							_view.removeChild(action.view);
-					}
+				}
+				else
+				{
+					if (_view.contains(action.view))
+						_view.removeChild(action.view);
 				}
 			}
 			i -= 20;
@@ -149,7 +146,6 @@ package daimons.game.actions
 		{
 			if (!_busy)
 			{
-				var delay : Number;
 				switch(event.keyCode)
 				{
 					case Keyboard.F1:
@@ -199,19 +195,15 @@ package daimons.game.actions
 				onAction.dispatch(_currentAction);
 				if (_busy)
 				{
-					delay = _currentAction.persistence;
-					_timerBusy.delay = delay;
+					_animBusy = _busy;
+					_timerBusy.delay = _currentAction.idleGameDelay;
 					_timerBusy.reset();
 					_timerBusy.start();
-				}
-			}
-		}
 
-		private function _clearTimer() : void
-		{
-			if (_timerBusy != null)
-			{
-				_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
+					_timerAnim.delay = _currentAction.persistence;
+					_timerAnim.reset();
+					_timerAnim.start();
+				}
 			}
 		}
 
@@ -219,8 +211,14 @@ package daimons.game.actions
 		{
 			(_currentAction.view as MovieClip).gotoAndPlay("idle");
 			// Reset the action to none
-			_currentAction = _defendArray[Actions.NONE];
 			_busy = false;
+		}
+
+		private function _endAnimBusy(event : TimerEvent) : void
+		{
+			_currentAction = _defendArray[Actions.NONE];
+			_animBusy = false;
+			onEndedAnim.dispatch();
 		}
 
 		public function get currentAction() : AAction
@@ -236,6 +234,11 @@ package daimons.game.actions
 		public function get view() : MovieClip
 		{
 			return _view;
+		}
+
+		public function get animBusy() : Boolean
+		{
+			return _animBusy;
 		}
 	}
 }
