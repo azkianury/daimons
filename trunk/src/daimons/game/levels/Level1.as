@@ -26,10 +26,6 @@ package daimons.game.levels
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 
-
-
-
-
 	/**
 	 * @author lbineau
 	 */
@@ -50,6 +46,7 @@ package daimons.game.levels
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
+		private var _currentEnnemyIdx : int;
 
 		public function Level1($duration : uint)
 		{
@@ -84,8 +81,9 @@ package daimons.game.levels
 			add(_defender);
 			_defender.x = 200;
 			_defender.y = stage.stageHeight - 300;
-			
+
 			_attacker = new Attacker("Attacker");
+			_attacker.onAttack.add(_onAttack);
 
 			_ground = new Ground1("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
@@ -101,14 +99,9 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 
-			if (CONFIG.ENNEMI_AUTO)
-			{
-				_timerGame = new PerfectTimer(CONFIG.ENNEMI_INTERVAL, 0);
-				_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
-				_timerGame.start();
-			}else{
-				_attacker.onAttack.add(_onAttack);
-			}
+			_timerGame = new PerfectTimer(2000, 0);
+			_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
+			_timerGame.start();
 		}
 
 		override public function destroy() : void
@@ -139,10 +132,15 @@ package daimons.game.levels
 			}
 		}
 
-		private function _onAttack(o:AHurtingObject) : void
+		private function _onAttack(ennemi : AHurtingObject) : void
 		{
-			_ennemyArray.push(o);
-			add(o);
+			_ennemyArray.push(ennemi);
+			add(ennemi);
+			ennemi.reset();
+			ennemi.x = _ground.x + stage.stageWidth - 200;
+			ennemi.y = _ground.y - ennemi.height - ennemi.initialHeight;
+			ennemi.onTouched.add(_onEnnemiTouched);
+			ennemi.onDestroyed.add(_onEnnemiDestroyed);
 		}
 
 		private function _onEnnemiDestroyed() : void
@@ -210,23 +208,19 @@ package daimons.game.levels
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, _ennemyArray.length - 1.01))];
+			/*var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, _ennemyArray.length - 1.01))];
 			// var _ennemi : AHurtingObject = _ennemyArray[1];
 			_ennemi.reset();
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
-			_ennemi.y = _ground.y - _ennemi.height - _ennemi.initialHeight;
-
-			/*_currentEnnemyIdx = (_currentEnnemyIdx < MAX_ENNEMIES - 1) ? _currentEnnemyIdx + 1 : 0;
-
-			_ennemyArray[_currentEnnemyIdx] = _ennemi as AHurtingObject;
+			_ennemi.y = _ground.y - _ennemi.height - _ennemi.initialHeight;*/
 
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-			if (ennemi != null && ennemi.x < _hero.x - 100)
-			{
-			ennemi.kill = true;
+				if (ennemi != null && ennemi.x < _defender.x - 100)
+				{
+					ennemi.kill = true;
+				}
 			}
-			}*/
 
 			// Roulement des Backgrounds
 			var tailleBg : Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;

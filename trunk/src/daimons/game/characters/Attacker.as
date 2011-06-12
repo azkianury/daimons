@@ -34,6 +34,7 @@ package daimons.game.characters
 
 		private function _onAction(action : AAction) : void
 		{
+			trace(this,action.name)
 			switch(action.name)
 			{
 				case Actions.ROCK:

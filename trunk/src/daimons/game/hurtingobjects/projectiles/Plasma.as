@@ -34,7 +34,6 @@ package daimons.game.hurtingobjects.projectiles
 				if (!(colliderBody.GetUserData() as Wall).killed)
 				{
 					_linearVelocity.x = 0;
-					e.contact.Disable();
 					setTimeout(_destroyMe, 500);
 					_animation = "destroy";
 				}

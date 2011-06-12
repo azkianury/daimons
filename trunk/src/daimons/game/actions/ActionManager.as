@@ -38,30 +38,27 @@ package daimons.game.actions
 		{
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
-			switch(CONFIG.PLAYER_TYPE)
-			{
-				case CONFIG.DEFENDER:
-					_defendArray = [];
-					_defendArray.none = new DefenseAction(new MovieClip(), Actions.NONE, 100, 100, false);
-					_defendArray.punch = new DefenseAction(new PunchAction(), Actions.PUNCH, 1000, 900, true);
-					_defendArray.shield = new DefenseAction(new ShieldAction(), Actions.SHIELD, 2000, 1300, true);
-					_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, 1000, 500, true);
-					_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, 1200, 1000, true);
-					_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, 3000, 2000, true);
-					_currentAction = _defendArray[Actions.NONE];
-					for each (var d : AAction in _defendArray)
-						if ((d as AAction).active) _defendArrayLength++;
-					break;
-				case CONFIG.ATTACKER:
-					_attackArray = [];
-					_attackArray.punch = new AttackAction(new PunchAction(), Actions.PUNCH, 1000, 1000, true);
-					_attackArray.shield = new AttackAction(new ShieldAction(), Actions.SHIELD, 1500, 1500, true);
-					_attackArray.jump = new AttackAction(new JumpAction(), Actions.JUMP, 500, 500, true);
-					for each (var a : AAction in _attackArray)
-						if ((a as AAction).active) _attackArrayLength++;
-					break;
-				default:
-			}
+
+			_defendArray = [];
+			_defendArray.none = new DefenseAction(new MovieClip(), Actions.NONE, 100, 100, false);
+			_defendArray.punch = new DefenseAction(new PunchAction(), Actions.PUNCH, 1000, 900, true);
+			_defendArray.shield = new DefenseAction(new ShieldAction(), Actions.SHIELD, 2000, 1300, true);
+			_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, 1000, 500, true);
+			_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, 1200, 1000, true);
+			_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, 3000, 2000, true);
+			_currentAction = _defendArray[Actions.NONE];
+			for each (var d : AAction in _defendArray)
+				if ((d as AAction).active) _defendArrayLength++;
+
+			_attackArray = [];
+			_attackArray.wall = new AttackAction(new PunchAction(), Actions.WALL, 1000, 1000, true);
+			_attackArray.rock = new AttackAction(new ShieldAction(), Actions.ROCK, 1500, 1500, true);
+			_attackArray.spikes = new AttackAction(new JumpAction(), Actions.SPIKES, 500, 500, true);
+			_attackArray.lightning = new AttackAction(new PunchAction(), Actions.LIGHTNING, 1000, 1000, true);
+			_attackArray.thunder = new AttackAction(new ShieldAction(), Actions.THUNDER, 1500, 1500, true);
+			for each (var a : AAction in _attackArray)
+				if ((a as AAction).active) _attackArrayLength++;
+
 			_timerBusy = new PerfectTimer(1000, 1);
 			_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusy);
 			_timerAnim = new PerfectTimer(1000, 1);
@@ -184,13 +181,33 @@ package daimons.game.actions
 						}
 						break;
 					case Keyboard.F12:
-						activateAction(Actions.BUBBLE);
+						if ((_attackArray[Actions.WALL] as AAction).active) _currentAction = _attackArray[Actions.WALL];
+						break;
+					case Keyboard.F11:
+						if ((_attackArray[Actions.ROCK] as AAction).active) _currentAction = _attackArray[Actions.ROCK];
+						break;
+					case Keyboard.F10:
+						if ((_attackArray[Actions.SPIKES] as AAction).active) _currentAction = _attackArray[Actions.SPIKES];
+						break;
+					case Keyboard.F9:
+						if ((_attackArray[Actions.LIGHTNING] as AAction).active) _currentAction = _attackArray[Actions.LIGHTNING];
+						break;
+					case Keyboard.F8:
+						if ((_attackArray[Actions.THUNDER] as AAction).active) _currentAction = _attackArray[Actions.THUNDER];
 						break;
 				}
-				for each (var action : AAction in _defendArray)
-				{
-					if (action.active && action === _currentAction)
-						(action.view as MovieClip).gotoAndPlay("active");
+				if(CONFIG.PLAYER_TYPE == CONFIG.DEFENDER){
+					for each (var d : AAction in _defendArray)
+					{
+						if (d.active && d === _currentAction)
+							(d.view as MovieClip).gotoAndPlay("active");
+					}					
+				}else if(CONFIG.PLAYER_TYPE == CONFIG.ATTACKER){
+					for each (var a : AAction in _attackArray)
+					{
+						if (a.active && a === _currentAction)
+							(a.view as MovieClip).gotoAndPlay("active");
+					}					
 				}
 				onAction.dispatch(_currentAction);
 				if (_busy)
