@@ -320,7 +320,7 @@ package daimons.game.characters
 		private function updateAnimation() : void
 		{
 			var velocity : V2 = _body.GetLinearVelocity();
-			if (!_actionManager.animBusy)
+			if (!_actionManager.animBusyDefender)
 			{
 				if (!_onGround)
 				{

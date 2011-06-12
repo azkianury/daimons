@@ -290,7 +290,6 @@ package daimons.game.levels
 				}
 			}
 			_timerGame.pause();
-			_countdown.pause();
 		}
 
 		override public function resume() : void
@@ -304,7 +303,6 @@ package daimons.game.levels
 				}
 			}
 			_timerGame.resume();
-			_countdown.resume();
 		}
 	}
 }
