@@ -9,10 +9,11 @@ package daimons.game.hurtingobjects.statics
 	import daimons.game.characters.Defender;
 
 
+
 	/**
 	 * @author lbineau
 	 */
-	public class Rock extends AHurtingObject
+	public class Rock extends AHurtingStatic
 	{
 		private var _radius : Number;
 		public var enemyClass : Class = Defender;

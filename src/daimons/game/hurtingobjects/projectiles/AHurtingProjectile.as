@@ -2,8 +2,8 @@ package daimons.game.hurtingobjects.projectiles
 {
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
+	import daimons.game.hurtingobjects.AHurtingObject;
 
-	import daimons.game.hurtingobjects.statics.AHurtingObject;
 
 	/**
 	 * @author lbineau

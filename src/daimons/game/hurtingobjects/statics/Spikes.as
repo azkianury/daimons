@@ -8,10 +8,11 @@ package daimons.game.hurtingobjects.statics
 	import daimons.game.characters.Defender;
 
 
+
 	/**
 	 * @author lbineau
 	 */
-	public class Spikes extends AHurtingObject
+	public class Spikes extends AHurtingStatic
 	{
 		public var enemyClass : Class = Defender;
 

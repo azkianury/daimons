@@ -12,10 +12,12 @@ package daimons.game.hurtingobjects.statics
 
 
 
+
+
 	/**
 	 * @author lbineau
 	 */
-	public class Wall extends AHurtingObject
+	public class Wall extends AHurtingStatic
 	{
 		public var enemyClass : Class = Defender;
 

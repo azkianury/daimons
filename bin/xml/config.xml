@@ -2,7 +2,8 @@
 <root>
 
 	<configuration>
-		<enneminterval>6000</enneminterval>
+		<playerType><![CDATA[defender]]></playerType>
+		<ennemiInterval><![CDATA[6000]]></ennemiInterval>
 		<box2D><![CDATA[false]]></box2D>
 		<ennemiAuto><![CDATA[true]]></ennemiAuto>
 	</configuration>
