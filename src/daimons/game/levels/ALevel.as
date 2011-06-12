@@ -100,7 +100,7 @@ package daimons.game.levels
 
 			_bmp = new Bitmap(bitmapdata);
 			TweenMax.to(_bmp, 0.5, {blurFilter:{blurX:10, blurY:10}});
-
+			_countdown.pause();
 			addChild(_bmp);
 		}
 
@@ -109,6 +109,7 @@ package daimons.game.levels
 			removeChild(_bmp);
 			_bmp.bitmapData.dispose();
 			_bmp = null;
+			_countdown.resume();
 		}
 	}
 }
