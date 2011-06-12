@@ -1,11 +1,10 @@
 package daimons.game.hurtingobjects.statics
 {
-	import daimons.game.hurtingobjects.projectiles.AHurtingProjectile;
 
 	/**
 	 * @author lbineau
 	 */
-	public class Thunder extends AHurtingProjectile
+	public class Thunder extends AHurtingStatic
 	{
 		public function Thunder(name : String, params : Object = null)
 		{

@@ -1,4 +1,4 @@
-package daimons.game.hurtingobjects.statics
+package daimons.game.hurtingobjects
 {
 	import org.osflash.signals.Signal;
 

@@ -3,22 +3,17 @@ package daimons.game.characters
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
-
-	import daimons.game.actions.AAction;
-	import daimons.game.actions.ActionManager;
-	import daimons.game.actions.Actions;
-	import daimons.game.hurtingobjects.projectiles.Plasma;
-	import daimons.game.hurtingobjects.statics.AHurtingObject;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.PhysicsObject;
 	import com.demonsters.debugger.MonsterDebugger;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
-
-	import org.osflash.signals.Signal;
-
+	import daimons.game.actions.AAction;
+	import daimons.game.actions.ActionManager;
+	import daimons.game.actions.Actions;
+	import daimons.game.hurtingobjects.AHurtingObject;
+	import daimons.game.hurtingobjects.projectiles.Plasma;
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
@@ -26,6 +21,11 @@ package daimons.game.characters
 	import flash.utils.clearTimeout;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
+	import org.osflash.signals.Signal;
+
+
+
+
 
 	/**
 	 * @author lbineau

@@ -1,8 +1,19 @@
 package daimons.game.levels
 {
 	import daimons.core.consts.CONFIG;
+	import daimons.game.characters.Attacker;
+	import daimons.game.characters.Defender;
 	import daimons.game.grounds.Ground1;
+	import daimons.game.hurtingobjects.AHurtingObject;
 	import daimons.game.hurtingobjects.projectiles.Lightning;
+	import daimons.game.hurtingobjects.statics.Rock;
+	import daimons.game.hurtingobjects.statics.Spikes;
+	import daimons.game.hurtingobjects.statics.Wall;
+	import daimons.game.sensors.DestroyerSensor;
+	import daimons.score.ScoreManager;
+
+	import fr.lbineau.utils.PerfectTimer;
+	import fr.lbineau.utils.UMath;
 
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
@@ -11,21 +22,13 @@ package daimons.game.levels
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
 
-	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.statics.AHurtingObject;
-	import daimons.game.hurtingobjects.statics.Rock;
-	import daimons.game.hurtingobjects.statics.Spikes;
-	import daimons.game.hurtingobjects.statics.Wall;
-	import daimons.game.sensors.DestroyerSensor;
-	import daimons.score.ScoreManager;
-
 	import flash.display.Bitmap;
-	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
 
-	import fr.lbineau.utils.PerfectTimer;
-	import fr.lbineau.utils.UMath;
+
+
+
 
 	/**
 	 * @author lbineau
@@ -33,7 +36,8 @@ package daimons.game.levels
 	public class Level1 extends ALevel
 	{
 		private var _tutorial : Boolean = true;
-		private var _hero : Defender;
+		private var _defender : Defender;
+		private var _attacker : Attacker;
 		private var _ground : Platform;
 		private var _destroyer : DestroyerSensor;
 		// Arrière plan
@@ -46,7 +50,6 @@ package daimons.game.levels
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
-		private static const MAX_ENNEMIES : uint = 4;
 
 		public function Level1($duration : uint)
 		{
@@ -57,7 +60,7 @@ package daimons.game.levels
 		{
 			super.initialize();
 
-			_ennemyArray = new Vector.<AHurtingObject>(MAX_ENNEMIES, true);
+			_ennemyArray = new Vector.<AHurtingObject>();
 
 			var box2D : Box2D = new Box2D("Box2D");
 			add(box2D);
@@ -68,19 +71,21 @@ package daimons.game.levels
 
 			_initHurtingObjects();
 
-			_hero = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:120, group:2});
-			_hero.offsetY = -20;
-			_hero.offsetX = -80;
-			_hero.hurtVelocityX = 1;
-			_hero.hurtVelocityY = 1;
-			_hero.killVelocity = 1;
-			_hero.acceleration = 6;
-			_hero.maxVelocity = 6;
-			_hero.skidFriction = 1;
+			_defender = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:120, group:2});
+			_defender.offsetY = -20;
+			_defender.offsetX = -80;
+			_defender.hurtVelocityX = 1;
+			_defender.hurtVelocityY = 1;
+			_defender.killVelocity = 1;
+			_defender.acceleration = 6;
+			_defender.maxVelocity = 6;
+			_defender.skidFriction = 1;
 
-			add(_hero);
-			_hero.x = 200;
-			_hero.y = stage.stageHeight - 300;
+			add(_defender);
+			_defender.x = 200;
+			_defender.y = stage.stageHeight - 300;
+			
+			_attacker = new Attacker("Attacker");
 
 			_ground = new Ground1("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
@@ -92,7 +97,7 @@ package daimons.game.levels
 			_destroyer.y = 100;
 			add(_destroyer);
 
-			view.cameraTarget = _hero;
+			view.cameraTarget = _defender;
 			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 
@@ -101,13 +106,15 @@ package daimons.game.levels
 				_timerGame = new PerfectTimer(CONFIG.ENNEMI_INTERVAL, 0);
 				_timerGame.addEventListener(TimerEvent.TIMER, _onTick);
 				_timerGame.start();
+			}else{
+				_attacker.onAttack.add(_onAttack);
 			}
 		}
 
 		override public function destroy() : void
 		{
-			_hero.destroy();
-			_hero = null;
+			_defender.destroy();
+			_defender = null;
 			_timerGame.stop();
 			_timerGame.removeEventListener(TimerEvent.TIMER, _onTick);
 			super.destroy();
@@ -132,6 +139,12 @@ package daimons.game.levels
 			}
 		}
 
+		private function _onAttack(o:AHurtingObject) : void
+		{
+			_ennemyArray.push(o);
+			add(o);
+		}
+
 		private function _onEnnemiDestroyed() : void
 		{
 			ScoreManager.getInstance().add(1);
@@ -142,7 +155,7 @@ package daimons.game.levels
 
 		private function _onEnnemiTouched() : void
 		{
-			_hero.hurt();
+			_defender.hurt();
 			ScoreManager.getInstance().remove(1);
 
 			if (_tutorial)
@@ -197,7 +210,7 @@ package daimons.game.levels
 
 		private function _onTick(event : TimerEvent) : void
 		{
-			var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, MAX_ENNEMIES - 0.01))];
+			var _ennemi : AHurtingObject = _ennemyArray[int(UMath.randomRange(0, _ennemyArray.length - 1.01))];
 			// var _ennemi : AHurtingObject = _ennemyArray[1];
 			_ennemi.reset();
 			_ennemi.x = _ground.x + stage.stageWidth - 200;
@@ -217,7 +230,7 @@ package daimons.game.levels
 
 			// Roulement des Backgrounds
 			var tailleBg : Number = view.getArt(_currentBg).x + _containerBg.getChildAt(0).x + _containerBg.getChildAt(0).width;
-			if (_hero.x > tailleBg)
+			if (_defender.x > tailleBg)
 			{
 				trace("REMOVED Background");
 				_containerBg.getChildAt(0).x = _containerBg.getChildAt(1).x + _containerBg.getChildAt(1).width - 10;
@@ -226,7 +239,7 @@ package daimons.game.levels
 
 			// Roulement des Middlegrounds
 			var tailleMg : Number = view.getArt(_currentMg).x + _containerMg.getChildAt(0).x + _containerMg.getChildAt(0).width;
-			if (_hero.x > tailleMg)
+			if (_defender.x > tailleMg)
 			{
 				trace("REMOVED Middleground");
 				_containerMg.getChildAt(0).x = _containerMg.getChildAt(1).x + _containerMg.getChildAt(1).width - 10;
@@ -235,7 +248,7 @@ package daimons.game.levels
 
 			// Roulement des Foregrounds
 			var tailleFg : Number = view.getArt(_currentFg).x + _containerFg.getChildAt(0).x + _containerFg.getChildAt(0).width;
-			if (_hero.x > tailleFg)
+			if (_defender.x > tailleFg)
 			{
 				trace("REMOVED Foreground");
 				_containerFg.getChildAt(0).x = _containerFg.getChildAt(1).x + _containerFg.getChildAt(1).width - 10;
@@ -250,7 +263,7 @@ package daimons.game.levels
 			{
 				if (!ennemi.passed)
 				{
-					if ((ennemi.x + ennemi.width < _hero.x))
+					if ((ennemi.x + ennemi.width < _defender.x))
 					{
 						if ((ennemi is Spikes || ennemi is Lightning) && !ennemi.touched)
 							ScoreManager.getInstance().add(1);
@@ -258,7 +271,7 @@ package daimons.game.levels
 						if (_tutorial)
 							_tuto.hide();
 					}
-					else if (ennemi.x < (_hero.x + 600))
+					else if (ennemi.x < (_defender.x + 600))
 					{
 						if (_tutorial)
 						{
@@ -268,8 +281,8 @@ package daimons.game.levels
 					}
 				}
 			}
-			_ground.x = _hero.x;
-			_destroyer.x = _hero.x + stage.stageWidth;
+			_ground.x = _defender.x;
+			_destroyer.x = _defender.x + stage.stageWidth;
 		}
 
 		override public function pause() : void
@@ -277,7 +290,7 @@ package daimons.game.levels
 			super.pause();
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi.x < _hero.x - 100)
+				if (ennemi.x < _defender.x - 100)
 				{
 					ennemi.changeAnimation("idle");
 				}
@@ -291,7 +304,7 @@ package daimons.game.levels
 			super.resume();
 			for each (var ennemi : AHurtingObject in _ennemyArray)
 			{
-				if (ennemi.x < _hero.x - 100)
+				if (ennemi.x < _defender.x - 100)
 				{
 					ennemi.changeAnimation(ennemi.prevAnimation);
 				}

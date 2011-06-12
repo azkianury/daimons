@@ -67,7 +67,8 @@
 			var xml : XML = LoaderMax.getContent("xmlConfig") as XML;
 			CONFIG.BOX2D = String(xml.configuration.box2D) == "true";
 			CONFIG.ENNEMI_AUTO = String(xml.configuration.ennemiAuto) == "true";
-			CONFIG.ENNEMI_INTERVAL = uint(xml.configuration.enneminterval);
+			CONFIG.ENNEMI_INTERVAL = uint(xml.configuration.ennemiInterval);
+			CONFIG.PLAYER_TYPE = String(xml.configuration.playerType);
 		}
 
 		private function _onLevelChanged(lvl : ALevel) : void
