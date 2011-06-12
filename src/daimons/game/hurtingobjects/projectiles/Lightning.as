@@ -40,7 +40,6 @@ package daimons.game.hurtingobjects.projectiles
 
 			if (colliderBody.GetUserData() is enemyClass)
 			{
-				e.contact.Disable();
 				if (ActionManager.getInstance().currentAction.name == Actions.CROUCH)
 				{
 					_touched = false;
