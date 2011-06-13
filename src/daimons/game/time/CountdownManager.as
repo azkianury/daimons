@@ -1,5 +1,7 @@
 package daimons.game.time
 {
+	import flash.utils.Timer;
+
 	import fr.lbineau.utils.PerfectTimer;
 
 	import flash.display.MovieClip;
@@ -16,6 +18,8 @@ package daimons.game.time
 		private var _view : MovieClip;
 		protected var _timerSec : PerfectTimer;
 		private var _startDate : Date;
+		private var _timelapseCount : uint;
+		private var _timelapse : Timer;
 
 		public function CountdownManager(view : MovieClip, target : IEventDispatcher = null)
 		{
@@ -33,6 +37,7 @@ package daimons.game.time
 		public function init(countMinutes : uint) : void
 		{
 			var repeatCountDown : uint = countMinutes * 60 - 2;
+			_timelapse = new Timer(1000);
 			_timerSec = new PerfectTimer(1000, repeatCountDown);
 			_timerSec.addEventListener(TimerEvent.TIMER, _onSecond);
 			_timerSec.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
@@ -57,11 +62,23 @@ package daimons.game.time
 		public function pause() : void
 		{
 			_timerSec.pause();
+			_timelapseCount = 0;
+			_timelapse.reset();
+			_timelapse.addEventListener(TimerEvent.TIMER, _onTimelapse);
+			_timelapse.start();
 		}
 
 		public function resume() : void
 		{
 			_timerSec.resume();
+			_timelapse.removeEventListener(TimerEvent.TIMER, _onTimelapse);
+			_timelapse.stop();
+			_startDate.seconds += _timelapseCount;
+		}
+
+		private function _onTimelapse(event : TimerEvent) : void
+		{
+			_timelapseCount++;
 		}
 
 		private function _onSecond(event : TimerEvent) : void
@@ -71,7 +88,9 @@ package daimons.game.time
 			var min : Number = Math.floor(sec / 60);
 
 			sec = sec % 60;
+			if (sec < 0) sec = 0;
 			min = min % 60;
+			if (min < 0) min = 0;
 
 			update(min.toString() + ":" + _digit2String(sec));
 		}

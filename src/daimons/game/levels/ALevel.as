@@ -1,9 +1,8 @@
 package daimons.game.levels
 {
-	import com.greensock.TweenMax;
-
-	import flash.events.Event;
-
+	import flash.ui.Keyboard;
+	import com.citrusengine.core.CitrusEngine;
+	import daimons.core.consts.CONFIG;
 	import daimons.game.MainGame;
 	import daimons.game.actions.ActionManager;
 	import daimons.game.time.CountdownManager;
@@ -13,12 +12,15 @@ package daimons.game.levels
 	import fr.lbineau.utils.PerfectTimer;
 
 	import com.citrusengine.core.State;
+	import com.citrusengine.physics.Box2D;
+	import com.greensock.TweenMax;
 
 	import org.osflash.signals.Signal;
 
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.events.TimerEvent;
+	import flash.display.MovieClip;
+	import flash.events.Event;
 
 	/**
 	 * @author lbineau
@@ -26,22 +28,25 @@ package daimons.game.levels
 	public class ALevel extends State implements ILevel
 	{
 		public var lvlEnded : Signal;
-		protected var _timerGame : PerfectTimer;
+		protected var _checkTimer : PerfectTimer;
 		protected var _tuto : TutorialManager;
 		protected var _countdown : CountdownManager;
 		private var _bmp : Bitmap;
-		private var _head : EonHeadUIAsset;
+		private var _head : MovieClip;
+		protected var _arrow : ArrowIndicator;
 
 		public function ALevel($duration : uint)
 		{
 			super();
 			lvlEnded = new Signal();
 			_countdown = new CountdownManager(new CountdownUIAsset());
+			_countdown.view.gotoAndStop(CONFIG.PLAYER_TYPE);
 			_countdown.init($duration);
 		}
 
 		override public function initialize() : void
 		{
+			super.initialize();
 			_countdown.start();
 			addChild(_countdown.view);
 			_countdown.addEventListener(Event.COMPLETE, _onGameComplete);
@@ -55,17 +60,21 @@ package daimons.game.levels
 			ActionManager.getInstance().init(new ActionsUIAsset());
 			addChild(ActionManager.getInstance().view);
 
-			_head = new EonHeadUIAsset();
+			_head = new HeadUIAsset();
+			_head.gotoAndStop(CONFIG.PLAYER_TYPE);
 			addChild(_head);
 			_head.x = MainGame.STAGE.stageWidth;
 			_head.y = MainGame.STAGE.stageHeight;
-
-			super.initialize();
+						
+			var box2D : Box2D = new Box2D("Box2D");
+			add(box2D);
+			box2D.visible = CONFIG.BOX2D;
 		}
+
 
 		override public function destroy() : void
 		{
-			_timerGame = null;
+			_checkTimer = null;
 			removeChild(_tuto.view);
 			_tuto = null;
 			removeChild(_countdown.view);
@@ -94,6 +103,8 @@ package daimons.game.levels
 
 		public function pause() : void
 		{
+			CitrusEngine.getInstance().playing = false;
+			ActionManager.getInstance().pause();
 			var bitmapdata : BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight);
 
 			bitmapdata.draw(stage);
@@ -106,6 +117,8 @@ package daimons.game.levels
 
 		public function resume() : void
 		{
+			CitrusEngine.getInstance().playing = true;
+			ActionManager.getInstance().resume();
 			removeChild(_bmp);
 			_bmp.bitmapData.dispose();
 			_bmp = null;
