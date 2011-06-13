@@ -43,7 +43,7 @@ package daimons.game.levels
 		private var _containerMg : Sprite;
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
-		private var _offsetXEnnemies : uint;
+		private var _offsetXEnnemies : uint = 300;
 
 		public function Level1($duration : uint)
 		{
