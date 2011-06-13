@@ -51,7 +51,7 @@ package daimons.game.levels
 			addChild(_countdown.view);
 			_countdown.addEventListener(Event.COMPLETE, _onGameComplete);
 
-			_tuto = new TutorialManager(new TutorialUIAsset());
+			_tuto = new TutorialManager((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new TutorialDefenderUIAsset() : new TutorialAttackerUIAsset());
 			addChild(_tuto.view);
 
 			ScoreManager.getInstance().init(new ScoreUIAsset());
