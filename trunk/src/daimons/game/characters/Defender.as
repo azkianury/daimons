@@ -1,5 +1,6 @@
 package daimons.game.characters
 {
+	import daimons.game.actions.DefenseAction;
 	import Box2DAS.Common.V2;
 	import Box2DAS.Dynamics.ContactEvent;
 	import Box2DAS.Dynamics.b2Body;
@@ -36,11 +37,11 @@ package daimons.game.characters
 		/**
 		 * This is the rate at which the hero speeds up when you move him left and right. 
 		 */
-		public var acceleration : Number = 1;
+		public var acceleration : Number = 6;
 		/**
 		 * This is the fastest speed that the hero can move left or right. 
 		 */
-		public var maxVelocity : Number = 8;
+		public var maxVelocity : Number = 6;
 		/**
 		 * This is the initial velocity that the hero will move at when he jumps.
 		 */
@@ -52,11 +53,11 @@ package daimons.game.characters
 		/**
 		 * This is the amount of friction that the hero will have when he's not running. 
 		 */
-		public var skidFriction : Number = 0.55;
+		public var skidFriction : Number = 1;
 		/**
 		 * This is the y velocity that the hero must be travelling in order to kill a Baddy.
 		 */
-		public var killVelocity : Number = 3;
+		public var killVelocity : Number = 1;
 		/**
 		 * The y velocity that the hero will spring when he kills an enemy. 
 		 */
@@ -76,11 +77,11 @@ package daimons.game.characters
 		/**
 		 * The amount of kick-back that the hero jumps when he gets hurt. 
 		 */
-		public var hurtVelocityX : Number = 30;
+		public var hurtVelocityX : Number = 1;
 		/**
 		 * The amount of kick-back that the hero jumps when he gets hurt. 
 		 */
-		public var hurtVelocityY : Number = 10;
+		public var hurtVelocityY : Number = 1;
 		// events
 		/**
 		 * Dispatched whenever the hero jumps. 
@@ -136,7 +137,8 @@ package daimons.game.characters
 					break;
 				default:
 			}
-			_animation = action.name;
+			if(action is DefenseAction)
+				_animation = action.name;
 		}
 
 		override public function destroy() : void
@@ -196,13 +198,13 @@ package daimons.game.characters
 					moveKeysPressed = true;
 				}
 
-				if (_onGround && _ce.input.justPressed(Keyboard.SPACE) && _actionManager.currentAction.name == "jump")
+				if (_onGround && _ce.input.justPressed(Keyboard.SPACE) && _actionManager.currentActionDefender.name == "jump")
 				{
 					velocity.y = -jumpHeight;
 					onJump.dispatch();
 				}
 
-				if (_ce.input.isDown(Keyboard.SPACE) && !_onGround && velocity.y < 0 && _actionManager.currentAction.name == "jump")
+				if (_ce.input.isDown(Keyboard.SPACE) && !_onGround && velocity.y < 0 && _actionManager.currentActionDefender.name == "jump")
 				{
 					velocity.y -= jumpAcceleration;
 				}

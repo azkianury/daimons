@@ -26,17 +26,18 @@ package daimons.game.actions
 		private var _defendArray : Object, _attackArray : Object;
 		private var _defendArrayLength : uint, _attackArrayLength : uint;
 		private var _timerBusy : Timer, _timerAnim : Timer;
-		private var _currentAction : AAction;
+		private var _currentActionDefender : DefenseAction;
+		private var _currentActionAttacker : AttackAction;
 		public var onAction : Signal;
-		private var addAction : Signal;
-		private var removeAction : Signal;
+		// Position du l'utilisateur
+		public var onPositionChanged : Signal;
 		public var onEndedAnim : Signal;
-		private var _currentKey : uint;
 
 		public function ActionManager()
 		{
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
 
 			_defendArray = [];
 			_defendArray.none = new DefenseAction(new MovieClip(), Actions.NONE, 100, 100, false);
@@ -45,7 +46,7 @@ package daimons.game.actions
 			_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, 1000, 200, true);
 			_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, 1200, 1000, true);
 			_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, 3000, 2000, true);
-			_currentAction = _defendArray[Actions.NONE];
+			_currentActionDefender = _defendArray[Actions.NONE];
 			for each (var d : AAction in _defendArray)
 				if ((d as AAction).active) _defendArrayLength++;
 
@@ -58,16 +59,14 @@ package daimons.game.actions
 			for each (var a : AAction in _attackArray)
 				if ((a as AAction).active) _attackArrayLength++;
 
+			onPositionChanged = new Signal(uint);
 			onEndedAnim = new Signal();
 			onAction = new Signal(AAction);
-			addAction = new Signal(AAction);
-			removeAction = new Signal(AAction);
 		}
 
 		public function deactivateAction(name : String) : void
 		{
 			(_defendArray[name] as AAction).active = false;
-			removeAction.dispatch(_defendArray[name] as AAction);
 			_defendArrayLength--;
 			_updateUI();
 		}
@@ -75,7 +74,6 @@ package daimons.game.actions
 		public function activateAction(name : String) : void
 		{
 			(_defendArray[name] as AAction).active = true;
-			addAction.dispatch(_defendArray[name] as AAction);
 			_defendArrayLength++;
 			_updateUI();
 		}
@@ -165,7 +163,13 @@ package daimons.game.actions
 
 		private function _onKeyDown(event : KeyboardEvent) : void
 		{
-			_currentKey = event.keyCode;
+			// On passe sur une nouvelle position
+			if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT || event.keyCode == Keyboard.UP)
+			{
+				onPositionChanged.dispatch(event.keyCode);
+				return;
+			}
+
 			if (!_busyDefender)
 			{
 				switch(event.keyCode)
@@ -173,35 +177,35 @@ package daimons.game.actions
 					case Keyboard.F1:
 						if ((_defendArray[Actions.PUNCH] as AAction).active)
 						{
-							_currentAction = _defendArray[Actions.PUNCH];
+							_currentActionDefender = _defendArray[Actions.PUNCH];
 							_busyDefender = true;
 						}
 						break;
 					case Keyboard.F2:
 						if ((_defendArray[Actions.SHIELD] as AAction).active)
 						{
-							_currentAction = _defendArray[Actions.SHIELD];
+							_currentActionDefender = _defendArray[Actions.SHIELD];
 							_busyDefender = true;
 						}
 						break;
 					case Keyboard.F3:
 						if ((_defendArray[Actions.BUBBLE] as AAction).active)
 						{
-							_currentAction = _defendArray[Actions.BUBBLE];
+							_currentActionDefender = _defendArray[Actions.BUBBLE];
 							_busyDefender = true;
 						}
 						break;
 					case Keyboard.SPACE:
 						if ((_defendArray[Actions.JUMP] as AAction).active)
 						{
-							_currentAction = _defendArray[Actions.JUMP];
+							_currentActionDefender = _defendArray[Actions.JUMP];
 							_busyDefender = true;
 						}
 						break;
 					case Keyboard.DOWN:
 						if ((_defendArray[Actions.CROUCH] as AAction).active)
 						{
-							_currentAction = _defendArray[Actions.CROUCH];
+							_currentActionDefender = _defendArray[Actions.CROUCH];
 							_busyDefender = true;
 						}
 						break;
@@ -210,63 +214,63 @@ package daimons.game.actions
 				{
 					for each (var d : AAction in _defendArray)
 					{
-						if (d.active && d === _currentAction)
+						if (d.active && d === _currentActionDefender)
 							(d.view as MovieClip).gotoAndPlay("active");
 					}
 				}
 				if (_busyDefender)
 				{
 					_timerBusy = null;
-					_timerBusy = new Timer(_currentAction.idleGameDelay, 1);
+					_timerBusy = new Timer(_currentActionDefender.idleGameDelay, 1);
 					_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusyDefender, false, 0, true);
 					_timerBusy.start();
 
 					_timerAnim = null;
-					_timerAnim = new Timer(_currentAction.persistence, 1);
+					_timerAnim = new Timer(_currentActionDefender.persistence, 1);
 					_timerAnim.addEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy, false, 0, true);
 					_timerAnim.start();
 
 					_animBusyDefender = _busyDefender;
 
-					onAction.dispatch(_currentAction);
+					onAction.dispatch(_currentActionDefender);
 				}
 			}
 			if (!_busyAttacker)
 			{
 				switch(event.keyCode)
 				{
-					case Keyboard.F12:
+					case Keyboard.P:
 						if ((_attackArray[Actions.WALL] as AAction).active)
 						{
-							_currentAction = _attackArray[Actions.WALL];
+							_currentActionAttacker = _attackArray[Actions.WALL];
 							_busyAttacker = true;
 						}
 						break;
-					case Keyboard.F11:
+					case Keyboard.O:
 						if ((_attackArray[Actions.ROCK] as AAction).active)
 						{
-							_currentAction = _attackArray[Actions.ROCK];
+							_currentActionAttacker = _attackArray[Actions.ROCK];
 							_busyAttacker = true;
 						}
 						break;
-					case Keyboard.F10:
+					case Keyboard.I:
 						if ((_attackArray[Actions.SPIKES] as AAction).active)
 						{
-							_currentAction = _attackArray[Actions.SPIKES];
+							_currentActionAttacker = _attackArray[Actions.SPIKES];
 							_busyAttacker = true;
 						}
 						break;
-					case Keyboard.F9:
+					case Keyboard.U:
 						if ((_attackArray[Actions.LIGHTNING] as AAction).active)
 						{
-							_currentAction = _attackArray[Actions.LIGHTNING];
+							_currentActionAttacker = _attackArray[Actions.LIGHTNING];
 							_busyAttacker = true;
 						}
 						break;
-					case Keyboard.F8:
+					case Keyboard.Y:
 						if ((_attackArray[Actions.THUNDER] as AAction).active)
 						{
-							_currentAction = _attackArray[Actions.THUNDER];
+							_currentActionAttacker = _attackArray[Actions.THUNDER];
 							_busyAttacker = true;
 						}
 						break;
@@ -275,33 +279,40 @@ package daimons.game.actions
 				{
 					for each (var a : AAction in _attackArray)
 					{
-						if (a.active && a === _currentAction)
+						if (a.active && a === _currentActionAttacker)
 							(a.view as MovieClip).gotoAndPlay("active");
 					}
 				}
 				if (_busyAttacker)
 				{
 					_timerBusy = null;
-					_timerBusy = new Timer(_currentAction.idleGameDelay, 1);
+					_timerBusy = new Timer(_currentActionAttacker.idleGameDelay, 1);
 					_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusyAttacker, false, 0, true);
 					_timerBusy.start();
-					
-					onAction.dispatch(_currentAction);
+
+					onAction.dispatch(_currentActionAttacker);
 				}
 			}
 		}
 
+		private function _onKeyUp(event : KeyboardEvent) : void
+		{
+			// On revient en position initiale
+			if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT || event.keyCode == Keyboard.UP)
+				onPositionChanged.dispatch(Keyboard.UP);
+		}
+
 		private function _endBusyAttacker(event : TimerEvent) : void
 		{
-			_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusyAttacker);
-			(_currentAction.view as MovieClip).gotoAndPlay("idle");
+			(event.target as Timer).removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusyAttacker);
+			(_currentActionAttacker.view as MovieClip).gotoAndPlay("idle");
 			_busyAttacker = false;
 		}
 
 		private function _endBusyDefender(event : TimerEvent) : void
 		{
-			_timerBusy.removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusyDefender);
-			(_currentAction.view as MovieClip).gotoAndPlay("idle");
+			(event.target as Timer).removeEventListener(TimerEvent.TIMER_COMPLETE, _endBusyDefender);
+			(_currentActionDefender.view as MovieClip).gotoAndPlay("idle");
 			_busyDefender = false;
 		}
 
@@ -310,14 +321,31 @@ package daimons.game.actions
 			trace('_endAnimBusy: ' + (_endAnimBusy));
 			_timerAnim.removeEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy);
 			// Reset the action to none
-			_currentAction = _defendArray[Actions.NONE];
+			_currentActionDefender = _defendArray[Actions.NONE];
 			_animBusyDefender = false;
 			onEndedAnim.dispatch();
 		}
 
-		public function get currentAction() : AAction
+		public function pause() : void
 		{
-			return _currentAction;
+			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
+		}
+
+		public function resume() : void
+		{
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
+		}
+
+		public function get currentActionDefender() : DefenseAction
+		{
+			return _currentActionDefender;
+		}
+
+		public function get currentActionAttacker() : AttackAction
+		{
+			return _currentActionAttacker;
 		}
 
 		public function get busyDefender() : Boolean

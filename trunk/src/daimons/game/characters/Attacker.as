@@ -34,7 +34,6 @@ package daimons.game.characters
 
 		private function _onAction(action : AAction) : void
 		{
-			trace(this,action.name)
 			switch(action.name)
 			{
 				case Actions.ROCK:
@@ -58,6 +57,9 @@ package daimons.game.characters
 
 		override public function destroy() : void
 		{
+			onAttack.removeAll();
+			onAttack = null;
+			super.destroy();
 		}
 
 		override public function update(timeDelta : Number) : void

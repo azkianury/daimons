@@ -30,7 +30,7 @@
 		{
 			STAGE = stage;
 			super();
-			this.scrollRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+//			this.scrollRect = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
 			stage.addChild(new Stats());
 			console.openKey = Keyboard.TAB;
 			console.enabled = true;
