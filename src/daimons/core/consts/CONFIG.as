@@ -11,5 +11,6 @@ package daimons.core.consts
 		public static var BOX2D : Boolean;
 		public static var ENNEMI_AUTO : Boolean;
 		public static var ENNEMI_INTERVAL : uint;
+		public static var TUTORIAL : Array = new Array();
 	}
 }

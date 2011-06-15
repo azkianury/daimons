@@ -1,5 +1,6 @@
 ﻿package daimons.game
 {
+	import daimons.game.actions.AttackAction;
 	import daimons.core.consts.CONFIG;
 	import daimons.core.consts.PATHS;
 	import daimons.game.levels.ALevel;
@@ -45,14 +46,23 @@
 		private function _onComplete(event : LoaderEvent) : void
 		{
 			_initConfig();
-			var arr : Array = [];
+			var arr : Array = new Array();
+			var tut : Array = new Array();
 			var xml : XML = LoaderMax.getContent("xmlConfig") as XML;
-			for each (var lvl : * in xml.levels.level)
+			var o : Object;
+			var personnes:XMLList = xml.levels.elements();
+			for each (var lvl : XML in xml.levels.level)
 			{
-				var o : Object = new Object();
+				o = new Object();
 				o.lvlname = "daimons.game.levels.Level" + lvl.@id;
 				o.duration = lvl.duration;
 				arr.push(o);
+				for each (var tuto : XML in (lvl.tutorial.elements())) {
+					o = new Object();
+					o.action = tuto;
+					o.time = tuto.@time;
+					CONFIG.TUTORIAL.push(o);
+				}
 			}
 			_levelManager = new LevelManager(arr);
 			_levelManager.onLevelChanged.add(_onLevelChanged);
