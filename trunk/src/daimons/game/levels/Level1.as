@@ -1,8 +1,8 @@
 package daimons.game.levels
 {
+	import daimons.core.consts.CONFIG;
+	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
-	import daimons.game.characters.Attacker;
-	import daimons.game.characters.Defender;
 	import daimons.game.grounds.Ground1;
 	import daimons.game.hurtingobjects.AHurtingObject;
 	import daimons.game.hurtingobjects.projectiles.Lightning;
@@ -29,8 +29,6 @@ package daimons.game.levels
 	public class Level1 extends ALevel
 	{
 		private var _tutorial : Boolean = true;
-		private var _defender : Defender;
-		private var _attacker : Attacker;
 		private var _ground : Platform;
 		private var _destroyer : DestroyerSensor;
 		// Arrière plan
@@ -44,6 +42,9 @@ package daimons.game.levels
 		private var _currentMg : CitrusSprite;
 		private var _ennemyArray : Vector.<AHurtingObject>;
 		private var _offsetXEnnemies : uint = 300;
+		// Tuto timer
+		private var _tutoTimer : PerfectTimer;
+		private var _tutoIdx : uint;
 
 		public function Level1($duration : uint)
 		{
@@ -57,17 +58,6 @@ package daimons.game.levels
 			_initDecor();
 
 			_initHurtingObjects();
-
-			_defender = new Defender("Hero", {view:((LoaderMax.getLoader("hero") as SWFLoader).getClass("Hero")), gravity:0.5, width:50, height:120, group:2});
-			_defender.offsetY = -20;
-			_defender.offsetX = -80;
-
-			add(_defender);
-			_defender.x = 200;
-			_defender.y = stage.stageHeight - 300;
-
-			_attacker = new Attacker("Attacker");
-			_attacker.onAttack.add(_onAttack);
 
 			_ground = new Ground1("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
@@ -93,8 +83,37 @@ package daimons.game.levels
 			_arrow.x = _ground.x + stage.stageWidth - _offsetXEnnemies;
 			_arrow.y = 400;
 			addChild(_arrow);
-			
+
 			ActionManager.getInstance().onPositionChanged.add(_onPositionChanged);
+			if (CONFIG.PLAYER_TYPE == CONFIG.ATTACKER)
+			{
+				_tutoTimer = new PerfectTimer((CONFIG.TUTORIAL[_tutoIdx]).time, 1);
+				_tutoTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+				_tutoTimer.start();
+			}
+		}
+
+		private function _onTimerComplete(event : TimerEvent) : void
+		{
+			trace((CONFIG.TUTORIAL[_tutoIdx]).action)
+			_tuto.displayPicto((CONFIG.TUTORIAL[_tutoIdx]).action);
+			_tuto.show();
+
+			pause();
+			ActionManager.getInstance().onAction.add(_onTutorialAction);
+		}
+
+		private function _onTutorialAction(a : AAction) : void
+		{
+			if (a.name == _tuto.currentActionName)
+			{
+				ActionManager.getInstance().onAction.remove(_onTutorialAction);
+				_tutoIdx++;
+				_tutoTimer.delay = (CONFIG.TUTORIAL[_tutoIdx]).time;
+				_tutoTimer.reset();
+				resume();
+				_tuto.hide();
+			}
 		}
 
 		override public function destroy() : void
@@ -127,8 +146,9 @@ package daimons.game.levels
 			}*/
 		}
 
-		private function _onAttack(ennemi : AHurtingObject) : void
+		override protected function _onAttack(ennemi : AHurtingObject) : void
 		{
+			super._onAttack(ennemi);
 			_ennemyArray.push(ennemi);
 			add(ennemi);
 			ennemi.reset();
@@ -142,7 +162,7 @@ package daimons.game.levels
 		{
 			ScoreManager.getInstance().add(1);
 
-			if (_tutorial)
+			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER && _tutorial)
 				_tuto.hide();
 		}
 
@@ -151,7 +171,7 @@ package daimons.game.levels
 			_defender.hurt();
 			ScoreManager.getInstance().remove(1);
 
-			if (_tutorial)
+			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER && _tutorial)
 				_tuto.hide();
 		}
 
@@ -275,12 +295,12 @@ package daimons.game.levels
 						if ((ennemi is Spikes || ennemi is Lightning) && !ennemi.touched)
 							ScoreManager.getInstance().add(1);
 						ennemi.passed = true;
-						if (_tutorial)
+						if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER && _tutorial)
 							_tuto.hide();
 					}
 					else if (ennemi.x < (_defender.x + 600))
 					{
-						if (_tutorial)
+						if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER && _tutorial)
 						{
 							_tuto.displayPicto(ennemi.hurtAction);
 							_tuto.show();
@@ -302,6 +322,7 @@ package daimons.game.levels
 					ennemi.changeAnimation("idle");
 				}
 			}
+			if (_tutoTimer) _tutoTimer.pause();
 			_checkTimer.pause();
 		}
 
@@ -315,6 +336,7 @@ package daimons.game.levels
 					ennemi.changeAnimation(ennemi.prevAnimation);
 				}
 			}
+			if (_tutoTimer) _tutoTimer.resume();
 			_checkTimer.resume();
 		}
 	}

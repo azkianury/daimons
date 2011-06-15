@@ -2,7 +2,7 @@
 <root>
 
 	<configuration>
-		<playerType><![CDATA[attacker]]></playerType><!-- attacker or defender -->
+		<playerType><![CDATA[defender]]></playerType><!-- attacker or defender -->
 		<ennemiInterval><![CDATA[6000]]></ennemiInterval>
 		<box2D><![CDATA[true]]></box2D>
 		<ennemiAuto><![CDATA[false]]></ennemiAuto>
@@ -10,6 +10,13 @@
 	<levels>
 		<level id="1">
 			<duration>1</duration>
+			<tutorial>
+				<action time="3000"><![CDATA[lightning]]></action>
+				<action time="8000"><![CDATA[rock]]></action>
+				<action time="12000"><![CDATA[spikes]]></action>
+				<action time="16000"><![CDATA[thunder]]></action>
+				<action time="20000"><![CDATA[wall]]></action>
+			</tutorial>
 		</level>
 	</levels>
 

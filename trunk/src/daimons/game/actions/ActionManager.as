@@ -55,7 +55,7 @@ package daimons.game.actions
 			_attackArray.rock = new AttackAction(new RockAction(), Actions.ROCK, 1500, 1500, true);
 			_attackArray.spikes = new AttackAction(new SpikesAction(), Actions.SPIKES, 500, 500, true);
 			_attackArray.lightning = new AttackAction(new LightningAction(), Actions.LIGHTNING, 1000, 1000, true);
-			_attackArray.thunder = new AttackAction(new ThunderAction(), Actions.THUNDER, 1500, 1500, true);
+			_attackArray.thunder = new AttackAction(new ThunderAction(), Actions.THUNDER, 1500, 1500, false);
 			for each (var a : AAction in _attackArray)
 				if ((a as AAction).active) _attackArrayLength++;
 
@@ -140,7 +140,7 @@ package daimons.game.actions
 			i -= 20;
 			var tl : TimelineLite = new TimelineLite();
 			tl.append(TweenLite.to(_view["bg"], 0.5, {width:i + 50}));
-			tl.append(TweenLite.to(_view, 0.5, {x:((_view.stage.stageWidth - _view.width) / 2 - 200), y:_view.stage.stageHeight - _view.height}));
+			tl.append(TweenLite.to(_view, 0.5, {x:((_view.stage.stageWidth - _view.width) / 2 + ((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? -200 : 100)), y:_view.stage.stageHeight - _view.height}));
 		}
 
 		public function init(view : MovieClip) : void

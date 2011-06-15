@@ -1,11 +1,10 @@
 package daimons.game.tutorial
 {
 	import com.greensock.TweenMax;
-	import com.greensock.TweenLite;
 
-	import flash.events.EventDispatcher;
-	import flash.events.Event;
 	import flash.display.MovieClip;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 
 	/**
 	 * @author lbineau
@@ -14,6 +13,7 @@ package daimons.game.tutorial
 	{
 		private var _view : MovieClip;
 		private var _busy : Boolean = false;
+		private var _currentActionName : String;
 
 		public function TutorialManager(view : MovieClip)
 		{
@@ -21,6 +21,8 @@ package daimons.game.tutorial
 			_view.alpha = 0;
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
 		}
+
+
 
 		private function _onAddedToStage(event : Event) : void
 		{
@@ -31,8 +33,10 @@ package daimons.game.tutorial
 
 		public function displayPicto($name : String) : void
 		{
-			if (_view.currentLabel != $name)
+			if (_view.currentLabel != $name){
 				_view.gotoAndPlay($name);
+				_currentActionName = $name;				
+			}
 		}
 
 		public function hide(delay : uint = 0) : void
@@ -53,6 +57,11 @@ package daimons.game.tutorial
 		public function get view() : MovieClip
 		{
 			return _view;
+		}
+
+		public function get currentActionName() : String
+		{
+			return _currentActionName;
 		}
 	}
 }

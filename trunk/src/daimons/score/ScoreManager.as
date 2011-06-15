@@ -1,5 +1,7 @@
 package daimons.score
 {
+	import daimons.core.consts.CONFIG;
+
 	import flash.display.MovieClip;
 	import flash.events.Event;
 
@@ -8,7 +10,7 @@ package daimons.score
 		private static var instance : ScoreManager = new ScoreManager();
 		private var _percentage : Number = 50;
 		private var _nbHuringObject : Number = 0;
-		private var _avoidHuringObject : Number = 0;
+		private var _avoidHurtingObject : Number = 0;
 		private var _view : MovieClip;
 
 		public function ScoreManager()
@@ -35,28 +37,42 @@ package daimons.score
 			_view.x = (_view.stage.stageWidth) / 2 + 180;
 			_view.y = 40;
 		}
-		
-		public function add(ponderation:Number) : void
+
+		public function add(ponderation : Number) : void
 		{
-			_avoidHuringObject++;
 			_nbHuringObject++;
-			_percentage = int((_avoidHuringObject / _nbHuringObject) * 100);
+			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER)
+			{
+				_avoidHurtingObject++;
+				_percentage = int((_avoidHurtingObject / _nbHuringObject) * 100);
+			}
+			else
+			{
+				_percentage = int((_avoidHurtingObject / _nbHuringObject) * 100);
+			}
 			updateUI(_percentage);
 		}
 
-		public function remove(ponderation:Number) : void
+		public function remove(ponderation : Number) : void
 		{
 			_nbHuringObject++;
-			_percentage = int((_avoidHuringObject / _nbHuringObject) * 100);
+			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER)
+				_percentage = int((_avoidHurtingObject / _nbHuringObject) * 100);
+			else
+			{
+				_avoidHurtingObject++;
+				_percentage = int((_avoidHurtingObject / _nbHuringObject) * 100);
+			}
 			updateUI(_percentage);
 		}
-		
-		public function updateUI(percent:Number):void
+
+		public function updateUI(percent : Number) : void
 		{
 			_view.gotoAndStop(percent);
-			_view["mc_percentage"]["tf"].text = percent + "%";			
-			//_view["mc_percentage"].x = _view["mc_mask"].x + _view["mc_mask"].width;
+			_view["mc_percentage"]["tf"].text = percent + "%";
+			// _view["mc_percentage"].x = _view["mc_mask"].x + _view["mc_mask"].width;
 		}
+
 		public function get view() : MovieClip
 		{
 			return _view;
