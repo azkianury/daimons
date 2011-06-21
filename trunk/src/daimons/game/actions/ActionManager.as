@@ -28,6 +28,7 @@ package daimons.game.actions
 		private var _timerBusy : Timer, _timerAnim : Timer;
 		private var _currentActionDefender : DefenseAction;
 		private var _currentActionAttacker : AttackAction;
+		private var _furyGauge : FuryGauge;
 		public var onAction : Signal;
 		// Position du l'utilisateur
 		public var onPositionChanged : Signal;
@@ -36,7 +37,8 @@ package daimons.game.actions
 		public function ActionManager()
 		{
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
-			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onDefenderKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onAttackerKeyDown);
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
 
 			_defendArray = [];
@@ -140,6 +142,9 @@ package daimons.game.actions
 			i -= 20;
 			var tl : TimelineLite = new TimelineLite();
 			tl.append(TweenLite.to(_view["bg"], 0.5, {width:i + 50}));
+			tl.append(TweenLite.to(_furyGauge.view["mc_barre"], 0.5, {width:i - 30}));
+			tl.append(TweenLite.to(_furyGauge.view["mc_barre_gris"], 0.5, {width:i - 30}));
+			_furyGauge.maxFury = i - 50;
 			tl.append(TweenLite.to(_view, 0.5, {x:((_view.stage.stageWidth - _view.width) / 2 + ((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? -200 : 100)), y:_view.stage.stageHeight - _view.height}));
 		}
 
@@ -147,6 +152,21 @@ package daimons.game.actions
 		{
 			_view = view;
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_furyGauge = new FuryGauge(this.view["mc_furyGauge"], 0, 100);
+			_furyGauge.addEventListener(Event.ACTIVATE, _onFuryEnabled);
+			_furyGauge.addEventListener(Event.DEACTIVATE, _onFuryDisabled);
+			if ((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER))
+				_furyGauge.view.visible = false;
+		}
+
+		private function _onFuryDisabled(event : Event) : void
+		{
+			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_DOWN, _onAttackerKeyDown);
+		}
+
+		private function _onFuryEnabled(event : Event) : void
+		{
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onAttackerKeyDown);
 		}
 
 		private function _onAddedToStage(event : Event) : void
@@ -161,7 +181,7 @@ package daimons.game.actions
 			return instance;
 		}
 
-		private function _onKeyDown(event : KeyboardEvent) : void
+		private function _onDefenderKeyDown(event : KeyboardEvent) : void
 		{
 			// On passe sur une nouvelle position
 			if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT || event.keyCode == Keyboard.UP)
@@ -214,7 +234,7 @@ package daimons.game.actions
 				{
 					for each (var d : AAction in _defendArray)
 					{
-						if (d.active && d === _currentActionDefender)
+						if (d.active && d == _currentActionDefender)
 							(d.view as MovieClip).gotoAndPlay("active");
 					}
 				}
@@ -235,6 +255,10 @@ package daimons.game.actions
 					onAction.dispatch(_currentActionDefender);
 				}
 			}
+		}
+
+		private function _onAttackerKeyDown(event : KeyboardEvent) : void
+		{
 			if (!_busyAttacker)
 			{
 				switch(event.keyCode)
@@ -279,7 +303,7 @@ package daimons.game.actions
 				{
 					for each (var a : AAction in _attackArray)
 					{
-						if (a.active && a === _currentActionAttacker)
+						if (a.active && a == _currentActionAttacker)
 							(a.view as MovieClip).gotoAndPlay("active");
 					}
 				}
@@ -289,7 +313,7 @@ package daimons.game.actions
 					_timerBusy = new Timer(_currentActionAttacker.idleGameDelay, 1);
 					_timerBusy.addEventListener(TimerEvent.TIMER_COMPLETE, _endBusyAttacker, false, 0, true);
 					_timerBusy.start();
-
+					_furyGauge.add(1, _currentActionAttacker.persistence / 10);
 					onAction.dispatch(_currentActionAttacker);
 				}
 			}
@@ -318,7 +342,6 @@ package daimons.game.actions
 
 		private function _endAnimBusy(event : TimerEvent) : void
 		{
-			trace('_endAnimBusy: ' + (_endAnimBusy));
 			_timerAnim.removeEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy);
 			// Reset the action to none
 			_currentActionDefender = _defendArray[Actions.NONE];
@@ -328,13 +351,15 @@ package daimons.game.actions
 
 		public function pause() : void
 		{
-			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_DOWN, _onAttackerKeyDown);
+			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_DOWN, _onDefenderKeyDown);
 			CitrusEngine.getInstance().stage.removeEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
 		}
 
 		public function resume() : void
 		{
-			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onAttackerKeyDown);
+			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_DOWN, _onDefenderKeyDown);
 			CitrusEngine.getInstance().stage.addEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
 		}
 

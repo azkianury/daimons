@@ -76,7 +76,7 @@ package daimons.game.levels
 			_tuto = new TutorialManager((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new TutorialDefenderUIAsset() : new TutorialAttackerUIAsset());
 			stage.addChild(_tuto.view);
 
-			ScoreManager.getInstance().init(new ScoreUIAsset());
+			ScoreManager.getInstance().init((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new ScoreDefenderUIAsset() : new ScoreAttackerUIAsset());
 			stage.addChild(ScoreManager.getInstance().view);
 
 			ActionManager.getInstance().init(new ActionsUIAsset());
@@ -92,12 +92,12 @@ package daimons.game.levels
 		override public function destroy() : void
 		{
 			_checkTimer = null;
-			removeChild(_tuto.view);
+			if (contains(_tuto.view)) removeChild(_tuto.view);
 			_tuto = null;
-			removeChild(_countdown.view);
+			if (contains(_countdown.view)) removeChild(_countdown.view);
 			_countdown = null;
-			removeChild(ScoreManager.getInstance().view);
-			removeChild(ActionManager.getInstance().view);
+			if (contains(ScoreManager.getInstance().view)) removeChild(ScoreManager.getInstance().view);
+			if (contains(ActionManager.getInstance().view)) removeChild(ActionManager.getInstance().view);
 			_head = null;
 			_tuto = null;
 			_bmp = null;
@@ -142,9 +142,12 @@ package daimons.game.levels
 			CitrusEngine.getInstance().playing = true;
 			// ActionManager.getInstance().resume();
 			_attacker.onAttack.add(_onAttack);
-			removeChild(_bmp);
-			_bmp.bitmapData.dispose();
-			_bmp = null;
+			if (_bmp != null && this.contains(_bmp))
+			{
+				removeChild(_bmp);
+				_bmp.bitmapData.dispose();
+				_bmp = null;
+			}
 			_countdown.resume();
 		}
 	}
