@@ -4,18 +4,18 @@
 	<configuration>
 		<playerType><![CDATA[defender]]></playerType><!-- attacker or defender -->
 		<ennemiInterval><![CDATA[6000]]></ennemiInterval>
-		<box2D><![CDATA[true]]></box2D>
+		<box2D><![CDATA[false]]></box2D>
 		<ennemiAuto><![CDATA[false]]></ennemiAuto>
 	</configuration>
 	<levels>
 		<level id="1">
 			<duration>1</duration>
 			<tutorial>
-				<action time="3000"><![CDATA[lightning]]></action>
-				<action time="8000"><![CDATA[rock]]></action>
-				<action time="12000"><![CDATA[spikes]]></action>
-				<action time="16000"><![CDATA[thunder]]></action>
-				<action time="20000"><![CDATA[wall]]></action>
+				<!-- <action time="3000"><![CDATA[lightning]]></action>
+				<action time="6000"><![CDATA[rock]]></action>
+				<action time="9000"><![CDATA[spikes]]></action>
+				<action time="11000"><![CDATA[wall]]></action>
+				<action time="13000"><![CDATA[thunder]]></action> -->
 			</tutorial>
 		</level>
 	</levels>

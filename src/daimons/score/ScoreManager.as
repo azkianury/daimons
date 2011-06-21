@@ -33,7 +33,6 @@ package daimons.score
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			trace(_view.stage.stageWidth, _view.width);
 			_view.x = (_view.stage.stageWidth) / 2 + 180;
 			_view.y = 40;
 		}
@@ -69,13 +68,19 @@ package daimons.score
 		public function updateUI(percent : Number) : void
 		{
 			_view.gotoAndStop(percent);
-			_view["mc_percentage"]["tf"].text = percent + "%";
+			//_view["mc_percentage"]["tf"].text = percent + "%";
+			_view["mc_percentage"]["tf"].text = _avoidHurtingObject + "/" + _nbHuringObject;
 			// _view["mc_percentage"].x = _view["mc_mask"].x + _view["mc_mask"].width;
 		}
 
 		public function get view() : MovieClip
 		{
 			return _view;
+		}
+
+		public function get percentage() : Number
+		{
+			return _percentage;
 		}
 	}
 }

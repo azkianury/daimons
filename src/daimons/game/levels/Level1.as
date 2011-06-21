@@ -1,5 +1,9 @@
 package daimons.game.levels
 {
+	import daimons.game.MainGame;
+
+	import flash.geom.Rectangle;
+
 	import daimons.core.consts.CONFIG;
 	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
@@ -95,12 +99,14 @@ package daimons.game.levels
 
 		private function _onTimerComplete(event : TimerEvent) : void
 		{
-			trace((CONFIG.TUTORIAL[_tutoIdx]).action)
-			_tuto.displayPicto((CONFIG.TUTORIAL[_tutoIdx]).action);
-			_tuto.show();
+			if (CONFIG.TUTORIAL[_tutoIdx] != null)
+			{
+				_tuto.displayPicto((CONFIG.TUTORIAL[_tutoIdx]).action);
+				_tuto.show();
 
-			pause();
-			ActionManager.getInstance().onAction.add(_onTutorialAction);
+				pause();
+			}
+				ActionManager.getInstance().onAction.add(_onTutorialAction);
 		}
 
 		private function _onTutorialAction(a : AAction) : void
@@ -109,7 +115,8 @@ package daimons.game.levels
 			{
 				ActionManager.getInstance().onAction.remove(_onTutorialAction);
 				_tutoIdx++;
-				_tutoTimer.delay = (CONFIG.TUTORIAL[_tutoIdx]).time;
+				if (CONFIG.TUTORIAL[_tutoIdx] != null)
+					_tutoTimer.delay = (CONFIG.TUTORIAL[_tutoIdx]).time;
 				_tutoTimer.reset();
 				resume();
 				_tuto.hide();
@@ -177,6 +184,8 @@ package daimons.game.levels
 
 		private function _initDecor() : void
 		{
+			this.scrollRect = new Rectangle(0, 0, MainGame.STAGE.stageWidth, MainGame.STAGE.stageHeight);
+			this.cacheAsBitmap = true;
 			var fgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("FG"));
 			var bgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("BG"));
 			var mgClass : Class = ((LoaderMax.getLoader("decors1") as SWFLoader).getClass("MG"));
@@ -185,36 +194,36 @@ package daimons.game.levels
 			_containerFg = new Sprite();
 			_containerBg = new Sprite();
 			_containerMg = new Sprite();
-			// _containerFg.cacheAsBitmap = _containerBg.cacheAsBitmap = _containerMg.cacheAsBitmap = true;
+			_containerFg.cacheAsBitmap = _containerBg.cacheAsBitmap = _containerMg.cacheAsBitmap = true;
 
 			bmp0 = new Bitmap(new bgClass());
-			// bmp0.cacheAsBitmap = true;
+			bmp0.cacheAsBitmap = true;
 			_containerBg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new bgClass());
-			// bmp1.cacheAsBitmap = true;
+			bmp1.cacheAsBitmap = true;
 			bmp1.x = _containerBg.width - 10;
 			_containerBg.addChild(bmp1);
 			_currentBg = new CitrusSprite("Background", {view:_containerBg, parallax:0.5, group:0});
 			add(_currentBg);
 
 			bmp0 = new Bitmap(new mgClass());
-			// bmp0.cacheAsBitmap = true;
+			bmp0.cacheAsBitmap = true;
 			_containerMg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new mgClass());
-			// bmp1.cacheAsBitmap = true;
+			bmp1.cacheAsBitmap = true;
 			bmp1.x = _containerMg.width - 10;
 			_containerMg.addChild(bmp1);
 			_currentMg = new CitrusSprite("Middleground", {view:_containerMg, parallax:1, group:0});
 			add(_currentMg);
 
 			bmp0 = new Bitmap(new fgClass());
-			// bmp0.cacheAsBitmap = true;
+			bmp0.cacheAsBitmap = true;
 			_containerFg.addChild(bmp0);
 
 			bmp1 = new Bitmap(new fgClass());
-			// bmp1.cacheAsBitmap = true;
+			bmp1.cacheAsBitmap = true;
 			bmp1.x = _containerFg.width - 10;
 			_containerFg.addChild(bmp1);
 
