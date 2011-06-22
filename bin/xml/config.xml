@@ -11,8 +11,8 @@
 		<level id="1">
 			<duration>1</duration>
 			<tutorial>
-				<!-- <action time="3000"><![CDATA[lightning]]></action>
-				<action time="6000"><![CDATA[rock]]></action>
+				<action time="3000"><![CDATA[lightning]]></action>
+				<!-- <action time="6000"><![CDATA[rock]]></action>
 				<action time="9000"><![CDATA[spikes]]></action>
 				<action time="11000"><![CDATA[wall]]></action>
 				<action time="13000"><![CDATA[thunder]]></action> -->

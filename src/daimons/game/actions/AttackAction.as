@@ -7,9 +7,9 @@ package daimons.game.actions
 	 */
 	public class AttackAction extends AAction
 	{
-		public function AttackAction($view : DisplayObject, $name : String, $persistence : Number, $idleGameDelay : Number, $active : Boolean = false)
+		public function AttackAction($view : DisplayObject, $name : String, $keyCode : uint, $persistence : Number, $idleGameDelay : Number, $active : Boolean = false)
 		{
-			super($view, $name, $persistence, $idleGameDelay, $active);
+			super($view, $name, $keyCode, $persistence, $idleGameDelay, $active);
 		}
 	}
 }

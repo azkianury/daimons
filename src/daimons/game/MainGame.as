@@ -71,8 +71,8 @@
 			_levelManager = new LevelManager(arr);
 			_levelManager.onLevelChanged.add(_onLevelChanged);
 			_levelManager.onLevelEnded.add(_onLevelEnd);
-			stage.addEventListener(MouseEvent.CLICK, _onClick);
-
+			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) stage.addEventListener(MouseEvent.CLICK, _onClick);
+			else _startGame();
 			// this.enabled = false;
 		}
 

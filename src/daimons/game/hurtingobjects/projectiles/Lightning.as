@@ -21,7 +21,7 @@ package daimons.game.hurtingobjects.projectiles
 			_hurtAction = Actions.CROUCH;
 			super(name, params);
 			_linearVelocity = _body.GetLinearVelocity();
-			_linearVelocity.x = -10;
+			_linearVelocity.x = -6;
 			var pHitVector : V2 = new V2(this.x, this.y);
 			var appForce : V2 = new V2(pHitVector.x * .1, pHitVector.y * .1);
 			_body.ApplyImpulse(appForce, _body.GetWorldCenter());
