@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="ANT"  basedir="/" default="AIR">
+<project name="ANT" basedir="/" default="AIR-Attacker">
 
 
 	<property name="OPTIMIZE" value="true" />
 	<property name="DEBUG" value="false" />
-	
-    <property name="FLEX_HOME" value="/Applications/Adobe Flash Builder 4/sdks/4.5-air2.7/" />
-	
+
+	<property name="FLEX_HOME" value="/Applications/Adobe Flash Builder 4/sdks/4.5-air2.7/" />
+
 	<property name="src.dir" value="/Users/lbineau/Documents/workspace/PROJECT_Daimons/src" />
 	<property name="lib.dir" value="/Users/lbineau/Documents/workspace/PROJECT_Daimons/libs" />
-    <property name="out.dir" value="/Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/" />
+	<property name="out.dir" value="/Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/" />
 	<property name="dbg.dir" value="/Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/" />
-    	
+
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
-		
+
 	<target name="clean" description="Clean the project">
 		<delete dir="${out.dir}" failonerror="false" />
 	</target>
-			
+
 	<target name="init" description="initialize the project" depends="clean">
 		<mkdir dir="${out.dir}" />
 		<copy todir="${out.dir}" includeemptydirs="false">
@@ -34,7 +34,7 @@
 		</copy>
 	</target>
 
-	<target name="AIR" description="Create the AIR package for our app">
+	<target name="AIR-Attacker" description="Create the AIR package for our app">
 		<exec executable="${FLEX_HOME}/bin/adt" failonerror="true">
 			<arg line="-package" />
 			<arg line="-storetype pkcs12" />
@@ -48,4 +48,20 @@
 			<arg line="-C ${out.dir} xml" />
 		</exec>
 	</target>
+
+	<target name="AIR-Defender" description="Create the AIR package for our app">
+		<exec executable="${FLEX_HOME}/bin/adt" failonerror="true">
+			<arg line="-package" />
+			<arg line="-storetype pkcs12" />
+			<arg line="-keystore ./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/daimons-key.p12" />
+			<arg line="-storepass pwd" />
+			<arg line="${out.dir}/Daimons-game.air" />
+			<arg line="${out.dir}/MainGame-app.xml" />
+			<arg line="${out.dir}/MainGame.swf" />
+			<arg line="-C ${out.dir} MainGame.swf" />
+			<arg line="-C ${out.dir} assets" />
+			<arg line="-C ${out.dir} xml" />
+		</exec>
+	</target>
+	
 </project>
