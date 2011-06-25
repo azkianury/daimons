@@ -1,30 +1,31 @@
 package daimons.game.levels
 {
-	import daimons.core.consts.CONFIG;
-	import daimons.game.MainGame;
-	import daimons.game.actions.ActionManager;
-	import daimons.game.characters.Attacker;
-	import daimons.game.characters.Defender;
-	import daimons.game.hurtingobjects.AHurtingObject;
-	import daimons.game.time.CountdownManager;
-	import daimons.game.tutorial.TutorialManager;
-	import daimons.score.ScoreManager;
-
-	import fr.lbineau.utils.PerfectTimer;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.citrusengine.core.State;
+	import com.citrusengine.math.MathVector;
 	import com.citrusengine.physics.Box2D;
 	import com.greensock.TweenMax;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
-
-	import org.osflash.signals.Signal;
-
+	import daimons.game.actions.ActionManager;
+	import daimons.game.characters.Attacker;
+	import daimons.game.characters.Defender;
+	import daimons.game.core.consts.CONFIG;
+	import daimons.game.hurtingobjects.AHurtingObject;
+	import daimons.game.score.ScoreManager;
+	import daimons.game.time.CountdownManager;
+	import daimons.game.tutorial.TutorialManager;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
+	import fr.lbineau.utils.PerfectTimer;
+	import org.osflash.signals.Signal;
+
+
+
+
 
 	/**
 	 * @author lbineau
@@ -64,29 +65,35 @@ package daimons.game.levels
 
 			add(_defender);
 			_defender.x = 200;
-			_defender.y = stage.stageHeight - 300;
+			_defender.y = CONFIG.APP_HEIGHT - 300;
+
+			view.cameraTarget = _defender;
+			view.cameraLensHeight = 0;
+			view.cameraLensWidth = 0;
+			view.cameraOffset = new MathVector(150, 200);
+			view.cameraEasing.y = 0;
 
 			_attacker = new Attacker("Attacker");
 			_attacker.onAttack.add(_onAttack);
 
 			_countdown.start();
-			stage.addChild(_countdown.view);
+			addChild(_countdown.view);
 			_countdown.addEventListener(Event.COMPLETE, _onGameComplete);
 
 			_tuto = new TutorialManager((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new TutorialDefenderUIAsset() : new TutorialAttackerUIAsset());
 			stage.addChild(_tuto.view);
 
 			ScoreManager.getInstance().init((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new ScoreDefenderUIAsset() : new ScoreAttackerUIAsset());
-			stage.addChild(ScoreManager.getInstance().view);
+			addChild(ScoreManager.getInstance().view);
 
 			ActionManager.getInstance().init(new ActionsUIAsset());
-			stage.addChild(ActionManager.getInstance().view);
+			addChild(ActionManager.getInstance().view);
 
 			_head = new HeadUIAsset();
 			_head.gotoAndStop(CONFIG.PLAYER_TYPE);
-			stage.addChild(_head);
-			_head.x = (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? MainGame.STAGE.stageWidth : 0;
-			_head.y = MainGame.STAGE.stageHeight;
+			addChild(_head);
+			_head.x = (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? CONFIG.APP_WIDTH : 0;
+			_head.y = CONFIG.APP_HEIGHT;
 		}
 
 		override public function destroy() : void
@@ -125,11 +132,10 @@ package daimons.game.levels
 		public function pause() : void
 		{
 			CitrusEngine.getInstance().playing = false;
-			// ActionManager.getInstance().pause();
 			_attacker.onAttack.remove(_onAttack);
-			var bitmapdata : BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight);
+			var bitmapdata : BitmapData = new BitmapData(CONFIG.APP_WIDTH, CONFIG.APP_HEIGHT);
 
-			bitmapdata.draw(stage);
+			bitmapdata.draw(this);
 
 			_bmp = new Bitmap(bitmapdata);
 			TweenMax.to(_bmp, 0.5, {blurFilter:{blurX:10, blurY:10}});
@@ -140,7 +146,6 @@ package daimons.game.levels
 		public function resume() : void
 		{
 			CitrusEngine.getInstance().playing = true;
-			// ActionManager.getInstance().resume();
 			_attacker.onAttack.add(_onAttack);
 			if (_bmp != null && this.contains(_bmp))
 			{

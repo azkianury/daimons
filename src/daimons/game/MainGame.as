@@ -1,13 +1,5 @@
 ﻿package daimons.game
 {
-	import daimons.core.consts.CONFIG;
-	import daimons.core.consts.PATHS;
-	import daimons.game.levels.ALevel;
-	import daimons.game.levels.LevelManager;
-	import daimons.pages.ScorePage;
-
-	import fr.lbineau.utils.Stats;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.TweenLite;
 	import com.greensock.events.LoaderEvent;
@@ -15,12 +7,21 @@
 	import com.greensock.loading.MP3Loader;
 	import com.greensock.loading.XMLLoader;
 	import com.greensock.loading.core.LoaderCore;
-
+	import daimons.game.core.consts.CONFIG;
+	import daimons.game.core.consts.PATHS;
+	import daimons.game.levels.ALevel;
+	import daimons.game.levels.LevelManager;
+	import daimons.game.pages.ScorePage;
+	import flash.display.Graphics;
+	import flash.display.Shape;
 	import flash.display.Stage;
+	import flash.display.StageDisplayState;
 	import flash.events.MouseEvent;
-	import flash.filesystem.File;
-	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
+	import fr.lbineau.utils.Stats;
+
+
+
 
 	/**
 	 * @author lbineau
@@ -34,6 +35,7 @@
 		public function MainGame()
 		{
 			STAGE = stage;
+
 			super();
 			stage.addChild(new Stats());
 			console.openKey = Keyboard.TAB;
@@ -71,14 +73,16 @@
 			_levelManager = new LevelManager(arr);
 			_levelManager.onLevelChanged.add(_onLevelChanged);
 			_levelManager.onLevelEnded.add(_onLevelEnd);
-			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) stage.addEventListener(MouseEvent.CLICK, _onClick);
-			else _startGame();
+			
+			stage.addEventListener(MouseEvent.CLICK, _onClick);
 			// this.enabled = false;
+			stage.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 		}
 
 		private function _onClick(event : MouseEvent) : void
 		{
 			stage.removeEventListener(MouseEvent.CLICK, _onClick);
+			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 			_startGame();
 		}
 
