@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><application xmlns="http://ns.adobe.com/air/application/2.6">
+	<!-- AIR Application Descriptor File. See http://www.adobe.com/go/learn_air_1.0_application_descriptor_en. -->
+	<id>MainGame-Defender</id>
+	<name>MainGame Defender</name>
+	<!-- A string value of the format <0-999>.<0-999>.<0-999> that represents 
+		application version which can be used to check for application upgrade. Values 
+		can also be 1-part or 2-part. It is not necessary to have a 3-part value. 
+		An updated version of application must have a versionNumber value higher 
+		than the previous version. Required for namespace >= 2.5 . -->
+	<versionNumber>1.0.0</versionNumber>
+	<icon>
+        <image32x32>compil-params/defender/icon_032.png</image32x32>
+        <image48x48>compil-params/defender/icon_048.png</image48x48>
+        <image128x128>compil-params/defender/icon_128.png</image128x128>
+        <image512x512>compil-params/defender/icon_512.png</image512x512>
+    </icon>
+	<!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents 
+		the version of the application, as it should be shown to users. Optional. -->
+	<versionLabel>v1</versionLabel>
+	<filename>Daimons Defender</filename>
+	<description>
+		<text xml:lang="fr">Daïmons</text>
+		<text xml:lang="en">Daïmons</text>
+	</description>
+	<copyright>Copyright 2011, lbineau</copyright>
+	<initialWindow>
+		<content>MainGame.swf</content>
+		<title>Daïmons</title>
+		<systemChrome>none</systemChrome>
+		<fullScreen>false</fullScreen>
+		<renderMode>gpu</renderMode>
+		<visible>true</visible>
+		<minimizable>true</minimizable>
+		<maximizable>true</maximizable>
+		<resizable>false</resizable>
+		<width>1280</width>
+		<height>768</height>
+		<x>0</x>
+		<y>0</y>
+		<minSize>1024 768</minSize>
+		<maxSize>1280 768</maxSize>
+	</initialWindow>
+	<installFolder>Daimons/thegame/defender</installFolder>
+	<programMenuFolder>Daimons/thegame</programMenuFolder>
+
+	<customUpdateUI>false</customUpdateUI>
+	<allowBrowserInvocation>false</allowBrowserInvocation>
+	<fileTypes>
+		<fileType>
+			<name>com.example</name>
+			<extension>xmpl</extension>
+			<description>Example file</description>
+			<contentType>example/x-data-type</contentType>
+		</fileType>
+	</fileTypes>
+</application>
