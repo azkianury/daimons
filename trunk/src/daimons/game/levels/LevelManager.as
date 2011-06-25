@@ -1,26 +1,32 @@
 package daimons.game.levels
 {
-	import daimons.core.consts.PATHS;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
-
-	import org.osflash.signals.Signal;
-
+	import daimons.game.MainGame;
+	import daimons.game.core.consts.CONFIG;
+	import daimons.game.core.consts.PATHS;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import flash.utils.getDefinitionByName;
+	import org.osflash.signals.Signal;
+
+
+
 
 	/**
 	 * @author lbineau
 	 */
-	public class LevelManager
+	public class LevelManager extends EventDispatcher
 	{
 		private var _imports : Array = [Level1]; // Import des classes pour pouvoir créer des instances dynamiquement
 		private var _levels : Array;
 		private var _currentIndex : uint;
+		private var _cache : Sprite;
 		private var _loader : LoaderMax;
 		private var _currentLevel : ALevel;
 		public var onLevelChanged : Signal;
@@ -37,6 +43,20 @@ package daimons.game.levels
 			_loader = new LoaderMax({onComplete:_onComplete});
 			_loader.append(new SWFLoader(PATHS.CHARACTER_ASSETS + "hero.swf", {name:"hero"}));
 			_loader.append(new SWFLoader(PATHS.HURTING_OBJECTS_ASSETS + "hurtingObjects.swf", {name:"hurtingObjects1"}));
+			_cache = new Cache();
+			_cache.cacheAsBitmap = true;
+			MainGame.STAGE.addChild(_cache);
+			MainGame.STAGE.addEventListener(Event.RESIZE,_onResize);
+		}
+
+		private function _onResize(event : Event = null) : void
+		{
+			_cache.x = MainGame.STAGE.stageWidth / 2;
+			_cache.y = MainGame.STAGE.stageHeight / 2;
+			if(_currentLevel != null){
+				_currentLevel.x = (MainGame.STAGE.stageWidth - CONFIG.APP_WIDTH) / 2;
+				_currentLevel.y = (MainGame.STAGE.stageHeight - CONFIG.APP_HEIGHT) / 2;				
+			}
 		}
 
 		private function _onKeyDown(event : KeyboardEvent) : void
@@ -106,6 +126,7 @@ package daimons.game.levels
 			_currentLevel.lvlEnded.add(_onLevelEnded);
 			onLevelChanged.dispatch(_currentLevel);
 			onLevelLoaded.dispatch(_currentLevel);
+			_onResize();
 		}
 
 		private function _onLevelEnded() : void

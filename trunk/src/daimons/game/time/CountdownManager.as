@@ -1,14 +1,15 @@
 package daimons.game.time
 {
-	import flash.utils.Timer;
-
-	import fr.lbineau.utils.PerfectTimer;
-
+	import daimons.game.core.consts.CONFIG;
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	import fr.lbineau.utils.PerfectTimer;
+
+
 
 	/**
 	 * @author lbineau
@@ -31,7 +32,7 @@ package daimons.game.time
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			_view.x = int(_view.stage.stageWidth - _view.width) / 2;
+			_view.x = int(CONFIG.APP_WIDTH - _view.width) / 2;
 		}
 
 		public function init(countMinutes : uint) : void

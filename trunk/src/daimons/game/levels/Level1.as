@@ -1,31 +1,31 @@
 package daimons.game.levels
 {
-	import daimons.game.MainGame;
-
-	import flash.geom.Rectangle;
-
-	import daimons.core.consts.CONFIG;
-	import daimons.game.actions.AAction;
-	import daimons.game.actions.ActionManager;
-	import daimons.game.grounds.Ground1;
-	import daimons.game.hurtingobjects.AHurtingObject;
-	import daimons.game.hurtingobjects.projectiles.Lightning;
-	import daimons.game.hurtingobjects.statics.Spikes;
-	import daimons.game.sensors.DestroyerSensor;
-	import daimons.score.ScoreManager;
-
-	import fr.lbineau.utils.PerfectTimer;
-
 	import com.citrusengine.math.MathVector;
 	import com.citrusengine.objects.CitrusSprite;
 	import com.citrusengine.objects.platformer.Platform;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
-
+	import daimons.game.MainGame;
+	import daimons.game.actions.AAction;
+	import daimons.game.actions.ActionManager;
+	import daimons.game.core.consts.CONFIG;
+	import daimons.game.grounds.Ground1;
+	import daimons.game.hurtingobjects.AHurtingObject;
+	import daimons.game.hurtingobjects.projectiles.Lightning;
+	import daimons.game.hurtingobjects.statics.Spikes;
+	import daimons.game.score.ScoreManager;
+	import daimons.game.sensors.DestroyerSensor;
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.TimerEvent;
+	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
+	import fr.lbineau.utils.PerfectTimer;
+
+
+
+
+
 
 	/**
 	 * @author lbineau
@@ -65,26 +65,21 @@ package daimons.game.levels
 
 			_ground = new Ground1("Platform1", {width:stage.stageWidth * 2, height:20});
 			add(_ground);
-			_ground.y = stage.stageHeight - 180;
-			_ground.x = -stage.stageWidth;
+			_ground.y = CONFIG.APP_HEIGHT - 180;
+			_ground.x = -CONFIG.APP_WIDTH;
 
 			_destroyer = new DestroyerSensor("theDestroyer", {width:100, height:stage.stageHeight});
 			_destroyer.x = stage.stageWidth;
 			_destroyer.y = 100;
 			add(_destroyer);
 
-			view.cameraTarget = _defender;
-			view.cameraLensHeight = 0;
-			view.cameraLensWidth = 0;
-			view.cameraOffset = new MathVector(150, 200);
-			view.cameraEasing.y = 0;
 
 			_checkTimer = new PerfectTimer(2000, 0);
 			_checkTimer.addEventListener(TimerEvent.TIMER, _onTick);
 			_checkTimer.start();
 
 			_arrow = new ArrowIndicator();
-			_arrow.x = _ground.x + stage.stageWidth - _offsetXEnnemies;
+			_arrow.x = _ground.x + CONFIG.APP_WIDTH - _offsetXEnnemies;
 			_arrow.y = 400;
 			addChild(_arrow);
 
@@ -159,7 +154,7 @@ package daimons.game.levels
 			_ennemyArray.push(ennemi);
 			add(ennemi);
 			ennemi.reset();
-			ennemi.x = _ground.x + stage.stageWidth - _offsetXEnnemies;
+			ennemi.x = _ground.x + CONFIG.APP_WIDTH - _offsetXEnnemies;
 			ennemi.y = _ground.y - ennemi.height - ennemi.initialHeight;
 			ennemi.onTouched.add(_onEnnemiTouched);
 			ennemi.onDestroyed.add(_onEnnemiDestroyed);
@@ -289,7 +284,7 @@ package daimons.game.levels
 					_offsetXEnnemies = 200;
 					break;
 			}
-			_arrow.x = stage.stageWidth - _offsetXEnnemies + 100;
+			_arrow.x = CONFIG.APP_WIDTH - _offsetXEnnemies + 100;
 		}
 
 		override public function update(timeDelta : Number) : void

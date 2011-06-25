@@ -1,13 +1,9 @@
 package daimons.game.actions
 {
-	import daimons.core.consts.CONFIG;
-
 	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.TimelineLite;
 	import com.greensock.TweenLite;
-
-	import org.osflash.signals.Signal;
-
+	import daimons.game.core.consts.CONFIG;
 	import flash.display.Graphics;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -16,6 +12,10 @@ package daimons.game.actions
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
+	import org.osflash.signals.Signal;
+
+
+
 
 	public final class ActionManager
 	{
@@ -140,7 +140,7 @@ package daimons.game.actions
 			i -= 20;
 			var tl : TimelineLite = new TimelineLite();
 			tl.append(TweenLite.to(_view["bg"], 0.5, {width:i + 50}));
-			tl.append(TweenLite.to(_view, 0.5, {x:((_view.stage.stageWidth - _view.width) / 2 + ((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? -200 : 100)), y:_view.stage.stageHeight - _view.height}));
+			tl.append(TweenLite.to(_view, 0.5, {x:((CONFIG.APP_WIDTH - _view.width) / 2 + ((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? -200 : 100)), y:CONFIG.APP_HEIGHT - _view.height}));
 		}
 
 		public function init(view : MovieClip) : void
@@ -152,7 +152,7 @@ package daimons.game.actions
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			_view.y = _view.stage.stageHeight;
+			_view.y = CONFIG.APP_HEIGHT;
 			_updateUI();
 		}
 
