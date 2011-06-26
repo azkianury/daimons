@@ -22,9 +22,12 @@ package daimons.game.pages
 
 		private function _initialize() : void
 		{
+			ScoreManager.getInstance().saveScore();
 			view['scoreUI'].gotoAndStop(CONFIG.PLAYER_TYPE);
 			view['scoreUI']['score'].text = ScoreManager.getInstance().percentage + ' %';
-			view['scoreUI']['scoreTotal'].text = uint(UMath.randomRange(40, 60)) + ' %';
+			//view['scoreUI']['scoreTotal'].text = uint(UMath.randomRange(40, 60)) + ' %';
+			view['scoreUI']['scoreTotal'].text = ((ScoreManager.getInstance().scoreSO.data.percentage != undefined) ? ScoreManager.getInstance().scoreSO.data.teamPercentage : '50') + ' %';
+
 			var congrat:String;
 			if(ScoreManager.getInstance().percentage < 50){
 				congrat = "Oh my... You should try an other day...";
