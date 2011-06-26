@@ -1,9 +1,11 @@
 package daimons.game.score
 {
 	import daimons.game.core.consts.CONFIG;
+
 	import flash.display.MovieClip;
 	import flash.events.Event;
-
+	import flash.net.SharedObject;
+	import flash.system.Security;
 
 	public final class ScoreManager
 	{
@@ -12,9 +14,11 @@ package daimons.game.score
 		private var _nbHuringObject : Number = 0;
 		private var _avoidHurtingObject : Number = 0;
 		private var _view : MovieClip;
+		private var _scoreSO : SharedObject;
 
 		public function ScoreManager()
 		{
+			Security.allowDomain("*"); 
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
 		}
 
@@ -28,6 +32,7 @@ package daimons.game.score
 			_view = view;
 			updateUI(_percentage);
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
+			_scoreSO = SharedObject.getLocal("score_"+CONFIG.PLAYER_TYPE,'/');
 		}
 
 		private function _onAddedToStage(event : Event) : void
@@ -68,9 +73,16 @@ package daimons.game.score
 		public function updateUI(percent : Number) : void
 		{
 			_view.gotoAndStop(percent);
-			//_view["mc_percentage"]["tf"].text = percent + "%";
+			// _view["mc_percentage"]["tf"].text = percent + "%";
 			_view["mc_percentage"]["tf"].text = _avoidHurtingObject + "/" + _nbHuringObject;
 			// _view["mc_percentage"].x = _view["mc_mask"].x + _view["mc_mask"].width;
+		}
+
+		public function saveScore() : void
+		{
+			_scoreSO.data.percentage = percentage.toString();
+			_scoreSO.data.teamPercentage = (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? '55' : '65';
+			_scoreSO.flush();
 		}
 
 		public function get view() : MovieClip
@@ -81,6 +93,11 @@ package daimons.game.score
 		public function get percentage() : Number
 		{
 			return _percentage;
+		}
+
+		public function get scoreSO() : SharedObject
+		{
+			return _scoreSO;
 		}
 	}
 }

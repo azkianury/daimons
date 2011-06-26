@@ -1,23 +1,25 @@
 package daimons.game.actions
 {
+	import daimons.game.core.consts.CONFIG;
+	import daimons.game.events.GameEvent;
+
 	import com.citrusengine.core.CitrusEngine;
 	import com.greensock.TimelineLite;
 	import com.greensock.TweenLite;
-	import daimons.game.core.consts.CONFIG;
+
+	import org.osflash.signals.Signal;
+
 	import flash.display.Graphics;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
-	import org.osflash.signals.Signal;
 
-
-
-
-	public final class ActionManager
+	public final class ActionManager extends EventDispatcher
 	{
 		private static var instance : ActionManager = new ActionManager();
 		private var _view : MovieClip;
@@ -163,6 +165,7 @@ package daimons.game.actions
 
 		private function _onDefenderKeyDown(event : KeyboardEvent) : void
 		{
+			if (event.keyCode == Keyboard.K) dispatchEvent(new GameEvent(GameEvent.CALIBRATED));
 			// On passe sur une nouvelle position
 			if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT || event.keyCode == Keyboard.UP)
 			{
@@ -179,7 +182,7 @@ package daimons.game.actions
 
 					_currentActionDefender = d as DefenseAction;
 
-					_timerAnim = null;
+					if(_timerAnim != null) _timerAnim.removeEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy);
 					_timerAnim = new Timer(_currentActionDefender.persistence, 1);
 					_timerAnim.addEventListener(TimerEvent.TIMER_COMPLETE, _endAnimBusy, false, 0, true);
 					_timerAnim.start();
@@ -193,6 +196,7 @@ package daimons.game.actions
 
 		private function _onAttackerKeyDown(event : KeyboardEvent) : void
 		{
+			if (event.keyCode == Keyboard.K) dispatchEvent(new GameEvent(GameEvent.CALIBRATED));
 			for each (var a : AAction in _attackArray)
 			{
 				if (a.active && a.keyCode == event.keyCode)

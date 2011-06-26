@@ -1,10 +1,5 @@
 package daimons.game.levels
 {
-	import com.citrusengine.math.MathVector;
-	import com.citrusengine.objects.CitrusSprite;
-	import com.citrusengine.objects.platformer.Platform;
-	import com.greensock.loading.LoaderMax;
-	import com.greensock.loading.SWFLoader;
 	import daimons.game.MainGame;
 	import daimons.game.actions.AAction;
 	import daimons.game.actions.ActionManager;
@@ -15,12 +10,20 @@ package daimons.game.levels
 	import daimons.game.hurtingobjects.statics.Spikes;
 	import daimons.game.score.ScoreManager;
 	import daimons.game.sensors.DestroyerSensor;
+
+	import fr.lbineau.utils.PerfectTimer;
+
+	import com.citrusengine.objects.CitrusSprite;
+	import com.citrusengine.objects.platformer.Platform;
+	import com.greensock.loading.LoaderMax;
+	import com.greensock.loading.SWFLoader;
+
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
-	import fr.lbineau.utils.PerfectTimer;
 
 
 
@@ -90,6 +93,7 @@ package daimons.game.levels
 				_tutoTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
 				_tutoTimer.start();
 			}
+			dispatchEvent(new Event(Event.INIT));
 		}
 
 		private function _onTimerComplete(event : TimerEvent) : void
