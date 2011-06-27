@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ANT-MOBILE" default="main" basedir=".">
+	<property name="environment" value="local" />
+	<property file="settings.properties" />
+	<!-- Path to the Flex task libraries. -->
+	<path id="flextasks.classpath">
+		<fileset dir="${FLEX_HOME}/ant/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<typedef resource="flexTasks.tasks" classpathref="flextasks.classpath" />
+	<!-- Add dependencies here (android, blackberry, apple) or uninstall.blackberry -->
+	<target name="main" depends="android, blackberry, apple" />
+	<target name="android" depends="prepPackage, package.android, install.android" />
+	<!-- Use package.blackberry OR install.blackberry, using both will overwrite 
+		the .bar file and remove signing. -->
+	<target name="blackberry" depends="prepPackage, package.blackberry" />
+	<target name="apple" depends="prepPackage, package.apple" />
+	<target name="clean">
+		<echo message="Cleaning Build Space" />
+		<delete dir="${build.dir}" />
+	</target>
+	<target name="prepPackage" depends="compile,handleDevices" />
+	<target name="compile" depends="clean">
+		<echo message="Compiling swf" />
+		<mxmlc file="${projectFile}" output="${swfFile}" optimize="true"
+			configname="airmobile" debug="false">
+			   
+			<load-config filename="${FLEX_HOME}/frameworks/airmobile-config.xml" />
+			   
+			<source-path path-element="${FLEX_HOME}/frameworks" />
+			   
+			<static-link-runtime-shared-libraries />
+			   
+			<compiler.library-path dir="${FLEX_HOME}/frameworks"
+				append="true">
+				     
+				<include name="libs/*" />
+				   
+			</compiler.library-path>
+			   
+			<compiler.library-path dir="${basedir}/libs"
+				append="true">
+				     
+				<include name="*" />
+				   
+			</compiler.library-path>
+			 
+		</mxmlc>
+	</target>
+	<!-- Create Android directory. -->
+	<target name="collect.android">
+		<echo message="Creating device folder for Android" />
+		<mkdir dir="${build.dir}/android" />
+		<echo message="Copying SWF for Android" />
+		<copy file="${cert.dir}/androidcert.p12" todir="${build.dir}/android" />
+		<copy file="${swfFile}" todir="${build.dir}/android" />
+		<echo message="Copying Application Description File for Android" />
+		<copy file="${dev.dir}/${app.name}-app.xml" todir="${build.dir}/android" preservelastmodified="true" />
+		<copy todir="${build.dir}/android/assets">
+			   
+			<fileset dir="${dev.dir}/assets" />
+			 
+		</copy>
+		<echo message="Modifying application description file" />
+		<replace file="${build.dir}/android/${app.name}-app.xml">
+			   
+			<replacefilter token="${contentText}" value="${app.name}.swf" />
+			 
+		</replace>
+	</target>
+	<!-- Create BlackBerry directory. -->
+	<target name="collect.blackberry">
+		<echo message="Creating Device Folder for BlackBerry" />
+		<mkdir dir="${build.dir}/blackberry" />
+		<echo message="Copying SWF for BlackBerry" />
+		<copy file="${swfFile}" todir="${build.dir}/blackberry" />
+		<copy file="${cert.dir}/${bb.cert}" todir="${build.dir}/blackberry" />
+		<echo message="Copying Application Description File for BlackBerry" />
+		<copy file="${dev.dir}/${app.name}BlackBerry-app.xml" todir="${build.dir}/blackberry" preservelastmodified="true" />
+		<copy file="${dev.dir}/blackberry-tablet.xml" todir="${build.dir}/blackberry" preservelastmodified="true" />
+		<copy todir="${build.dir}/blackberry/assets">
+			<fileset dir="${dev.dir}/assets" />
+		</copy>
+		<echo message="Modifying application description file" />
+		<replace file="${build.dir}/blackberry/${app.name}BlackBerry-app.xml">
+			   
+			<replacefilter token="${contentText}" value="${app.name}.swf" />
+			 
+		</replace>
+	</target>
+	<!-- Create Apple directory. -->
+	<target name="collect.apple">
+		<echo message="Creating device folder for apple" />
+		<mkdir dir="${build.dir}/apple" />
+		<echo message="Copying SWF for Apple" />
+		<copy file="${swfFile}" todir="${build.dir}/apple" />
+		<copy file="${cert.dir}/${apple.cert}" todir="${build.dir}/apple" />
+		<copy file="${cert.dir}/${apple.provision}" todir="${build.dir}/apple" />
+		<echo message="Copying Application Description File for Apple" />
+		<copy file="${dev.dir}/${app.name}Apple-app.xml" todir="${build.dir}/apple" preservelastmodified="true" />
+		<copy todir="${build.dir}/apple/assets">
+			<fileset dir="${dev.dir}/assets" />
+		</copy>
+		<echo message="Modifying Application Description File" />
+		<replace file="${build.dir}/apple/${app.name}Apple-app.xml">
+			<replacefilter token="${contentText}" value="${app.name}.swf" />
+		</replace>
+	</target>
+	<target name="handleDevices"
+		depends="collect.android, collect.blackberry, collect.apple" />
+	<target name="package.android">
+		<echo message="Packaging for Android ${cert}" />
+		<exec executable="${ADT}" dir="${build.dir}/android">
+			<arg value="-package" />
+			   
+			<arg line="-target apk" />
+			   
+			<arg line="-storetype pkcs12" />
+			   
+			<arg line="-keystore ${cert}" />
+			   
+			<arg line="-storepass ${cert.password}" />
+			   
+			<arg value="${app.name}" />
+			   
+			<arg value="${app.name}-app.xml" />
+			   
+			<arg value="${app.name}.swf" />
+			   
+			<arg line="assets" />
+			 
+		</exec>
+	</target>
+	<target name="package.blackberry">
+		<echo message="Packaging for BlackBerry" />
+		<exec executable="${BBPackager}" dir="${build.dir}/blackberry">
+			   
+			<arg value="-package" />
+			   
+			<arg value="${app.name}.bar" />
+			   
+			<arg value="${app.name}BlackBerry-app.xml" />
+			   
+			<arg value="blackberry-tablet.xml" />
+			   
+			<arg value="${app.name}.swf" />
+			   
+			<arg line="assets" />
+			 
+		</exec>
+		<exec executable="${BBSigner}" dir="${build.dir}/blackberry">
+			   
+			<arg value="-verbose" />
+			   
+			<arg line="-cskpass ${bb.cert.password}" />
+			   
+			<arg line="-keystore ${bb.cert}" />
+			   
+			<arg line="-storepass ${bb.store.password}" />
+			   
+			<arg value="${app.name}.bar" />
+			   
+			<arg value="RDK" />
+			 
+		</exec>
+		<exec executable="${BBSigner}" dir="${build.dir}/blackberry">
+			   
+			<arg line="-keystore ${bb.cert}" />
+			   
+			<arg line="-storepass ${bb.store.password}" />
+			   
+			<arg value="${app.name}.bar" />
+			   
+			<arg value="author" />
+			 
+		</exec>
+	</target>
+	<target name="package.apple">
+		<exec executable="${ADT}" dir="${build.dir}/apple">
+			   
+			<arg line="-package -target '${apple.target}'" />
+			   
+			<arg line="-provisioning-profile '${apple.provision}'" />
+			   
+			<arg line="-storetype pkcs12" />
+			   
+			<arg line="-keystore '${apple.cert}'" />
+			   
+			<arg line="-storepass '${apple.cert.password}'" />
+			   
+			<arg line="'${app.name}.ipa'" />
+			   
+			<arg line="'${apple.descriptor}'" />
+			   
+			<arg line="'${app.name}.swf'" />
+			   
+			<arg line="assets" />
+			 
+		</exec>
+	</target>
+	<target name="install.android">
+		<echo message="Uninstalling attached Android Device" />
+		<exec executable="${ADT}">
+			        
+			<arg line="-uninstallApp" />
+			        
+			<arg line="-platform android" />
+			       
+			<arg line="-appid '${app.name}'" />
+			      
+		</exec>
+		<echo message="Installing onto attached Android Device" />
+		<exec executable="${ADT}">
+			   
+			<arg line="-installApp" />
+			   
+			<arg line="-platform android" />
+			   
+			<arg line="-package '${build.dir}/android/${app.name}.apk'" />
+			 
+		</exec>
+		<echo message="Launching on attached Android Device" />
+		<exec executable="${ADT}">
+			   
+			<arg line="-launchApp" />
+			   
+			<arg line="-platform android" />
+			   
+			<arg line="-appid '${app.name}'" />
+			 
+		</exec>
+	</target>
+	<target name="uninstall.blackberry">
+		<echo message="Uninstalling from Blackberry VM" />
+		<exec executable="${BBDeploy}" dir="${build.dir}/blackberry">
+			   
+			<arg value="-uninstallApp" />
+			   
+			<arg value="-device" />
+			   
+			<arg value="${bb.ip}" />
+			   
+			<arg value="-password" />
+			   
+			<arg value="${bb.password}" />
+			   
+			<arg value="-package" />
+			   
+			<arg value="${app.name}.bar" />
+			 
+		</exec>
+	</target>
+	<target name="install.blackberry">
+		<echo message="Installing onto Blackberry VM" />
+		<exec executable="${BBPackager}" dir="${build.dir}/blackberry">
+			   
+			<arg value="-package" />
+			   
+			<arg value="${app.name}.bar" />
+			   
+			<arg value="-installApp" />
+			   
+			<arg value="-launchApp" />
+			   
+			<arg value="${app.name}BlackBerry-app.xml" />
+			   
+			<arg value="blackberry-tablet.xml" />
+			   
+			<arg value="${app.name}.swf" />
+			   
+			<arg value="-device" />
+			   
+			<arg value="${bb.ip}" />
+			   
+			<arg value="-password" />
+			   
+			<arg value="${bb.password}" />
+			   
+			<arg value="assets" />
+			 
+		</exec>
+	</target>
+</project>

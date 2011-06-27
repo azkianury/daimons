@@ -2,7 +2,7 @@
 <root>
 
 	<configuration>
-		<playerType><![CDATA[attacker]]></playerType><!-- attacker or defender -->
+		<playerType><![CDATA[defender]]></playerType><!-- attacker or defender -->
 		<ennemiInterval><![CDATA[6000]]></ennemiInterval>
 		<box2D><![CDATA[false]]></box2D>
 		<ennemiAuto><![CDATA[false]]></ennemiAuto>

@@ -27,7 +27,7 @@
 		<content>MainGame.swf</content>
 		<title>Daïmons</title>
 		<systemChrome>none</systemChrome>
-		<fullScreen>false</fullScreen>
+		<fullScreen>true</fullScreen>
 		<renderMode>gpu</renderMode>
 		<visible>true</visible>
 		<minimizable>true</minimizable>
