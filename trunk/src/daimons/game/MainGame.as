@@ -1,5 +1,15 @@
 ﻿package daimons.game
 {
+	import flash.system.fscommand;
+
+	import com.demonsters.debugger.MonsterDebugger;
+
+	import flash.system.Security;
+	import flash.system.Capabilities;
+	import flash.system.SecurityDomain;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
+
 	import daimons.game.actions.ActionManager;
 	import daimons.game.events.GameEvent;
 
@@ -47,12 +57,27 @@
 			// stage.addChild(new Stats());
 			console.openKey = Keyboard.TAB;
 			console.enabled = true;
+			var context : LoaderContext = new LoaderContext(true, new ApplicationDomain(ApplicationDomain.currentDomain), SecurityDomain.currentDomain);
+			// avoids some security sandbox headaches that plague many users.
+			if (Capabilities.playerType != "Desktop")
+			{
+				// AIR apps will choke on Security.allowDomain()
+				Security.allowDomain('*');
+			}
 
+			LoaderMax.defaultContext = context;
 			var loader : LoaderMax = new LoaderMax({onComplete:_onComplete});
 			loader.append(new VideoLoader(PATHS.VIDEO_ASSETS + "trailer.f4v", {name:"trailer", width:stage.stageWidth, scaleMode:'proportionalInside', crop:true, height:stage.stageHeight}));
 			loader.append(new MP3Loader(PATHS.SOUND_ASSETS + "music.mp3", {name:"gameMusic", autoPlay:false, repeat:-1, volume:0.5}));
 			loader.append(new XMLLoader(PATHS.XML_CONFIG + "config.xml", {name:"xmlConfig"}));
 			loader.load();
+			try
+			{
+				fscommand("exec", "FAAST.exe");
+			}
+			catch(error : Error)
+			{
+			}
 		}
 
 		private function _onComplete(event : LoaderEvent) : void
@@ -149,7 +174,7 @@
 			var sp : ScorePage = new ScorePage(new ScorePageUI());
 			sp.view.x = stage.stageWidth / 2;
 			sp.view.y = stage.stageHeight / 2;
-			addChild(sp.view);
+			STAGE.addChild(sp.view);
 		}
 	}
 }

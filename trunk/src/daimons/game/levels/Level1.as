@@ -25,11 +25,6 @@ package daimons.game.levels
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 
-
-
-
-
-
 	/**
 	 * @author lbineau
 	 */
@@ -56,6 +51,11 @@ package daimons.game.levels
 		public function Level1($duration : uint)
 		{
 			super($duration);
+			if (CONFIG.PLAYER_TYPE == CONFIG.ATTACKER)
+			{
+				_tutoTimer = new PerfectTimer((CONFIG.TUTORIAL[_tutoIdx]).time, 1);
+				_tutoTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+			}
 		}
 
 		override public function initialize() : void
@@ -76,7 +76,6 @@ package daimons.game.levels
 			_destroyer.y = 100;
 			add(_destroyer);
 
-
 			_checkTimer = new PerfectTimer(2000, 0);
 			_checkTimer.addEventListener(TimerEvent.TIMER, _onTick);
 			_checkTimer.start();
@@ -87,12 +86,10 @@ package daimons.game.levels
 			addChild(_arrow);
 
 			ActionManager.getInstance().onPositionChanged.add(_onPositionChanged);
-			if (CONFIG.PLAYER_TYPE == CONFIG.ATTACKER)
-			{
-				_tutoTimer = new PerfectTimer((CONFIG.TUTORIAL[_tutoIdx]).time, 1);
-				_tutoTimer.addEventListener(TimerEvent.TIMER_COMPLETE, _onTimerComplete);
+
+			if (_tutoTimer != null)
 				_tutoTimer.start();
-			}
+
 			dispatchEvent(new Event(Event.INIT));
 		}
 
@@ -105,7 +102,7 @@ package daimons.game.levels
 
 				pause();
 			}
-				ActionManager.getInstance().onAction.add(_onTutorialAction);
+			ActionManager.getInstance().onAction.add(_onTutorialAction);
 		}
 
 		private function _onTutorialAction(a : AAction) : void
@@ -330,7 +327,7 @@ package daimons.game.levels
 					ennemi.changeAnimation("idle");
 				}
 			}
-			if (_tutoTimer) _tutoTimer.pause();
+			if (_tutoTimer != null) _tutoTimer.pause();
 			_checkTimer.pause();
 		}
 
@@ -344,7 +341,7 @@ package daimons.game.levels
 					ennemi.changeAnimation(ennemi.prevAnimation);
 				}
 			}
-			if (_tutoTimer) _tutoTimer.resume();
+			if (_tutoTimer != null) _tutoTimer.resume();
 			_checkTimer.resume();
 		}
 	}

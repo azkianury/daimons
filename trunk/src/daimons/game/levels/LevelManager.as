@@ -1,5 +1,8 @@
 package daimons.game.levels
 {
+	import com.demonsters.debugger.MonsterDebugger;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import daimons.game.MainGame;
 	import daimons.game.actions.ActionManager;
 	import daimons.game.core.consts.CONFIG;
@@ -31,6 +34,7 @@ package daimons.game.levels
 		private var _currentIndex : uint;
 		private var _cache : Sprite;
 		private var _calibration : Sprite;
+		private var _counter : Sprite;		
 		private var _loader : LoaderMax;
 		private var _currentLevel : ALevel;
 		public var onLevelChanged : Signal;
@@ -153,14 +157,26 @@ package daimons.game.levels
 
 		public function launchGame() : void
 		{
-			MainGame.STAGE.removeChild(_calibration);
-			_currentLevel.resume();
+			_counter = new CounterUIAsset();
+			_counter['youare'].gotoAndStop(CONFIG.PLAYER_TYPE);
+			_counter.addEventListener(Event.COMPLETE, _onStartCountComplete);
+			MainGame.STAGE.addChild(_counter);
+			_counter.x = (MainGame.STAGE.stageWidth - _counter.width) / 2;
+			_counter.y = (MainGame.STAGE.stageHeight - _counter.height) / 2;
 		}
 
 		private function _onCalibrated(event : GameEvent) : void
 		{
+			MainGame.STAGE.removeChild(_calibration);
 			ActionManager.getInstance().removeEventListener(GameEvent.CALIBRATED, _onCalibrated);
 			dispatchEvent(new GameEvent(GameEvent.CALIBRATED));
+		}
+
+		private function _onStartCountComplete(event : Event) : void
+		{
+			_counter.removeEventListener(Event.COMPLETE, _onStartCountComplete);
+			MainGame.STAGE.removeChild(_counter);
+			_currentLevel.resume();
 		}
 
 		private function _onLevelEnded() : void

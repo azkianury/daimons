@@ -1,10 +1,16 @@
 package daimons.game.score
 {
+	import flash.events.IOErrorEvent;
+
 	import daimons.game.core.consts.CONFIG;
 
 	import flash.display.MovieClip;
 	import flash.events.Event;
-	import flash.net.SharedObject;
+	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
+	import flash.net.URLVariables;
 	import flash.system.Security;
 
 	public final class ScoreManager
@@ -14,11 +20,9 @@ package daimons.game.score
 		private var _nbHuringObject : Number = 0;
 		private var _avoidHurtingObject : Number = 0;
 		private var _view : MovieClip;
-		private var _scoreSO : SharedObject;
 
 		public function ScoreManager()
 		{
-			Security.allowDomain("*"); 
 			if ( instance ) throw new Error("Singleton and can only be accessed through Singleton.getInstance()");
 		}
 
@@ -32,7 +36,6 @@ package daimons.game.score
 			_view = view;
 			updateUI(_percentage);
 			_view.addEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			_scoreSO = SharedObject.getLocal("score_"+CONFIG.PLAYER_TYPE,'/');
 		}
 
 		private function _onAddedToStage(event : Event) : void
@@ -80,9 +83,42 @@ package daimons.game.score
 
 		public function saveScore() : void
 		{
-			_scoreSO.data.percentage = percentage.toString();
-			_scoreSO.data.teamPercentage = (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? '55' : '65';
-			_scoreSO.flush();
+			try
+			{
+				_sendScoreToServer('http://lbineau.com/projects/daimons/');
+			}
+			catch(error : Error)
+			{
+			}
+		}
+
+		private function _sendScoreToServer(baseURL : String) : void
+		{
+			Security.loadPolicyFile(baseURL + 'crossdomain.xml');
+
+			var request : URLRequest = new URLRequest(baseURL + 'scripts/addScore.php');
+			request.method = URLRequestMethod.POST;
+
+			var variables : URLVariables = new URLVariables();
+
+			variables.score = _percentage;
+			request.data = variables;
+
+			var loader : URLLoader = new URLLoader(request);
+			loader.dataFormat = URLLoaderDataFormat.VARIABLES;
+			loader.addEventListener(IOErrorEvent.IO_ERROR, _onSendingError);
+			loader.load(request);
+		}
+
+		private function _onSendingError(event : IOErrorEvent) : void
+		{
+			try
+			{
+				_sendScoreToServer('http://localhost/daimons/');
+			}
+			catch(error : Error)
+			{
+			}
 		}
 
 		public function get view() : MovieClip
@@ -93,11 +129,6 @@ package daimons.game.score
 		public function get percentage() : Number
 		{
 			return _percentage;
-		}
-
-		public function get scoreSO() : SharedObject
-		{
-			return _scoreSO;
 		}
 	}
 }

@@ -67,9 +67,6 @@ package daimons.game.levels
 			_head.x = (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? CONFIG.APP_WIDTH : 0;
 			_head.y = CONFIG.APP_HEIGHT;
 
-			_tuto = new TutorialManager((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new TutorialDefenderUIAsset() : new TutorialAttackerUIAsset());
-			addChild(_tuto.view);
-
 		}
 
 		override public function initialize() : void
@@ -95,6 +92,8 @@ package daimons.game.levels
 			view.cameraOffset = new MathVector(150, 200);
 			view.cameraEasing.y = 0;
 			
+			_tuto = new TutorialManager((CONFIG.PLAYER_TYPE == CONFIG.DEFENDER) ? new TutorialDefenderUIAsset() : new TutorialAttackerUIAsset());
+			addChild(_tuto.view);
 		}
 
 		override public function destroy() : void
@@ -142,6 +141,7 @@ package daimons.game.levels
 			TweenMax.to(_bmp, 0.5, {blurFilter:{blurX:10, blurY:10}});
 			_countdown.pause();
 			addChild(_bmp);
+			swapChildren(_bmp, _tuto.view);
 		}
 
 		public function resume() : void

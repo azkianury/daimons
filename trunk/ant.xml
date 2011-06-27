@@ -34,33 +34,45 @@
 		</copy>
 	</target>
 
-	<target name="AIR-Attacker" description="Create the AIR package for our app">
+	<target name="AIR-Attacker" description="Create the AIR package for Attacker">
+		<copy overwrite="true" file="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/compil-params/attacker/config.xml" tofile="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/xml/config.xml"/>
+		<copy overwrite="true" todir="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/fscommand">
+		  <fileset dir="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/compil-params/attacker/FAAST" />
+		</copy>
 		<exec executable="${FLEX_HOME}/bin/adt" failonerror="true">
 			<arg line="-package" />
 			<arg line="-storetype pkcs12" />
 			<arg line="-keystore ./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/daimons-key.p12" />
 			<arg line="-storepass pwd" />
-			<arg line="${out.dir}/Daimons-game.air" />
-			<arg line="${out.dir}/MainGame-app.xml" />
+			<arg line="${out.dir}/Daimons-game-attacker.air" />
+			<arg line="${out.dir}/compil-params/attacker/MainGame-app-attacker.xml" />
 			<arg line="${out.dir}/MainGame.swf" />
 			<arg line="-C ${out.dir} MainGame.swf" />
 			<arg line="-C ${out.dir} assets" />
+			<arg line="-C ${out.dir} compil-params/attacker" />
 			<arg line="-C ${out.dir} xml" />
+			<arg line="-C ${out.dir} fscommand" />
 		</exec>
 	</target>
 
-	<target name="AIR-Defender" description="Create the AIR package for our app">
+	<target name="AIR-Defender" description="Create the AIR package for Defender">
+		<copy overwrite="true" file="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/compil-params/defender/config.xml" tofile="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/xml/config.xml" />
+		<copy overwrite="true" todir="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/fscommand">
+		  <fileset dir="./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/compil-params/defender/FAAST" />
+		</copy>
 		<exec executable="${FLEX_HOME}/bin/adt" failonerror="true">
 			<arg line="-package" />
 			<arg line="-storetype pkcs12" />
 			<arg line="-keystore ./Users/lbineau/Documents/workspace/PROJECT_Daimons/bin/daimons-key.p12" />
 			<arg line="-storepass pwd" />
-			<arg line="${out.dir}/Daimons-game.air" />
-			<arg line="${out.dir}/MainGame-app.xml" />
+			<arg line="${out.dir}/Daimons-game-defender.air" />
+			<arg line="${out.dir}/compil-params/defender/MainGame-app-defender.xml" />
 			<arg line="${out.dir}/MainGame.swf" />
 			<arg line="-C ${out.dir} MainGame.swf" />
 			<arg line="-C ${out.dir} assets" />
+			<arg line="-C ${out.dir} compil-params/defender" />
 			<arg line="-C ${out.dir} xml" />
+			<arg line="-C ${out.dir} fscommand" />
 		</exec>
 	</target>
 	

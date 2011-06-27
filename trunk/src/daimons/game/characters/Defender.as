@@ -244,7 +244,6 @@ package daimons.game.characters
 		{
 			var _theMc : MovieClip = (_ce.state.view.getArt(this) as MovieClip);
 			_theMc.visible = true;
-			MonsterDebugger.trace(this, _view);
 			event.currentTarget.removeEventListener(TimerEvent.TIMER, _clignote);
 			event.currentTarget.removeEventListener(TimerEvent.TIMER_COMPLETE, _finClignote);
 		}
