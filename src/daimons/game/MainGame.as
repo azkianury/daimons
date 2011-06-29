@@ -139,19 +139,12 @@
 		{
 			stage.removeEventListener(MouseEvent.CLICK, _onClick);
 			stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-			if (CONFIG.PLAYER_TYPE == CONFIG.DEFENDER)
-			{
-				_trailer = LoaderMax.getLoader("trailer");
-				this.addChildAt(_trailer.content, 0);
-				_trailer.addEventListener(VideoLoader.VIDEO_COMPLETE, _onTrailerPlayedComplete);
-				_trailer.content.width = stage.stageWidth;
-				_trailer.content.height = stage.stageHeight;
-				_trailer.playVideo();
-			}
-			else
-			{
-				_waitForCalibration();
-			}
+			_trailer = LoaderMax.getLoader("trailer");
+			this.addChildAt(_trailer.content, 0);
+			_trailer.addEventListener(VideoLoader.VIDEO_COMPLETE, _onTrailerPlayedComplete);
+			_trailer.content.width = stage.stageWidth;
+			_trailer.content.height = stage.stageHeight;
+			_trailer.playVideo();
 		}
 
 		private function _initConfig() : void
