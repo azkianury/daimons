@@ -1,8 +1,5 @@
 package daimons.game.levels
 {
-	import com.demonsters.debugger.MonsterDebugger;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
 	import daimons.game.MainGame;
 	import daimons.game.actions.ActionManager;
 	import daimons.game.core.consts.CONFIG;
@@ -10,6 +7,7 @@ package daimons.game.levels
 	import daimons.game.events.GameEvent;
 
 	import com.citrusengine.core.CitrusEngine;
+	import com.greensock.TweenLite;
 	import com.greensock.events.LoaderEvent;
 	import com.greensock.loading.LoaderMax;
 	import com.greensock.loading.SWFLoader;
@@ -145,7 +143,9 @@ package daimons.game.levels
 			_currentLevel.addEventListener(Event.INIT, _onLevelInited);
 
 			_calibration = new CalibPageUI();
+			_calibration.alpha = 0;
 			MainGame.STAGE.addChild(_calibration);
+			TweenLite.to(_calibration, 1, {alpha:1});
 			ActionManager.getInstance().addEventListener(GameEvent.CALIBRATED, _onCalibrated);
 			_onResize();
 		}

@@ -27,7 +27,7 @@ package daimons.game.tutorial
 		private function _onAddedToStage(event : Event) : void
 		{
 			_view.removeEventListener(Event.ADDED_TO_STAGE, _onAddedToStage);
-			_view.x = int(_view.stage.stageWidth) / 2;
+			_view.x = int(_view.stage.stageWidth - _view.width / 2) / 2;
 			_view.y = _view.height + 10;
 		}
 

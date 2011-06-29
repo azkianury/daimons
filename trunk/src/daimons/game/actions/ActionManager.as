@@ -47,7 +47,7 @@ package daimons.game.actions
 			_defendArray.shield = new DefenseAction(new ShieldAction(), Actions.SHIELD, Keyboard.F2, 2000, 800, true);
 			_defendArray.jump = new DefenseAction(new JumpAction(), Actions.JUMP, Keyboard.SPACE, 1000, 200, true);
 			_defendArray.crouch = new DefenseAction(new CrouchAction(), Actions.CROUCH, Keyboard.DOWN, 1200, 800, true);
-			_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, Keyboard.F3, 3000, 800, true);
+			_defendArray.bubble = new DefenseAction(new BubbleAction(), Actions.BUBBLE, Keyboard.F3, 3000, 800, false);
 			_currentActionDefender = _defendArray[Actions.NONE];
 			for each (var d : AAction in _defendArray)
 				if ((d as AAction).active) _defendArrayLength++;
